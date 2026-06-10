@@ -1740,7 +1740,7 @@
 
             getSnapCoordinates: function() {
                 const s = GameApp.State; const cellSize = GameApp.Config.bCellSize;
-                const targetX = s.mouseX - s.dragOffset.x; const targetY = s.mouseY - s.dragOffset.y - 85; 
+                const targetX = s.mouseX - s.dragOffset.x; const targetY = s.mouseY - s.dragOffset.y - 50; 
                 return { gridX: Math.round(targetX / cellSize), gridY: Math.round(targetY / cellSize) };
             },
 
@@ -1940,7 +1940,7 @@
                 
                 s.hand.forEach(piece => {
                     if(piece.isUsed) return;
-                    if(s.mouseX >= piece.x - 20 && s.mouseX <= piece.x + 120 && s.mouseY >= piece.y - 20 && s.mouseY <= piece.y + 120) {
+                    if(s.mouseX >= piece.x - 35 && s.mouseX <= piece.x + 155 && s.mouseY >= piece.y - 30 && s.mouseY <= piece.y + 150) {
                         s.selectedPiece = piece;
                         s.dragOffset.x = (piece.shape[0].length * bCell) / 2;
                         s.dragOffset.y = (piece.shape.length * bCell) / 2;
@@ -2398,7 +2398,23 @@
                 s.hand.forEach(piece => { if (!piece.isUsed && piece !== s.selectedPiece) this.drawPiece(piece, piece.x, piece.y, 24); });
                 
                 if (s.selectedPiece && !s.isGameOver) {
-                    this.drawPiece(s.selectedPiece, s.mouseX - s.dragOffset.x, s.mouseY - s.dragOffset.y - 85, bCell);
+                    // 拖拽时加外发光，让方块更明显
+                    const dx = s.mouseX - s.dragOffset.x;
+                    const dy = s.mouseY - s.dragOffset.y - 50;
+                    ctx.save();
+                    ctx.shadowColor = s.selectedPiece.color;
+                    ctx.shadowBlur = 25;
+                    this.drawPiece(s.selectedPiece, dx, dy, bCell);
+                    ctx.restore();
+                    // 半透明底光
+                    ctx.save();
+                    ctx.shadowColor = 'rgba(255,255,255,0.5)';
+                    ctx.shadowBlur = 40;
+                    ctx.globalAlpha = 0.2;
+                    this.drawPiece(s.selectedPiece, dx, dy, bCell);
+                    ctx.restore();
+                    // 实心绘制
+                    this.drawPiece(s.selectedPiece, dx, dy, bCell);
                 }
             }
         };
