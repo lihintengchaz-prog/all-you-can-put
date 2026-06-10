@@ -1020,7 +1020,7 @@
 
             light: function() {
                 if (!this.supported) return;
-                try { navigator.vibrate(8); } catch(e) {}
+                try { navigator.vibrate(5); } catch(e) {}
             },
             medium: function() {
                 if (!this.supported) return;
@@ -1950,10 +1950,16 @@
 
             handleInputMove: function(pos) {
                 const s = GameApp.State;
+                const dx = pos.x - s.mouseX;
+                const dy = pos.y - s.mouseY;
                 s.mouseX = pos.x; s.mouseY = pos.y;
                 
-                // 格子滑动震动反馈：进入新格子时轻震
                 if (s.selectedPiece && !s.isGameOver) {
+                    // 每移动超过3px就震一下，连续拖动时手感超级爽
+                    if (Math.abs(dx) + Math.abs(dy) > 3) {
+                        GameApp.Vibe.light();
+                    }
+                    // 格子吸附震动：进入新格子时加多一下短震
                     const bCell = GameApp.Config.bCellSize;
                     const hoverR = Math.floor(pos.y / bCell);
                     const hoverC = Math.floor(pos.x / bCell);
