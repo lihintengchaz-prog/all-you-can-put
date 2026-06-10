@@ -2144,6 +2144,7 @@
                 s.lastHoverR = -1; s.lastHoverC = -1;
                 if (!s.selectedPiece) return;
                 
+                const bCell = GameApp.Config.bCellSize;
                 const { gridX, gridY } = this.getSnapCoordinates();
                 
                 if(this.canPlaceShape(s.selectedPiece.shape, gridY, gridX)) {
