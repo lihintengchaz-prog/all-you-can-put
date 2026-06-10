@@ -676,7 +676,6 @@
 
         /* 模式卡片入场：依次弹出 */
         .mode-card {
-            opacity: 0;
             animation: cardEntrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
             transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
                         box-shadow 0.25s ease, border-color 0.25s ease;
@@ -2592,13 +2591,7 @@
                 ctx.fillStyle = "rgba(0,0,0,0.4)"; ctx.fillRect(0, canvas.width, canvas.width, canvas.height - canvas.width);
                 s.hand.forEach(piece => { if (!piece.isUsed && piece !== s.selectedPiece) this.drawPiece(piece, piece.x, piece.y, 24); });
                 
-                // 拖拽粒子轨迹
-                if (s.selectedPiece && !s.isGameOver && Math.random() > 0.6) {
-                    const bx = s.mouseX + (Math.random() - 0.5) * 20;
-                    const by = s.mouseY + (Math.random() - 0.5) * 20;
-                    const trailColor = s.selectedPiece.color;
-                    s.particles.push({ x: bx, y: by, vx: (Math.random() - 0.5) * 2, vy: -Math.random() * 3 - 1, radius: Math.random() * 3 + 1.5, alpha: 0.6, color: trailColor });
-                }
+
 
                 if (s.selectedPiece && !s.isGameOver) {
                     // 拖拽粒子轨迹（降频，每帧概率降低到10%）
