@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ALL YOU CAN PUT!</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧩</text></svg>">
-    <meta name="build" content="v1.0-fix">
     
     
     <style>
@@ -1174,7 +1173,11 @@
             },
 
             light: function() {
-                this._fire(12, 0);
+                // 纯硬件震动，不产生音频触感（防止拖拽时无限创建振荡器导致卡死）
+                const now = Date.now();
+                if (now - this._lastTs < this._throttle) return;
+                this._lastTs = now;
+                this._vibrate(12);
             },
             medium: function() {
                 this._fire(25, 0.5);
@@ -2578,6 +2581,8 @@
                 }
 
 
+                // 粒子上限 200 个，防止爆内存
+                while (s.particles.length > 200) s.particles.shift();
                 s.particles.forEach(p => { ctx.save(); ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill(); ctx.restore(); });
                 
                 if (s.allClearFlashTimer > 0) {
@@ -2596,8 +2601,8 @@
                 }
 
                 if (s.selectedPiece && !s.isGameOver) {
-                    // 拖拽粒子轨迹 
-                    if (Math.random() > 0.5) {
+                    // 拖拽粒子轨迹（降频，每帧概率降低到10%）
+                    if (Math.random() > 0.9) {
                         const tx = s.mouseX + (Math.random() - 0.5) * 25;
                         const ty = s.mouseY + (Math.random() - 0.5) * 25;
                         s.particles.push({ x: tx, y: ty, vx: (Math.random() - 0.5) * 2, vy: -Math.random() * 3 - 1, radius: Math.random() * 3 + 1.5, alpha: 0.5, color: s.selectedPiece.color });
