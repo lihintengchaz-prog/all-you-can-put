@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ALL YOU CAN PUT!</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧩</text></svg>">
     
     
     <style>
@@ -108,14 +109,7 @@
             box-shadow: 0 0 15px var(--blue);
         }
 
-        .subtitle {
-            color: #1a223d;
-            font-size: clamp(1rem, 3vw, 1.3rem);
-            margin-bottom: 40px;
-            letter-spacing: 5px;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
+
 
         .mode-container {
             display: grid;
@@ -354,6 +348,10 @@
         canvas {
             display: block;
             border-radius: 24px;
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
             max-width: 100%;
             border: 1px solid rgba(255,255,255,0.05);
             background: var(--grid-dark);
@@ -1477,15 +1475,12 @@
                 const S = GameApp.Config.Shapes.special;
                 const M = GameApp.Config.Shapes.medium;
                 const H = GameApp.Config.Shapes.hard;
-
-                // ============================================================
                 // 难度曲线：根据当前分数决定出牌池
                 //   Phase 1 (0-200):  新手保护，基本只出简单形状
                 //   Phase 2 (200-500): 少量中等形状
                 //   Phase 3 (500-1000): 混合出牌
                 //   Phase 4 (1000-2000): 开始出难形状
                 //   Phase 5 (2000+):   真正的挑战
-                // ============================================================
                 let poolEasy = [...E];
                 let poolMed = [...E, ...M];
                 let poolAll = [...E, ...M, ...H];
@@ -1518,10 +1513,10 @@
                     }
                 }
 
-                // 🎯 优先找一个能立即消除行列的形狀（所有难度都尝试）
+                // 🎯 优先找一个能立即消除行列的形狀（所有难度都尝试，低分时更积极）  
                 let lineClearPiece = null;
                 if (s.currentMode === 'endless' || s.currentMode === 'lucky') {
-                    let searchPool = difficultyTier <= 1 ? [...E, ...M] : [...E, ...M, ...H];
+                    let searchPool = (difficultyTier <= 1 || s.bScore <= 100) ? [...E, ...M, ...S] : [...E, ...M, ...H];
                     searchPool.sort(() => Math.random() - 0.5);
                     for (let p of searchPool) {
                         for (let r = 0; r < size; r++) {
@@ -1579,10 +1574,7 @@
 
                 // 🎯 精准帮扶：根据棋盘空缺给玩家需要的形状
                 this._giveHelpfulPieces(chosenPool);
-
-                // ============================================================
                 // 保底机制：如果所有手牌都无法放置，自动替换为可放置的简单形状
-                // ============================================================
                 this._ensurePlayableHand();
 
                 this.saveCurrentGame();
@@ -1669,63 +1661,57 @@
                     }
                 }
 
-                // 如果有需要的形状，替换手牌中第一个未使用的
+                // 如果有需要的形状，替换手牌中第一和第二个未使用的（最多2个）
                 if (neededShapes.length > 0) {
                     neededShapes.sort((a, b) => b.priority - a.priority);
-                    const best = neededShapes[Math.floor(Math.random() * Math.min(neededShapes.length, 3))];
-                    for (let i = 0; i < s.hand.length; i++) {
+                    const picks = neededShapes.slice(0, Math.min(neededShapes.length, 2));
+                    let replaceIdx = 0;
+                    for (let i = 0; i < s.hand.length && replaceIdx < picks.length; i++) {
                         if (!s.hand[i].isUsed) {
-                            s.hand[i].shape = best.shape;
-                            s.hand[i].color = best.color;
-                            break;
+                            s.hand[i].shape = picks[replaceIdx].shape;
+                            s.hand[i].color = picks[replaceIdx].color;
+                            replaceIdx++;
                         }
                     }
                 }
             },
 
-            // 保底：检查手牌是否至少有一块可以放，如果没有就替换
+            // 保底：逐一检查每张手牌，确保都能放置；不能放的就替换成简单形状
             _ensurePlayableHand: function() {
                 const s = GameApp.State;
                 const size = GameApp.Config.bGridSize;
                 const E = GameApp.Config.Shapes.easy;
                 const S = GameApp.Config.Shapes.special;
+                const pool = [...E, ...S];
 
-                // 检查是否随便哪块能放
-                let anyPlayable = false;
-                for (let piece of s.hand) {
-                    if (piece.isUsed) continue;
+                for (let i = 0; i < s.hand.length; i++) {
+                    if (s.hand[i].isUsed) continue;
+                    let playable = false;
                     for (let r = 0; r < size; r++) {
                         for (let c = 0; c < size; c++) {
-                            if (this.canPlaceShape(piece.shape, r, c)) {
-                                anyPlayable = true;
+                            if (this.canPlaceShape(s.hand[i].shape, r, c)) {
+                                playable = true;
                                 break;
                             }
                         }
-                        if (anyPlayable) break;
+                        if (playable) break;
                     }
-                    if (anyPlayable) break;
-                }
-
-                // 如果全都不能放，暴力替换到有能放的为止
-                if (!anyPlayable) {
-                    for (let i = 0; i < s.hand.length; i++) {
-                        if (s.hand[i].isUsed) continue;
-                        let found = false;
-                        for (let attempts = 0; attempts < 30; attempts++) {
-                            let testPool = [...E, ...S];
-                            let testPiece = testPool[Math.floor(Math.random() * testPool.length)];
+                    if (!playable) {
+                        // 暴力替换到有能放的为止
+                        for (let attempts = 0; attempts < 50; attempts++) {
+                            let testPiece = pool[Math.floor(Math.random() * pool.length)];
                             for (let r = 0; r < size; r++) {
                                 for (let c = 0; c < size; c++) {
                                     if (this.canPlaceShape(testPiece.matrix, r, c)) {
                                         s.hand[i].shape = testPiece.matrix;
                                         s.hand[i].color = testPiece.color;
-                                        found = true;
+                                        playable = true;
                                         break;
                                     }
                                 }
-                                if (found) break;
+                                if (playable) break;
                             }
-                            if (found) break;
+                            if (playable) break;
                         }
                     }
                 }
@@ -2008,10 +1994,7 @@
                 }
                 s.selectedPiece = null; 
             },
-
-            // ======================================================================
             // 🔮 寶箱與自選 3 連抽系統 (PICK 3 SYSTEM)
-            // ======================================================================
             triggerChestPopup: function() {
                 const s = GameApp.State;
                 s.selectedPiece = null; 
@@ -2416,10 +2399,6 @@
                 }
             }
         };
-
-        // ==========================================================================
-        // 9. BOOTSTRAP INITIALIZATION
-        // ==========================================================================
         window.onload = function() {
             GameApp.UI.init();
             GameApp.I18N.init();
