@@ -1468,13 +1468,17 @@
                 const t = GameApp.I18N;
                 const s = GameApp.State;
                 
-                // 分数滚动效果
+                // 分数滚动效果 + 弹动动画
                 if (this._lastDisplayedScore !== s.bScore) {
                     const el = this.elements.topScoreText;
                     const startVal = this._lastDisplayedScore;
                     const endVal = s.bScore;
-                    const duration = Math.min(400, Math.max(150, Math.abs(endVal - startVal) * 2));
+                    const duration = Math.min(600, Math.max(200, Math.abs(endVal - startVal) * 2));
                     const startTime = Date.now();
+                    // 加分时闪一下
+                    el.style.transition = 'transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                    el.style.transform = 'scale(1.2)';
+                    setTimeout(() => { el.style.transform = 'scale(1)'; }, 150);
                     const animate = () => {
                         const elapsed = Date.now() - startTime;
                         const progress = Math.min(1, elapsed / duration);
@@ -1730,19 +1734,19 @@
                 let difficultyTier;
 
                 if (s.currentMode === 'level') {
-                    if (s.currentLevel <= 30) { chosenPool = poolEasy; difficultyTier = 0; }
-                    else if (s.currentLevel <= 50) { chosenPool = poolMed; difficultyTier = 1; }
+                    if (s.currentLevel <= 50) { chosenPool = poolEasy; difficultyTier = 0; }
+                    else if (s.currentLevel <= 60) { chosenPool = poolMed; difficultyTier = 1; }
                     else { chosenPool = [...M, ...H]; difficultyTier = 2; }
                 } else {
                     const sc = s.bScore;
                     // 幸运模式比无尽模式稍微难一点点（门槛降低20%）
                     const diffMod = s.currentMode === 'lucky' ? 0.8 : 1.0;
                     const adj = sc * diffMod;
-                    if (adj <= 500) { chosenPool = poolEasy; difficultyTier = 0; }
-                    else if (adj <= 1200) { 
+                    if (adj <= 5000) { chosenPool = poolEasy; difficultyTier = 0; }
+                    else if (adj <= 10000) { 
                         chosenPool = Math.random() < 0.7 ? poolEasy : poolMed;
                         difficultyTier = 1;
-                    } else if (adj <= 2500) {
+                    } else if (adj <= 20000) {
                         const r = Math.random();
                         chosenPool = r < 0.4 ? poolEasy : r < 0.8 ? poolMed : poolAll;
                         difficultyTier = 2;
@@ -2026,7 +2030,7 @@
                     GameApp.Core.showComboPopup(0);
                     const cx = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
                     const cy = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
-                    s.scoreFlyouts.push({ x: cx, y: cy, vy: 2.2, text: "\u2728 ALL CLEAR x" + s.allClearCount + "!", color: "#ffd700", timer: 1.2 });
+                    s.scoreFlyouts.push({ x: cx, y: cy, vy: 2.2, text: "\u2728 ALL CLEAR x" + s.allClearCount + "!", color: "#ffd700", timer: 1.5, color: "#ffd700", timer: 1.2 });
                     GameApp.UI.updateScoreDisplay();
                 }
             },
@@ -2064,7 +2068,9 @@
                     // 同时消除行数直接做倍数：清1行=100分，2行=400分，3行=900分，4行=1600分
                     const comboMult = linesCount * linesCount;
                     const bonus = Math.round(comboMult * 100 * (s.currentMode === 'lucky' ? s.currentMultiplier : 1));
-                    s.scoreFlyouts.push({ x: cx, y: cy + 20, vy: 1.8, text: "+" + bonus, color: linesCount >= 4 ? "#d500f9" : linesCount >= 3 ? "#ffd700" : "#00e5ff", timer: 1 });
+                    // 消除分数飞字更大更持久
+                    const flyFontSize = bonus > 1000 ? 40 : bonus > 500 ? 34 : bonus > 200 ? 28 : 24;
+                    s.scoreFlyouts.push({ x: cx, y: cy + 10, vy: 1.5, text: "+" + bonus, color: linesCount >= 4 ? "#d500f9" : linesCount >= 3 ? "#ffd700" : "#00e5ff", timer: 1.4 });
                 }
 
                 const bCell = GameApp.Config.bCellSize;
@@ -2239,7 +2245,9 @@
                     const fcx = gridX * bCell + (s.selectedPiece.shape[0].length * bCell) / 2;
                     const fcy = gridY * bCell - 10;
                     const fcolor = cells >= 4 ? '#d500f9' : cells >= 3 ? '#00e5ff' : '#00ff66';
-                    s.scoreFlyouts.push({ x: fcx, y: fcy, vy: 1.5, text: '+' + finalGain, color: fcolor, timer: 1.2 });
+                    // 放置分数飞字更大
+                    const pFontSize = finalGain > 200 ? 32 : finalGain > 80 ? 26 : 22;
+                    s.scoreFlyouts.push({ x: fcx, y: fcy, vy: 1.2, text: '+' + finalGain, color: fcolor, timer: 1.3 });
                     GameApp.Render.triggerSoftJelly(gridY, gridX, s.selectedPiece.shape);
                     GameApp.Vibe.medium();
                     GameApp.Audio.place();
@@ -2651,18 +2659,26 @@
                     }
                 }
 
-                // 绘製分數飛字
+                // 绘製分數飛字（放大+发光）
                 for (let fi = s.scoreFlyouts.length - 1; fi >= 0; fi--) {
                     const fl = s.scoreFlyouts[fi];
                     fl.y -= fl.vy; fl.timer -= 0.02;
                     if (fl.timer <= 0) { s.scoreFlyouts.splice(fi, 1); continue; }
                     ctx.save();
                     ctx.globalAlpha = Math.min(fl.timer * 2, 1);
-                    ctx.font = 'bold 22px -apple-system, sans-serif';
+                    // 分数越大字号越大
+                    const scoreNum = parseInt(fl.text.replace(/\D/g,'')) || 0;
+                    const fontSize = scoreNum > 500 ? 38 : scoreNum > 200 ? 32 : scoreNum > 80 ? 28 : 24;
+                    ctx.font = `bold ${fontSize}px -apple-system, sans-serif`;
                     ctx.textAlign = 'center';
-                    ctx.fillStyle = fl.color || '#ffd700';
+                    ctx.textBaseline = 'middle';
+                    // 外发光（分层）
                     ctx.shadowColor = fl.color || '#ffd700';
-                    ctx.shadowBlur = 15;
+                    ctx.shadowBlur = 30;
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillText(fl.text, fl.x + 1, fl.y + 1);
+                    ctx.shadowBlur = 20;
+                    ctx.fillStyle = fl.color || '#ffd700';
                     ctx.fillText(fl.text, fl.x, fl.y);
                     ctx.restore();
                 }
