@@ -2651,7 +2651,7 @@
 
             getSnapCoordinates: function() {
                 const s = GameApp.State; const cellSize = GameApp.Config.bCellSize;
-                const mult = GameApp.Config.isTouchDevice ? 1.5 : 0.95; const targetX = s.dragStartX + (s.mouseX - s.dragStartX) * mult - s.dragOffset.x; const targetY = s.dragStartY + (s.mouseY - s.dragStartY) * mult - s.dragOffset.y; 
+                const mult = GameApp.Config.isTouchDevice ? 1.5 : 1.1; const targetX = s.dragStartX + (s.mouseX - s.dragStartX) * mult - s.dragOffset.x; const targetY = s.dragStartY + (s.mouseY - s.dragStartY) * mult - s.dragOffset.y; 
                 return { gridX: Math.round(targetX / cellSize), gridY: Math.round(targetY / cellSize) };
             },
 
@@ -3615,7 +3615,7 @@
                     // 完全自由跟随手指，不做任何绘制限制（手感与之前完全一致）
                     const pW = s.selectedPiece.shape[0].length * bCell;
                     const pH = s.selectedPiece.shape.length * bCell;
-                    const mult = GameApp.Config.isTouchDevice ? 1.5 : 0.95; const dx = s.dragStartX + (s.mouseX - s.dragStartX) * mult - s.dragOffset.x;
+                    const mult = GameApp.Config.isTouchDevice ? 1.5 : 1.1; const dx = s.dragStartX + (s.mouseX - s.dragStartX) * mult - s.dragOffset.x;
                     const dy = s.dragStartY + (s.mouseY - s.dragStartY) * mult - s.dragOffset.y;
                     ctx.save();
                     ctx.shadowColor = s.selectedPiece.color;
