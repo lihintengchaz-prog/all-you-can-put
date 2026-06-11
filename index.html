@@ -133,26 +133,19 @@
         }
 
         .mode-card:hover {
-            transform: translateY(-10px);
+            transform: translateY(-12px) scale(1.03);
             border-color: var(--blue);
-            box-shadow: 0 30px 60px rgba(0,242,254,0.2);
+            box-shadow: 0 30px 60px rgba(0,242,254,0.2), 0 0 40px rgba(0,229,255,0.15);
         }
 
         .mode-card h3 {
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-            font-weight: 800;
-            letter-spacing: 1px;
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            font-weight: 900;
+            letter-spacing: 2px;
         }
 
-        .mode-card p {
-            color: #bbc6e0;
-            font-size: 0.95rem;
-            margin-bottom: 30px;
-            line-height: 1.6;
-            text-align: center;
-            height: 75px;
-        }
+        
 
         .play-btn {
             background: linear-gradient(45deg, var(--pink), var(--blue));
@@ -845,19 +838,19 @@
         <div class="mode-container">
             <div class="mode-card" onclick="GameApp.Core.startLuckyMode()">
                 <h3 id="mode-lucky-title">幸運模式 (Lucky)</h3>
-                <p id="mode-lucky-desc">每消除滿 3 行即可抽取幸運寶箱！觸發高額分數翻倍與方塊自選改命！</p>
+
                 <button class="play-btn" style="background: linear-gradient(45deg, var(--yellow), var(--orange)); color: #000;">LUCKY PLAY</button>
             </div>
             
             <div class="mode-card" onclick="GameApp.Core.startEndlessMode()">
                 <h3 id="mode-endless-title">無盡模式 (Endless)</h3>
-                <p id="mode-endless-desc">經典刷分模式！享受滿屏極速全清的無限爽感，不斷挑戰最高分！</p>
+
                 <button class="play-btn">START</button>
             </div>
             
             <div class="mode-card" id="level-card">
                 <h3 id="mode-level-title">闖關模式 (Levels)</h3>
-                <p id="mode-level-desc">挑戰由淺入深的 66 道經典關卡！繞開固定死局障礙鐵塊，衝擊通關目標。</p>
+
                 <button class="play-btn" onclick="GameApp.UI.toggleLevelSelect(event)">STAGES</button>
                 <div id="level-select-panel">
                     </div>
@@ -974,8 +967,7 @@
                 ],
                 // 隱藏VIP款（僅限自選面板出現）
                 special: [
-                    { name: "dot", matrix: [[1]], color: '#00ff66' },
-                    { name: "cross-3x3", matrix: [[0,1,0],[1,1,1],[0,1,0]], color: '#d500f9' }
+                    { name: "dot", matrix: [[1]], color: '#00ff66' }
                 ]
             },
 
