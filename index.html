@@ -2424,7 +2424,7 @@
 
             getSnapCoordinates: function() {
                 const s = GameApp.State; const cellSize = GameApp.Config.bCellSize;
-                const targetX = s.dragStartX + (s.mouseX - s.dragStartX) * 1.1 - s.dragOffset.x; const targetY = s.dragStartY + (s.mouseY - s.dragStartY) * 1.1 - s.dragOffset.y; 
+                const targetX = s.dragStartX + (s.mouseX - s.dragStartX) * 1.2 - s.dragOffset.x; const targetY = s.dragStartY + (s.mouseY - s.dragStartY) * 1.2 - s.dragOffset.y; 
                 return { gridX: Math.round(targetX / cellSize), gridY: Math.round(targetY / cellSize) };
             },
 
@@ -3325,8 +3325,8 @@
                         s.particles.push({ x: tx, y: ty, vx: (Math.random() - 0.5) * 2, vy: -Math.random() * 3 - 1, radius: Math.random() * 3 + 1.5, alpha: 0.5, color: s.selectedPiece.color });
                     }
                     // 拖拽时加外发光，让方块更明显
-                    const dx = s.dragStartX + (s.mouseX - s.dragStartX) * 1.1 - s.dragOffset.x;
-                    const dy = s.dragStartY + (s.mouseY - s.dragStartY) * 1.1 - s.dragOffset.y;
+                    const dx = s.dragStartX + (s.mouseX - s.dragStartX) * 1.2 - s.dragOffset.x;
+                    const dy = s.dragStartY + (s.mouseY - s.dragStartY) * 1.2 - s.dragOffset.y;
                     ctx.save();
                     ctx.shadowColor = s.selectedPiece.color;
                     ctx.shadowBlur = 25;
