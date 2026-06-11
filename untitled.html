@@ -906,16 +906,16 @@
                 <div class="left-nav-group">
                     <button class="home-icon-btn" onclick="GameApp.Core.exitToMenu()">🏠</button>
                     <div class="score-left-box">
-                        <div class="top-score-text" id="topScoreText">SCORE: 0</div>
-                        <div class="top-best-text" id="topBestText">BEST: 0</div>
+                        <div class="top-score-text" id="topScoreText">-</div>
+                        <div class="top-best-text" id="topBestText">-</div>
                     </div>
                 </div>
                 <button class="settings-gear-btn" onclick="GameApp.UI.openSettingsModal()">⚙️</button>
             </div>
 
             <div class="status-indicators-bar">
-                <div id="lucky-multiplier-tag" class="indicator-tag" style="display:none;">倍率: 1.0x</div>
-                <div id="lucky-progress-bar" class="indicator-tag">距離寶箱還剩: 3 行</div>
+                <div id="lucky-multiplier-tag" class="indicator-tag" style="display:none;">-</div>
+                <div id="lucky-progress-bar" class="indicator-tag" style="display:none;">-</div>
             </div>
 
             <div class="arena" id="gameArenaPanel">
@@ -1111,17 +1111,17 @@
                     btnRetry: "🔄 重新開始", 
                     btnLobby: "🚪 返回主頁",
                     btnClose: "關閉面板", 
-                    goWin: "STAGE CLEAR! 順利通關", 
+                    goWin: "🎉 通關成功！", 
                     goLose: "挑戰失敗", 
                     goOver: "遊戲結束", 
-                    goScore: "最終得分", 
+                    goScore: "🏆 最終得分", 
                     goWinDesc: "成功攻克本關分數目標！", 
                     goLoseDesc: "死局！格子塞滿且未達目標分。",
                     alertX2: "✨ 神話降臨！當前分數直接翻倍（x2）！", 
                     alertDot: "🎯 幸運！下回合手牌全部轉化為【單點救局方塊】！", 
                     alertSelect: "🔮 靈魂自選！右側已解鎖全圖形庫，請自由挑選 3 個方塊！",
                     chestTitle: "幸運寶箱！", 
-                    chestDesc: "消除滿3行解鎖，點擊開啟逆天改命", 
+                    chestDesc: "消除滿 3 行解鎖，點擊開啟逆天改命", 
                     chestOpen: "開 啟 寶 箱", 
                     goRetryBtn: "再開一局", 
                     goLobbyBtn: "返回大廳", 
@@ -1140,7 +1140,7 @@
                     best: "BEST", 
                     stage: "STAGE", 
                     multiplier: "Multiplier", 
-                    luckyProgress: "Chest in", 
+                    luckyProgress: "Chest in:", 
                     rows: "Lines",
                     selectTitle: "🔮 PICK 3 SHAPES", 
                     selectAlert: "🔮 Pick 3 shapes from the right panel to fill your hand!", 
@@ -1179,30 +1179,41 @@
 
             applyLanguage: function() {
                 const t = this.dictionary[this.currentLang];
+                const s = GameApp.State;
                 
-                // subtitle removed
+                // 主界面模式卡片
                 document.getElementById('mode-lucky-title').innerText = t.luckyTitle;
                 document.getElementById('mode-endless-title').innerText = t.endlessTitle;
                 document.getElementById('mode-level-title').innerText = t.levelTitle;
                 document.getElementById('level-card').querySelector('.play-btn').innerText = t.stagesBtn;
 
-                
+                // 自選面板
                 document.getElementById('panel-select-title').innerText = t.selectTitle;
+                // 設置面板
                 document.getElementById('settings-title').innerText = t.settingsTitle;
                 document.getElementById('settings-retry').innerText = t.btnRetry;
                 document.getElementById('settings-lobby').innerText = t.btnLobby;
                 document.getElementById('settings-close').innerText = t.btnClose;
+                // 寶箱
                 document.getElementById('chest-title').innerText = t.chestTitle;
                 document.getElementById('chest-desc').innerText = t.chestDesc;
                 document.getElementById('chest-open-btn').innerText = t.chestOpen;
+                // 遊戲結束彈窗（及時更新語言）
+                if (s && s.isGameOver) {
+                    if (s.currentMode === 'level') {
+                        // 保持 showGameOverModal 設定的內容
+                    } else {
+                        document.getElementById('modalTitle').innerText = t.goOver;
+                        document.getElementById('modalScoreText').innerText = t.goScore + ': ' + s.bScore;
+                    }
+                }
                 document.getElementById('go-retry').innerText = t.goRetryBtn;
                 document.getElementById('go-lobby').innerText = t.goLobbyBtn;
-                
+                // 語言按鈕高亮
                 document.getElementById('lang-zh').className = 'lang-sub-btn' + (this.currentLang === 'zh' ? ' active' : '');
                 document.getElementById('lang-en').className = 'lang-sub-btn' + (this.currentLang === 'en' ? ' active' : '');
-                
+                // 即時更新遊戲內分數欄
                 GameApp.UI.updateScoreDisplay();
-
             },
 
             getText: function(key) {
@@ -1558,6 +1569,8 @@
                     this.elements.modalScoreText.innerText = `${t.getText('goScore')}: ${GameApp.State.bScore}`;
                     GameApp.Core.clearSavedGame();
                 }
+                // 跟进语言设置更新分数显示
+                this.updateScoreDisplay();
                 GameApp.Audio.gameOver();
                 GameApp.Vibe.heavy();
                 GameApp.AdsManager.showInterstitial(null);
