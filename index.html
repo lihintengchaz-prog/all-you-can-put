@@ -988,7 +988,7 @@
             bGridSize: 8,
             bCellSize: 440 / 8, // 55px
             maxLevel: 66,
-            luckyLineTarget: 3,
+            luckyLineTarget: 5,
             
             // 🌟 核心修改：單點與十字架移出普通池，改為隱藏款
             Shapes: {
@@ -2000,7 +2000,7 @@
                 GameApp.UI.elements.customSelectPanel.style.display = 'none';
                 
                 s.bGrid = Array(size).fill(null).map(() => Array(size).fill(0));
-                s.bScore = 0; s.isGameOver = false; s.luckyLinesNeeded = 3; s.isCustomSelecting = false; s.allClearCount = 0; s.currentMultiplier = 1.0; s.allClearFlashTimer = 0; s.selectedPiece = null;
+                s.bScore = 0; s.isGameOver = false; s.luckyLinesNeeded = 5; s.isCustomSelecting = false; s.allClearCount = 0; s.currentMultiplier = 1.0; s.allClearFlashTimer = 0; s.selectedPiece = null;
                 s.particles = []; s.clearingCells = [];
                 s.gridBounceX = Array(size).fill().map(() => Array(size).fill(1)); s.gridBounceY = Array(size).fill().map(() => Array(size).fill(1));
                 s.gridVelocityX = Array(size).fill().map(() => Array(size).fill(0)); s.gridVelocityY = Array(size).fill().map(() => Array(size).fill(0));
@@ -2675,7 +2675,7 @@
                 
                 s.hand.forEach(piece => {
                     if(piece.isUsed) return;
-                    if(s.mouseX >= piece.x - 40 && s.mouseX <= piece.x + 165 && s.mouseY >= piece.y - 35 && s.mouseY <= piece.y + 160) {
+                    if(s.mouseX >= piece.x - 48 && s.mouseX <= piece.x + 178 && s.mouseY >= piece.y - 42 && s.mouseY <= piece.y + 175) {
                         s.selectedPiece = piece;
                         s.dragOffset.x = (piece.shape[0].length * bCell) / 2;
                         s.dragOffset.y = (piece.shape.length * bCell) / 2;
@@ -2791,7 +2791,7 @@
                         GameApp.Core.showComboPopup(5);
                         GameApp.Core.showPrize('💎', 'JACKPOT!', t.getText('prizeJackpot') + s.bScore, '#ffd700');
                     }},
-                    { chance: 0.12, name: 'dots', exec: function() {
+                    { chance: 0.14, name: 'dots', exec: function() {
                         s.hand = [];
                         for(let i=0; i<3; i++) s.hand.push({ shape: [[1]], color: '#00ff66', x: 35 + i * 140, y: 520, origX: 35 + i * 140, origY: 520, isUsed: false });
                         GameApp.Core.showPrize('🎯', 'LUCKY DOTS!', t.getText('prizeDots'), '#00ff66');
@@ -2861,7 +2861,7 @@
                             s.bScore += 100;
                         }
                     }},
-                    { chance: 0.21, name: 'fullclear', exec: function() {
+                    { chance: 0.10, name: 'fullclear', exec: function() {
                         // 全清！清空整個棋盤
                         const size = GameApp.Config.bGridSize;
                         const bCell = GameApp.Config.bCellSize;
@@ -2887,7 +2887,7 @@
                         }
                         GameApp.Core.showPrize('🌈', 'FULL CLEAR!', t.getText('prizeFullClear') + s.currentMultiplier.toFixed(1) + 'x', '#ffd700');
                     }},
-                    { chance: 0.12, name: 'wildswap', exec: function() {
+                    { chance: 0.18, name: 'wildswap', exec: function() {
                         // 換牌：獲得一組高級形狀
                         const pool = [...GameApp.Config.Shapes.medium, ...GameApp.Config.Shapes.hard, ...GameApp.Config.Shapes.hard];
                         s.hand = [];
@@ -3034,6 +3034,8 @@
                     }
                     if (!cell.expanding && cell.scale < 0.05) s.clearingCells.splice(i, 1);
                 }
+                    s._frameCount = (s._frameCount || 0) + 1;
+                    // 弹跳物理每帧都算（这个影响视觉不能省），但代码已优化为一趟循环
                     for(let r=0; r<size; r++) {
                         for(let c=0; c<size; c++) {
                             let ax = (1 - s.gridBounceX[r][c]) * 0.28; s.gridVelocityX[r][c] += ax; s.gridVelocityX[r][c] *= 0.65; s.gridBounceX[r][c] += s.gridVelocityX[r][c];
@@ -3044,7 +3046,9 @@
                 // 屏幕震动
                 if (s.screenShakeTimer > 0) {
                     s.screenShakeTimer -= 0.02;
-                    const arena = document.getElementById('gameArenaPanel');
+                    if (GameApp.UI._arenaCached) {}
+                    const arena = GameApp.UI._arenaCached || document.getElementById('gameArenaPanel');
+                    if (!GameApp.UI._arenaCached) GameApp.UI._arenaCached = arena;
                     if (arena) {
                         arena.classList.remove('screen-shake', 'screen-shake-heavy');
                         if (s.screenShakeTimer > 0) {
@@ -3162,7 +3166,7 @@
                     for(let c=0; c<size; c++) {
                         let cellVal = s.bGrid[r][c];
                         // 跳过正在消除动画的格子（它们在后面单独渲染）
-                        if(s.clearingCells.some(cell => cell.r === r && cell.c === c)) continue;
+                        if(s._clearingSet && s._clearingSet.has(r+','+c)) continue;
                         if (cellVal && cellVal !== '#4e566d') this.drawTexturedCandyCell(ctx, c * bCell, r * bCell, bCell, cellVal, s.gridBounceX[r][c], s.gridBounceY[r][c]);
                         else if (!cellVal) { 
                         ctx.fillStyle = s.currentTheme.emptyCell;
@@ -3268,7 +3272,7 @@
 
 
                 // 粒子上限 200 个，防止爆内存
-                while (s.particles.length > 300) s.particles.shift();
+                while (s.particles.length > 150) s.particles.shift();
                 s.particles.forEach(p => { ctx.save(); ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill(); ctx.restore(); });
                 
                 if (s.allClearFlashTimer > 0) {
