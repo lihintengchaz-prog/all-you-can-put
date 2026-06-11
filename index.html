@@ -2273,9 +2273,9 @@
                     }
                 }
 
-                // 🎯 优先找一个能立即消除行列的形狀（增强版：搜索更多形状，更积极）  
+                // 🎯 优先找一个能立即消除行列的形狀（经典模式也启用）
                 let lineClearPiece = null;
-                if (s.currentMode === 'endless' || s.currentMode === 'lucky') {
+                if (s.currentMode === 'endless' || s.currentMode === 'lucky' || s.currentMode === 'level') {
                     let searchPool = [...E, ...E, ...E, ...M, ...H, ...S]; // 重复简单池增加命中率
                     searchPool.sort(() => Math.random() - 0.5);
                     for (let p of searchPool) {
@@ -2462,8 +2462,43 @@
                     }
                 }
 
+                // 🔥 智能形状检测：T形/L形能完美填充的空缺（经典模式更积极）
+                var isClassic = s.currentMode === 'level';
+                var tChance = isClassic ? 0.55 : 0.35;
+                if (Math.random() > (1 - tChance)) {
+                    // T形检测：检测 T 形缺口 [[1,1,1],[0,1,0]]
+                    for (let r = 0; r < size - 1; r++) {
+                        for (let c = 0; c < size - 2; c++) {
+                            if (s.bGrid[r][c] === 0 && s.bGrid[r][c+1] === 0 && s.bGrid[r][c+2] === 0 &&
+                                s.bGrid[r+1][c+1] === 0 && 
+                                s.bGrid[r+1][c] !== 0 && s.bGrid[r+1][c+2] !== 0) {
+                                helpers.push({ shape: [[1,1,1],[0,1,0]], color: '#d500f9', priority: 8 });
+                            }
+                        }
+                    }
+                    // L形检测：[[1,0],[1,0],[1,1]]
+                    for (let r = 0; r < size - 2; r++) {
+                        for (let c = 0; c < size - 1; c++) {
+                            if (s.bGrid[r][c] === 0 && s.bGrid[r+1][c] === 0 && s.bGrid[r+2][c] === 0 &&
+                                s.bGrid[r+2][c+1] === 0 &&
+                                s.bGrid[r][c+1] !== 0 && s.bGrid[r+1][c+1] !== 0) {
+                                helpers.push({ shape: [[1,0],[1,0],[1,1]], color: '#ff3377', priority: 8 });
+                            }
+                        }
+                    }
+                    // Z形检测：[[1,1,0],[0,1,1]]
+                    for (let r = 0; r < size - 1; r++) {
+                        for (let c = 0; c < size - 2; c++) {
+                            if (s.bGrid[r][c] === 0 && s.bGrid[r][c+1] === 0 && s.bGrid[r][c+2] !== 0 &&
+                                s.bGrid[r+1][c] !== 0 && s.bGrid[r+1][c+1] === 0 && s.bGrid[r+1][c+2] === 0) {
+                                helpers.push({ shape: [[1,1,0],[0,1,1]], color: '#ffea00', priority: 8 });
+                            }
+                        }
+                    }
+                }
+
                 // 检测2x2方块空缺和3x2空缺，给对应形状
-                if (Math.random() > 0.4) {
+                if (Math.random() > (isClassic ? 0.25 : 0.4)) {
                     for (let r = 0; r < size - 1; r++) {
                         for (let c = 0; c < size - 1; c++) {
                             if (s.bGrid[r][c] === 0 && s.bGrid[r][c+1] === 0 && 
@@ -2528,9 +2563,11 @@
                     }
                 }
 
-                // 应用替换（换1-2张，保底1张，最多2张）
+                // 应用替换（经典模式换2-3张，其他1-2张）
                 let idx = 0;
-                const replaceCount = Math.min(finalPicks.length, Math.random() > 0.4 ? 2 : 1);
+                const replaceCount = isClassic ? 
+                    Math.min(finalPicks.length, 2 + (Math.random() > 0.5 ? 1 : 0)) :
+                    Math.min(finalPicks.length, Math.random() > 0.4 ? 2 : 1);
                 for (let i = 0; i < s.hand.length && idx < replaceCount; i++) {
                     if (!s.hand[i].isUsed) {
                         s.hand[i].shape = finalPicks[idx].shape;
@@ -2545,8 +2582,10 @@
                 const s = GameApp.State;
                 const size = GameApp.Config.bGridSize;
                 const E = GameApp.Config.Shapes.easy;
+                const M = GameApp.Config.Shapes.medium;
                 const S = GameApp.Config.Shapes.special;
-                const pool = [...E, ...S];
+                // 经典模式用更大的保底池（包含中形）
+                const pool = s.currentMode === 'level' ? [...E, ...M, ...S] : [...E, ...S];
 
                 for (let i = 0; i < s.hand.length; i++) {
                     if (s.hand[i].isUsed) continue;
