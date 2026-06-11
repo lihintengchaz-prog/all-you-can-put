@@ -28,7 +28,7 @@
             --grid-empty: #0e1630;
             
             /* 預設海洋主題漸變 */
-            --bg-gradient: linear-gradient(135deg, #050a1a 0%, #0a1628 15%, #0f1f3a 30%, #141a30 50%, #0e1628 70%, #080e1e 85%, #050a1a 100%);
+            --bg-gradient: radial-gradient(ellipse at 50% 40%, #0f2040 0%, #0a1628 25%, #080e20 50%, #040a14 75%, #020408 100%);
             --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
@@ -933,38 +933,18 @@
         .bg-glow {
             position: absolute;
             border-radius: 50%;
-            filter: blur(100px);
+            filter: blur(120px);
             animation: glowPulse 8s ease-in-out infinite alternate;
             pointer-events: none;
         }
-        .glow-1 { width: 500px; height: 500px; top: -12%; left: -8%; background: rgba(150, 200, 255, 0.15); animation-delay: 0s; animation-duration: 10s; }
-        .glow-2 { width: 400px; height: 400px; bottom: -5%; right: -10%; background: rgba(100, 180, 255, 0.12); animation-delay: 2s; animation-duration: 12s; }
-        .glow-3 { width: 350px; height: 350px; top: 30%; left: 30%; background: rgba(180, 220, 255, 0.10); animation-delay: 4s; animation-duration: 9s; }
-        .glow-4 { width: 300px; height: 300px; top: 65%; left: 70%; background: rgba(200, 230, 255, 0.10); animation-delay: 1s; animation-duration: 11s; }
-        .glow-5 { width: 450px; height: 450px; top: 45%; left: -5%; background: rgba(120, 190, 255, 0.10); animation-delay: 5s; animation-duration: 13s; }
-        .glow-6 { width: 380px; height: 380px; top: 10%; left: 55%; background: rgba(80, 160, 255, 0.12); animation-delay: 3s; animation-duration: 8s; }
-        .glow-7 { width: 280px; height: 280px; top: 80%; left: 20%; background: rgba(200, 220, 255, 0.08); animation-delay: 6s; animation-duration: 14s; }
-        .glow-8 { width: 320px; height: 320px; top: 20%; left: 80%; background: rgba(100, 170, 255, 0.09); animation-delay: 7s; animation-duration: 10s; }
+        .glow-1 { width: 600px; height: 600px; top: -15%; left: -10%; background: rgba(150, 200, 255, 0.20); animation-delay: 0s; animation-duration: 10s; }
+        .glow-2 { width: 500px; height: 500px; bottom: -10%; right: -10%; background: rgba(100, 180, 255, 0.15); animation-delay: 2s; animation-duration: 12s; }
+        .glow-3 { width: 450px; height: 450px; top: 25%; left: 25%; background: rgba(180, 220, 255, 0.12); animation-delay: 4s; animation-duration: 9s; }
+        .glow-4 { width: 400px; height: 400px; top: 55%; left: 60%; background: rgba(200, 230, 255, 0.10); animation-delay: 1s; animation-duration: 11s; }
+        .glow-5 { width: 500px; height: 500px; top: 40%; left: -8%; background: rgba(120, 190, 255, 0.12); animation-delay: 5s; animation-duration: 13s; }
+        .glow-6 { width: 450px; height: 450px; top: 5%; left: 50%; background: rgba(80, 160, 255, 0.15); animation-delay: 3s; animation-duration: 8s; }
 
-        /* 光柱效果 */
-        .light-ray {
-            position: absolute;
-            pointer-events: none;
-            background: linear-gradient(180deg, rgba(180, 220, 255, 0.06) 0%, transparent 100%);
-            animation: raySweep 15s ease-in-out infinite;
-        }
-        .ray-1 { width: 2px; height: 100%; top: 0; left: 15%; animation-delay: 0s; animation-duration: 12s; }
-        .ray-2 { width: 1.5px; height: 80%; top: 10%; left: 35%; animation-delay: 3s; animation-duration: 18s; }
-        .ray-3 { width: 3px; height: 90%; top: 5%; left: 55%; animation-delay: 6s; animation-duration: 14s; }
-        .ray-4 { width: 1px; height: 70%; top: 15%; left: 75%; animation-delay: 9s; animation-duration: 16s; }
-        .ray-5 { width: 2.5px; height: 85%; top: 8%; left: 90%; animation-delay: 2s; animation-duration: 13s; }
-
-        @keyframes raySweep {
-            0%, 100% { transform: scaleY(1) translateX(0); opacity: 0.3; }
-            50% { transform: scaleY(1.2) translateX(15px); opacity: 0.8; }
-        }
-
-        @keyframes glowPulse {
+@keyframes glowPulse {
             0% { transform: scale(1) translate(0, 0); opacity: 0.3; }
             50% { transform: scale(1.4) translate(25px, -20px); opacity: 0.7; }
             100% { transform: scale(0.85) translate(-15px, 10px); opacity: 0.4; }
@@ -984,21 +964,13 @@
         <div class="wave wave-3"></div>
         <!-- 🎪 糖果森林 Emoji 大軍（JS動態生成） -->
         <div id="emoji-rain"></div>
-        <!-- 动态光柱 -->
-        <div class="light-ray ray-1"></div>
-        <div class="light-ray ray-2"></div>
-        <div class="light-ray ray-3"></div>
-        <div class="light-ray ray-4"></div>
-        <div class="light-ray ray-5"></div>
-        <!-- 动态光晕 -->
+<!-- 动态光晕 -->
         <div class="bg-glow glow-1"></div>
         <div class="bg-glow glow-2"></div>
         <div class="bg-glow glow-3"></div>
         <div class="bg-glow glow-4"></div>
         <div class="bg-glow glow-5"></div>
         <div class="bg-glow glow-6"></div>
-        <div class="bg-glow glow-7"></div>
-        <div class="bg-glow glow-8"></div>
     </div>
 
     <div id="menu-screen">
