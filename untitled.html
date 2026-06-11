@@ -1898,7 +1898,8 @@
                 const stateObj = {
                     bGrid: s.bGrid, bScore: s.bScore, hand: s.hand,
                     currentMode: s.currentMode, luckyLinesNeeded: s.luckyLinesNeeded,
-                    allClearCount: s.allClearCount, currentMultiplier: s.currentMultiplier
+                    allClearCount: s.allClearCount, currentMultiplier: s.currentMultiplier,
+                    bBestScoreEndless: s.bBestScoreEndless, bBestScoreLucky: s.bBestScoreLucky
                 };
                 localStorage.setItem('all_you_can_put_save_v5', JSON.stringify(stateObj));
             },
@@ -2462,8 +2463,10 @@
                 }
                 if (isBoardEmpty) {
                     s.allClearCount++;
-                    if (s.allClearCount === 1) s.currentMultiplier = 2.0;
-                    else s.currentMultiplier = 3.0; 
+                    // 幸运模式：每次清屏+0.2倍，最高2.0
+                    if (s.currentMode === 'lucky') {
+                        s.currentMultiplier = Math.min(2.0, s.currentMultiplier + 0.2);
+                    }
                     
                     this.triggerHapticShock(80);
                     GameApp.Vibe.celebration();
