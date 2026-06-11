@@ -1730,30 +1730,25 @@
                 let difficultyTier;
 
                 if (s.currentMode === 'level') {
-                    if (s.currentLevel <= 10) { chosenPool = poolEasy; difficultyTier = 0; }
-                    else if (s.currentLevel <= 25) { chosenPool = poolMed; difficultyTier = 1; }
-                    else if (s.currentLevel <= 45) { chosenPool = poolAll; difficultyTier = 2; }
-                    else { chosenPool = [...M, ...H]; difficultyTier = 3; }
+                    if (s.currentLevel <= 30) { chosenPool = poolEasy; difficultyTier = 0; }
+                    else if (s.currentLevel <= 50) { chosenPool = poolMed; difficultyTier = 1; }
+                    else { chosenPool = [...M, ...H]; difficultyTier = 2; }
                 } else {
                     const sc = s.bScore;
                     // 幸运模式比无尽模式稍微难一点点（门槛降低20%）
                     const diffMod = s.currentMode === 'lucky' ? 0.8 : 1.0;
                     const adj = sc * diffMod;
-                    if (adj <= 160) { chosenPool = poolEasy; difficultyTier = 0; }
-                    else if (adj <= 400) { 
+                    if (adj <= 500) { chosenPool = poolEasy; difficultyTier = 0; }
+                    else if (adj <= 1200) { 
                         chosenPool = Math.random() < 0.7 ? poolEasy : poolMed;
                         difficultyTier = 1;
-                    } else if (adj <= 800) {
+                    } else if (adj <= 2500) {
                         const r = Math.random();
                         chosenPool = r < 0.4 ? poolEasy : r < 0.8 ? poolMed : poolAll;
                         difficultyTier = 2;
-                    } else if (adj <= 1600) {
-                        const r = Math.random();
-                        chosenPool = r < 0.2 ? poolEasy : r < 0.6 ? poolMed : poolAll;
-                        difficultyTier = 3;
                     } else {
                         chosenPool = Math.random() < 0.3 ? poolMed : [...M, ...H];
-                        difficultyTier = 4;
+                        difficultyTier = 3;
                     }
                 }
 
