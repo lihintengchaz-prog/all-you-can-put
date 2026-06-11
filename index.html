@@ -2684,7 +2684,7 @@
                     if(s.mouseX >= piece.x - 35 && s.mouseX <= piece.x + 155 && s.mouseY >= piece.y - 30 && s.mouseY <= piece.y + 150) {
                         s.selectedPiece = piece;
                         s.dragOffset.x = (piece.shape[0].length * bCell) / 2;
-                        s.dragOffset.y = (piece.shape.length * bCell) / 2 + 30;
+                        s.dragOffset.y = (piece.shape.length * bCell) / 2 + 50;
                         s.dragStartX = s.mouseX;
                         s.dragStartY = s.mouseY;
                         GameApp.Audio.pick();
@@ -2705,7 +2705,7 @@
                         s.selectedPiece = bestPiece;
                         // 方块自动偏手指上方35px，拖的时候能看到下面
                         s.dragOffset.x = s.mouseX - bestPiece.x;
-                        s.dragOffset.y = s.mouseY - bestPiece.y + 150;
+                        s.dragOffset.y = s.mouseY - bestPiece.y + 200;
                         s.dragStartX = s.mouseX;
                         s.dragStartY = s.mouseY;
                     }
