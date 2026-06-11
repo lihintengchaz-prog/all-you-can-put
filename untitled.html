@@ -165,6 +165,27 @@
             box-shadow: 0 30px 60px rgba(0,242,254,0.2), 0 0 40px rgba(0,229,255,0.15);
         }
 
+        /* 自创玩法角标 */
+        .mode-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: linear-gradient(135deg, var(--yellow), var(--orange));
+            color: #000;
+            font-size: 0.6rem;
+            font-weight: 900;
+            padding: 3px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(255, 234, 0, 0.4);
+            animation: badgePulse 2s ease-in-out infinite;
+            z-index: 5;
+            text-transform: uppercase;
+        }
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 4px 12px rgba(255, 234, 0, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 4px 20px rgba(255, 234, 0, 0.7); }
+        }
         .mode-card h3 {
             font-size: 1.3rem;
             margin-bottom: 0;
@@ -955,6 +976,7 @@
 
         <div class="mode-container">
             <div class="mode-card" onclick="GameApp.Core.startLuckyMode()">
+                <span class="mode-badge" id="mode-badge-lucky">✨ 自创</span>
                 <h3 id="mode-lucky-title">幸運模式 (Lucky)</h3>
 
                 <button class="play-btn" style="background: linear-gradient(45deg, var(--yellow), var(--orange)); color: #000;">LUCKY PLAY</button>
