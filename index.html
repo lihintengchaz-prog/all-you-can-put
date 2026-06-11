@@ -1094,7 +1094,8 @@
             bGrid: [],
             bScore: 0,
             lastAchievement: null,
-            bBestScore: 0,
+            bBestScoreEndless: 0,
+            bBestScoreLucky: 0,
             hand: [],
             selectedPiece: null,
             
@@ -1797,7 +1798,8 @@
                 }
                 
 
-                this.elements.topBestText.innerText = `${t.getText('best')}: ${s.bBestScore}`;
+                const bestKey = s.currentMode === 'lucky' ? s.bBestScoreLucky : s.bBestScoreEndless;
+                this.elements.topBestText.innerText = `${t.getText('best')}: ${bestKey}`;
             },
 
             openSettingsModal: function() { this.elements.settingsOverlay.style.display = 'flex'; },
@@ -1879,11 +1881,15 @@
             },
 
             loadBestScore: function() {
-                GameApp.State.bBestScore = localStorage.getItem('all_you_can_put_best_v5') ? parseInt(localStorage.getItem('all_you_can_put_best_v5')) : 0;
+                GameApp.State.bBestScoreEndless = localStorage.getItem('all_you_can_put_best_endless_v6') ? parseInt(localStorage.getItem('all_you_can_put_best_endless_v6')) : 0;
+                GameApp.State.bBestScoreLucky = localStorage.getItem('all_you_can_put_best_lucky_v6') ? parseInt(localStorage.getItem('all_you_can_put_best_lucky_v6')) : 0;
             },
 
             saveBestScore: function() {
-                localStorage.setItem('all_you_can_put_best_v5', GameApp.State.bBestScore);
+                const mode = GameApp.State.currentMode;
+                const key = mode === 'lucky' ? 'all_you_can_put_best_lucky_v6' : 'all_you_can_put_best_endless_v6';
+                const score = mode === 'lucky' ? GameApp.State.bBestScoreLucky : GameApp.State.bBestScoreEndless;
+                localStorage.setItem(key, score);
             },
 
             saveCurrentGame: function() {
@@ -2078,10 +2084,10 @@
                     }
                 }
 
-                // 🎯 优先找一个能立即消除行列的形狀（所有难度都尝试，低分时更积极）  
+                // 🎯 优先找一个能立即消除行列的形狀（增强版：搜索更多形状，更积极）  
                 let lineClearPiece = null;
                 if (s.currentMode === 'endless' || s.currentMode === 'lucky') {
-                    let searchPool = [...E, ...M, ...H, ...S];
+                    let searchPool = [...E, ...E, ...E, ...M, ...H, ...S]; // 重复简单池增加命中率
                     searchPool.sort(() => Math.random() - 0.5);
                     for (let p of searchPool) {
                         for (let r = 0; r < size; r++) {
@@ -2236,10 +2242,10 @@
                     }
                 }
 
-                // 自然混搭：收集各种有益形状
+                // 自然混搭：收集各种有益形状（增强版 - 更积极帮助清屏）
                 let helpers = [];
 
-                // 行列缺口检测（仅连续空缺）
+                // 行列缺口检测（积极度提升：优先找缺1-2格的空缺）
                 for (let r = 0; r < size; r++) {
                     let empties = [];
                     for (let c = 0; c < size; c++) {
@@ -2317,22 +2323,26 @@
                     }
                 }
 
-                // 从随机池中挑选1-2个助手形状（混搭，不全是同一种）
+                // 从随机池中挑选1-3个助手形状（增强版：更积极帮助玩家清屏）
                 const finalPicks = [];
-                if (lineClearPick && Math.random() > 0.3) {
+                if (lineClearPick && Math.random() > 0.15) {
                     finalPicks.push(lineClearPick);
                 }
                 if (helpers.length > 0) {
-                    helpers.sort(() => Math.random() - 0.5);
-                    const pickCount = Math.min(helpers.length, Math.random() > 0.5 ? 2 : 1);
+                    helpers.sort((a, b) => (b.priority || 0) - (a.priority || 0));
+                    const pickCount = Math.min(helpers.length, Math.random() > 0.4 ? 2 : 1);
                     for (let i = 0; i < pickCount; i++) {
-                        finalPicks.push(helpers[i]);
+                        // 不重复添加同一种形状
+                        if (!finalPicks.some(p => JSON.stringify(p.shape) === JSON.stringify(helpers[i].shape))) {
+                            finalPicks.push(helpers[i]);
+                        }
                     }
                 }
 
-                // 应用替换（只换1-2张，保留随机性）
+                // 应用替换（换1-2张，保底1张，最多2张）
                 let idx = 0;
-                for (let i = 0; i < s.hand.length && idx < finalPicks.length; i++) {
+                const replaceCount = Math.min(finalPicks.length, Math.random() > 0.4 ? 2 : 1);
+                for (let i = 0; i < s.hand.length && idx < replaceCount; i++) {
                     if (!s.hand[i].isUsed) {
                         s.hand[i].shape = finalPicks[idx].shape;
                         s.hand[i].color = finalPicks[idx].color;
@@ -2611,7 +2621,7 @@
                 overlay.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;animation:prizePopIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;"><div style="font-size:clamp(3rem,10vw,5rem);filter:drop-shadow(0 0 30px ' + (color||'#ffd700') + ');animation:prizeIconBounce 1s ease-in-out infinite;">' + icon + '</div><div style="font-size:clamp(1.8rem,5vw,2.5rem);font-weight:900;color:#fff;text-shadow:0 0 30px ' + (color||'#ffd700') + ',0 0 60px ' + (color||'#ffd700') + ';margin-top:10px;">' + title + '</div><div style="font-size:clamp(0.9rem,2.5vw,1.2rem);color:rgba(255,255,255,0.8);margin-top:8px;text-shadow:0 0 20px rgba(0,0,0,0.5);">' + desc + '</div></div>';
                 // 屏幕闪 + 震动
                 const flash = document.getElementById('gameArenaPanel');
-                if (flash) { flash.style.transition = 'box-shadow 0.2s'; flash.style.boxShadow = 'inset 0 0 120px ' + (color||'#ffd700') + ', 0 0 60px ' + (color||'#ffd700'); setTimeout(() => { flash.style.boxShadow = ''; }, 600); }
+                if (flash) { flash.style.transition = 'box-shadow 0.2s'; flash.style.boxShadow = 'inset 0 0 60px ' + (color||'#ffd700'); setTimeout(() => { flash.style.boxShadow = ''; }, 400); }
                 s.screenShakeTimer = 0.3;
                 GameApp.Vibe.celebration();
                 setTimeout(() => { overlay.innerHTML = ''; }, 1800);
@@ -2718,8 +2728,8 @@
                     const placeArena = document.getElementById('gameArenaPanel');
                     if (placeArena) { 
                         placeArena.style.transition = 'box-shadow 0.15s'; 
-                        placeArena.style.boxShadow = 'inset 0 0 60px ' + s.selectedPiece.color; 
-                        setTimeout(() => { placeArena.style.boxShadow = ''; }, 250); 
+                        placeArena.style.boxShadow = 'inset 0 0 30px ' + s.selectedPiece.color; 
+                        setTimeout(() => { placeArena.style.boxShadow = ''; }, 200); 
                     }
                     // 🎆 放置粒子爆发
                     const bCellNow = GameApp.Config.bCellSize;
@@ -2744,7 +2754,8 @@
                     if(s.hand.every(p => p.isUsed)) this.generateHand();
                     
                     if (s.currentMode === 'endless' || s.currentMode === 'lucky') {
-                        if (s.bScore > s.bBestScore) { s.bBestScore = s.bScore; this.saveBestScore(); GameApp.UI.elements.topBestText.innerText = `${GameApp.I18N.getText('best')}: ${s.bBestScore}`; }
+                        if (s.currentMode === 'lucky' && s.bScore > s.bBestScoreLucky) { s.bBestScoreLucky = s.bScore; this.saveBestScore(); GameApp.UI.elements.topBestText.innerText = `${GameApp.I18N.getText('best')}: ${s.bBestScoreLucky}`; }
+                        else if (s.currentMode === 'endless' && s.bScore > s.bBestScoreEndless) { s.bBestScoreEndless = s.bScore; this.saveBestScore(); GameApp.UI.elements.topBestText.innerText = `${GameApp.I18N.getText('best')}: ${s.bBestScoreEndless}`; }
                         this.saveCurrentGame();
                     }
                     if (s.currentMode === 'level' && s.bScore >= s.targetScore) GameApp.UI.showGameOverModal(true);
@@ -3119,15 +3130,15 @@
                 piece.shape.forEach((row, rIdx) => {
                     row.forEach((val, cIdx) => {
                         if(val) {
-                            // 底部发光（增强版）
+                            // 底部发光（淡雅版）
                             const glow = ctx.createRadialGradient(
                                 startX + cIdx * cellSize + cellSize/2, startY + rIdx * cellSize + cellSize/2, 0,
-                                startX + cIdx * cellSize + cellSize/2, startY + rIdx * cellSize + cellSize/2, cellSize * 1.2
+                                startX + cIdx * cellSize + cellSize/2, startY + rIdx * cellSize + cellSize/2, cellSize * 0.8
                             );
-                            glow.addColorStop(0, piece.color + '60');
+                            glow.addColorStop(0, piece.color + '30');
                             glow.addColorStop(1, 'transparent');
                             ctx.fillStyle = glow;
-                            ctx.fillRect(startX + cIdx * cellSize - 8, startY + rIdx * cellSize - 8, cellSize + 16, cellSize + 16);
+                            ctx.fillRect(startX + cIdx * cellSize - 4, startY + rIdx * cellSize - 4, cellSize + 8, cellSize + 8);
                             this.drawTexturedCandyCell(ctx, startX + cIdx * cellSize, startY + rIdx * cellSize, cellSize, piece.color, 1, 1);
                         }
                     });
@@ -3190,14 +3201,14 @@
                                 if(val) {
                                     const hx = (gridX+cIdx)*bCell;
                                     const hy = (gridY+rIdx)*bCell;
-                                    // 外发光
-                                    const hoverGlow = ctx.createRadialGradient(hx+bCell/2, hy+bCell/2, 0, hx+bCell/2, hy+bCell/2, bCell);
-                                    hoverGlow.addColorStop(0, hoverColor + '60');
+                                    // 外发光（淡雅版）
+                                    const hoverGlow = ctx.createRadialGradient(hx+bCell/2, hy+bCell/2, 0, hx+bCell/2, hy+bCell/2, bCell*0.6);
+                                    hoverGlow.addColorStop(0, hoverColor + '30');
                                     hoverGlow.addColorStop(1, 'transparent');
                                     ctx.fillStyle = hoverGlow;
-                                    ctx.fillRect(hx-4, hy-4, bCell+8, bCell+8);
+                                    ctx.fillRect(hx-3, hy-3, bCell+6, bCell+6);
                                     // 预览方块
-                                    ctx.globalAlpha = 0.35;
+                                    ctx.globalAlpha = 0.25;
                                     ctx.fillStyle = hoverColor;
                                     const r2 = 4;
                                     ctx.beginPath();
