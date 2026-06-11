@@ -900,6 +900,7 @@
             </div>
 
             <div class="status-indicators-bar">
+                <div id="lucky-multiplier-tag" class="indicator-tag" style="display:none;">倍率: 1.0x</div>
                 <div id="lucky-progress-bar" class="indicator-tag">距離寶箱還剩: 3 行</div>
             </div>
 
@@ -1388,6 +1389,7 @@
                 this.elements.gameoverOverlay = document.getElementById('gameover-overlay');
                 this.elements.settingsOverlay = document.getElementById('settings-overlay');
                 this.elements.luckyChestOverlay = document.getElementById('lucky-chest-overlay');
+                this.elements.luckyMultiplierTag = document.getElementById('lucky-multiplier-tag');
                 this.elements.luckyProgressBar = document.getElementById('lucky-progress-bar');
 
                 this.elements.customSelectPanel = document.getElementById('custom-select-panel');
@@ -1489,7 +1491,8 @@
                     this.elements.topScoreText.innerText = `${t.getText('stage')} ${s.currentLevel}: ${s.bScore} / ${s.targetScore}`; 
                 }
                 if (s.currentMode === 'lucky') { 
-                    this.elements.luckyProgressBar.innerText = `${t.getText('luckyProgress')}: ${s.luckyLinesNeeded} ${t.getText('rows')}`; 
+                    this.elements.luckyMultiplierTag.innerText = `${t.getText('multiplier')}: ${s.currentMultiplier.toFixed(1)}x`;
+                this.elements.luckyProgressBar.innerText = `${t.getText('luckyProgress')}: ${s.luckyLinesNeeded} ${t.getText('rows')}`; 
                 }
                 
 
@@ -1585,6 +1588,7 @@
                 s.allClearCount = stateObj.allClearCount; s.currentMultiplier = stateObj.currentMultiplier;
                 
                 s.isGameOver = false; s.isCustomSelecting = false; s.selectedPiece = null;
+                GameApp.UI.elements.luckyMultiplierTag.style.display = s.currentMode === 'lucky' ? 'block' : 'none';
                 GameApp.UI.elements.luckyProgressBar.style.display = s.currentMode === 'lucky' ? 'block' : 'none';
                 
                 GameApp.I18N.applyLanguage();
@@ -1603,6 +1607,7 @@
                 GameApp.UI.elements.settingsOverlay.style.display = 'none';
                 document.getElementById('menu-screen').style.display = 'block';
                 document.getElementById('game-screen').style.display = 'none';
+                GameApp.UI.elements.luckyMultiplierTag.style.display = 'none';
                 
                 // 🌟 返回主頁時還原粉藍漸變主題背景
                 document.body.style.background = 'var(--bg-gradient)'; 
@@ -1614,6 +1619,7 @@
                 this.clearSavedGame(); GameApp.State.currentMode = 'lucky';
                 GameApp.State.currentMultiplier = 1.0;
                 GameApp.UI.elements.topBestText.style.display = 'block';
+                GameApp.UI.elements.luckyMultiplierTag.style.display = 'block';
                 GameApp.UI.elements.luckyProgressBar.style.display = 'block';
                 GameApp.UI.elements.customSelectPanel.style.display = 'none';
                 this.enterArena();
@@ -1623,6 +1629,7 @@
                 this.clearSavedGame(); GameApp.State.currentMode = 'endless';
                 GameApp.State.currentMultiplier = 1.0;
                 GameApp.UI.elements.topBestText.style.display = 'block';
+                GameApp.UI.elements.luckyMultiplierTag.style.display = 'none';
                 GameApp.UI.elements.luckyProgressBar.style.display = 'none';
                 GameApp.UI.elements.customSelectPanel.style.display = 'none';
                 this.enterArena();
@@ -1632,6 +1639,7 @@
                 GameApp.State.currentMode = 'level'; GameApp.State.currentLevel = lvlNum;
                 GameApp.State.targetScore = this.generateLevelConfig(lvlNum).target;
                 GameApp.UI.elements.topBestText.style.display = 'none';
+                GameApp.UI.elements.luckyMultiplierTag.style.display = 'none';
                 GameApp.UI.elements.luckyProgressBar.style.display = 'none';
                 GameApp.UI.elements.customSelectPanel.style.display = 'none';
                 this.enterArena();
