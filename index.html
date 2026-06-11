@@ -1016,32 +1016,75 @@
                 ]
             },
 
-            Themes: {
-                sea: { 
-                    bg: 'linear-gradient(135deg, #ff99ca 0%, #4facfe 50%, #171b36 100%)', 
-                    panel: 'rgba(22, 27, 49, 0.85)', 
-                    emptyCell: '#1d223a',
-                    canvasFill: '#121626'
+            Themes: [
+                // 每1000分一個主題，循環切換
+                { // 0-999: 海洋粉蓝
+                    name:'Ocean',
+                    bg:'linear-gradient(135deg, #ff99ca 0%, #4facfe 50%, #171b36 100%)',
+                    panel:'rgba(22,27,49,0.85)', emptyCell:'#1d223a', canvasFill:'#121626',
+                    colors:['#ff3377','#00e5ff','#ffea00','#d500f9','#00ff66','#ff6d00']
                 },
-                grass: { 
-                    bg: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', 
-                    panel: 'rgba(17, 43, 31, 0.85)', 
-                    emptyCell: '#1e382b',
-                    canvasFill: '#0d2117'
+                { // 1000-1999: 霓虹绿洲
+                    name:'Neon Oasis',
+                    bg:'linear-gradient(135deg, #0f3443 0%, #34e89e 50%, #0b1e1e 100%)',
+                    panel:'rgba(8,40,30,0.88)', emptyCell:'#14352a', canvasFill:'#0a1f18',
+                    colors:['#00ff88','#00e5ff','#ffee58','#ff6d00','#ff3377','#d500f9']
                 },
-                sunset: { 
-                    bg: 'linear-gradient(135deg, #ff7b54 0%, #ffb26b 50%, #6b4f4f 100%)', 
-                    panel: 'rgba(66, 43, 43, 0.85)', 
-                    emptyCell: '#3c2828',
-                    canvasFill: '#241818'
+                { // 2000-2999: 火焰黄昏
+                    name:'Fire Dusk',
+                    bg:'linear-gradient(135deg, #ff512f 0%, #f09819 50%, #2c041c 100%)',
+                    panel:'rgba(60,20,10,0.88)', emptyCell:'#3d2214', canvasFill:'#2a1008',
+                    colors:['#ff1744','#ff9100','#ffea00','#00e5ff','#d500f9','#ff6d00']
                 },
-                universe: { 
-                    bg: 'linear-gradient(135deg, #0f051d 0%, #05020a 100%)', 
-                    panel: 'rgba(25, 12, 43, 0.9)', 
-                    emptyCell: '#211534',
-                    canvasFill: '#0c0616'
+                { // 3000-3999: 极光幻想
+                    name:'Aurora',
+                    bg:'linear-gradient(135deg, #0a1628 0%, #1a3a5c 30%, #2d1b69 70%, #0a0a1a 100%)',
+                    panel:'rgba(20,15,50,0.88)', emptyCell:'#1e1a40', canvasFill:'#0e0a20',
+                    colors:['#00e5ff','#00ff66','#d500f9','#ff3377','#ffea00','#ff6d00']
+                },
+                { // 4000-4999: 糖果风暴
+                    name:'Candy Storm',
+                    bg:'linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #4a0830 100%)',
+                    panel:'rgba(55,15,45,0.88)', emptyCell:'#3e1a35', canvasFill:'#2a0a20',
+                    colors:['#ffea00','#00e5ff','#00ff66','#ff3377','#d500f9','#ff6d00']
+                },
+                { // 5000-5999: 翡翠深渊
+                    name:'Jade Deep',
+                    bg:'linear-gradient(135deg, #025357 0%, #00b09b 50%, #001a14 100%)',
+                    panel:'rgba(5,40,35,0.88)', emptyCell:'#173530', canvasFill:'#0a1f1a',
+                    colors:['#00ff66','#00e5ff','#ffea00','#ff6d00','#ff3377','#d500f9']
+                },
+                { // 6000-6999: 赛博暴力
+                    name:'Cyber Blast',
+                    bg:'linear-gradient(135deg, #fc00ff 0%, #00dbde 50%, #0a0020 100%)',
+                    panel:'rgba(30,5,50,0.88)', emptyCell:'#241542', canvasFill:'#120830',
+                    colors:['#00e5ff','#ff3377','#ffea00','#00ff66','#d500f9','#ff6d00']
+                },
+                { // 7000-7999: 日落金沙
+                    name:'Gold Sunset',
+                    bg:'linear-gradient(135deg, #f12711 0%, #f5af19 50%, #3d1a00 100%)',
+                    panel:'rgba(50,25,5,0.88)', emptyCell:'#3d2a14', canvasFill:'#2a1808',
+                    colors:['#ffea00','#ff6d00','#ff3377','#00e5ff','#00ff66','#d500f9']
+                },
+                { // 8000-8999: 冰火两重天
+                    name:'Ice & Fire',
+                    bg:'linear-gradient(135deg, #00c6ff 0%, #0072ff 30%, #c471ed 60%, #f7797d 100%)',
+                    panel:'rgba(15,20,60,0.88)', emptyCell:'#1e2448', canvasFill:'#0e1030',
+                    colors:['#00e5ff','#ff3377','#ffea00','#d500f9','#00ff66','#ff6d00']
+                },
+                { // 9000-9999: 暗夜银河
+                    name:'Galaxy Night',
+                    bg:'linear-gradient(135deg, #0f1220 0%, #1a1140 40%, #351a60 70%, #0a0510 100%)',
+                    panel:'rgba(10,5,30,0.9)', emptyCell:'#1a1030', canvasFill:'#080520',
+                    colors:['#d500f9','#00e5ff','#ff3377','#00ff66','#ffea00','#ff6d00']
+                },
+                { // 10000+: 闪电磁暴
+                    name:'Thunder Storm',
+                    bg:'linear-gradient(135deg, #0a0010 0%, #1a0030 30%, #ff00cc 70%, #0a0010 100%)',
+                    panel:'rgba(15,0,30,0.92)', emptyCell:'#1a0a30', canvasFill:'#0a0018',
+                    colors:['#ffea00','#ff3377','#00e5ff','#00ff66','#d500f9','#ff6d00']
                 }
-            }
+            ]
         };
 
         // ----------------------------------------------------------------------
@@ -1069,7 +1112,8 @@
             particles: [],
             clearingCells: [],
             allClearFlashTimer: 0,
-            currentTheme: GameApp.Config.Themes.sea,
+            currentTheme: GameApp.Config.Themes[0],
+            currentThemeIndex: 0,
             
             mouseX: 0, mouseY: 0,
             dragOffset: { x: 0, y: 0 },
@@ -1095,8 +1139,8 @@
                     sub: "", 
                     luckyTitle: "幸運模式 (Lucky)", 
                     luckyDesc: "每消除滿 3 行即可抽取幸運寶箱！觸發高額分數翻倍與方塊自選改命！",
-                    endlessTitle: "無盡模式 (Endless)", 
-                    endlessDesc: "經典刷分模式！享受滿屏極速全清的無限爽感，不斷挑戰最高分！",
+                    endlessTitle: "經典模式 (Classic)", 
+                    endlessDesc: "經典刷分模式！每1000分更換主題配色，享受滿屏極速全清的無限爽感！",
                     levelTitle: "闖關模式 (Levels)", 
                     levelDesc: "挑戰由淺入深的 66 道經典關卡！繞開固定死局障礙鐵塊，衝擊通關目標。",
                     stagesBtn: "選關大廳", 
@@ -1143,8 +1187,8 @@
                     sub: "", 
                     luckyTitle: "Lucky Mode", 
                     luckyDesc: "Clear 3 lines to pop a Lucky Chest! Explode your score x2 or select your dream shapes!",
-                    endlessTitle: "Endless Mode", 
-                    endlessDesc: "Classic endless mode! Enjoy satisfying screen clears and push your high score to the limit!",
+                    endlessTitle: "Classic Mode", 
+                    endlessDesc: "Classic mode! Theme colors refresh every 1000 points. Endless satisfaction!",
                     levelTitle: "Level Mode", 
                     levelDesc: "Conquer 66 progressive stages. Place wisely around obstacles.",
                     stagesBtn: "STAGES", 
@@ -1938,6 +1982,14 @@
                 this._giveHelpfulPieces(chosenPool);
                 // 保底机制：如果所有手牌都无法放置，自动替换为可放置的简单形状
                 this._ensurePlayableHand();
+                
+                // 🎨 为主题循环着色：用当前主题色板覆盖方塊颜色
+                const themeColors = s.currentTheme.colors;
+                s.hand.forEach((piece, idx) => {
+                    if (!piece.isUsed) {
+                        piece.color = themeColors[idx % themeColors.length];
+                    }
+                });
 
                 this.saveCurrentGame();
             },
@@ -2123,15 +2175,17 @@
                 const body = document.body;
                 const arenaPanel = document.getElementById('gameArenaPanel');
                 const s = GameApp.State;
-                const t = GameApp.Config.Themes;
+                const themes = GameApp.Config.Themes;
                 
-                if (s.bScore >= 1000) s.currentTheme = t.universe;
-                else if (s.bScore >= 600) s.currentTheme = t.sunset;
-                else if (s.bScore >= 300) s.currentTheme = t.grass;
-                else s.currentTheme = t.sea;
+                // 每1000分循環切換主題（最多到10000分以上取模循環）
+                const themeIndex = Math.min(Math.floor(s.bScore / 1000), themes.length - 1);
+                s.currentTheme = themes[themeIndex];
 
                 body.style.background = s.currentTheme.bg;
                 arenaPanel.style.background = s.currentTheme.panel;
+                
+                // 保存當前主題索引供生成方塊時使用
+                s.currentThemeIndex = themeIndex;
             },
 
             getSnapCoordinates: function() {
@@ -2542,9 +2596,10 @@
                         // 換牌：獲得一組高級形狀
                         const pool = [...GameApp.Config.Shapes.medium, ...GameApp.Config.Shapes.hard, ...GameApp.Config.Shapes.hard];
                         s.hand = [];
+                        const themeColors = s.currentTheme.colors;
                         for (let i = 0; i < 3; i++) {
                             const pick = pool[Math.floor(Math.random() * pool.length)];
-                            s.hand.push({ shape: pick.matrix, color: pick.color, x: 35 + i * 140, y: 520, origX: 35 + i * 140, origY: 520, isUsed: false });
+                            s.hand.push({ shape: pick.matrix, color: themeColors[i % themeColors.length], x: 35 + i * 140, y: 520, origX: 35 + i * 140, origY: 520, isUsed: false });
                         }
                         GameApp.Core.showPrize('🔄', 'WILDSWAP!', t.getText('prizeWildswap'), '#d500f9');
                     }},
