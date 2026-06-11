@@ -2759,7 +2759,7 @@
                     let cells = 0;
                     s.selectedPiece.shape.forEach(row => row.forEach(v => { if(v) cells++; }));
                     let baseGain = cells * (10 + cells * 2); let finalGain = Math.round(baseGain * s.currentMultiplier);
-                    this.placeShape(s.selectedPiece.shape, gridY, gridX, s.selectedPiece.color, finalGain);
+                    this.placeShape(s.selectedPiece.shape, clampedGridY, clampedGridX, s.selectedPiece.color, finalGain);
                     // 放置分数飞字
                     const fcx = gridX * bCell + (s.selectedPiece.shape[0].length * bCell) / 2;
                     const fcy = gridY * bCell - 10;
