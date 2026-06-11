@@ -3237,15 +3237,20 @@
 
                 if (s.selectedPiece && !s.isGameOver) {
                     const { gridX, gridY } = GameApp.Core.getSnapCoordinates();
-                    if (GameApp.Core.canPlaceShape(s.selectedPiece.shape, gridY, gridX)) {
+                    // 限制預覽在棋盤範圍內（防止顯示到邊界外）
+                    const size = GameApp.Config.bGridSize;
+                    const pShape = s.selectedPiece.shape;
+                    const previewX = Math.max(0, Math.min(gridX, size - pShape[0].length));
+                    const previewY = Math.max(0, Math.min(gridY, size - pShape.length));
+                    if (GameApp.Core.canPlaceShape(pShape, previewY, previewX)) {
                         // 预览发光（增强版）
                         const hoverColor = s.selectedPiece.color;
                         ctx.save();
-                        s.selectedPiece.shape.forEach((row, rIdx) => {
+                        pShape.forEach((row, rIdx) => {
                             row.forEach((val, cIdx) => {
                                 if(val) {
-                                    const hx = (gridX+cIdx)*bCell;
-                                    const hy = (gridY+rIdx)*bCell;
+                                    const hx = (previewX+cIdx)*bCell;
+                                    const hy = (previewY+rIdx)*bCell;
                                     // 外发光（淡雅版）
                                     const hoverGlow = ctx.createRadialGradient(hx+bCell/2, hy+bCell/2, 0, hx+bCell/2, hy+bCell/2, bCell*0.6);
                                     hoverGlow.addColorStop(0, hoverColor + '30');
