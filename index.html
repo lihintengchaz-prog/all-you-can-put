@@ -2424,7 +2424,7 @@
 
             getSnapCoordinates: function() {
                 const s = GameApp.State; const cellSize = GameApp.Config.bCellSize;
-                const targetX = s.mouseX - s.dragOffset.x; const targetY = s.mouseY - s.dragOffset.y; 
+                const targetX = s.mouseX - s.dragOffset.x; const targetY = s.mouseY - s.dragOffset.y - 50; 
                 return { gridX: Math.round(targetX / cellSize), gridY: Math.round(targetY / cellSize) };
             },
 
@@ -2673,27 +2673,21 @@
                 s.mouseX = pos.x; s.mouseY = pos.y;
                 s.lastHoverR = -1; s.lastHoverC = -1;
                 
-                // 找出距离点击位置最近的未使用方块（避免重叠误触）
-                let bestPiece = null;
-                let bestDist = 200;
-                s.hand.forEach(piece => {
-                    if(piece.isUsed) return;
-                    // 方块中心
-                    const cX = piece.x + (piece.shape[0].length * 24) / 2;
-                    const cY = piece.y + (piece.shape.length * 24) / 2;
-                    const dist = Math.sqrt((s.mouseX - cX) ** 2 + (s.mouseY - cY) ** 2);
-                    const maxDist = Math.max(piece.shape[0].length, piece.shape.length) * 24;
-                    if (dist < maxDist && dist < bestDist) {
-                        bestDist = dist;
-                        bestPiece = piece;
+                // 倒序遍历（视觉上层优先），根据方块实际大小检测点击
+                for (let pi = s.hand.length - 1; pi >= 0; pi--) {
+                    const piece = s.hand[pi];
+                    if(piece.isUsed) continue;
+                    const pw = piece.shape[0].length * 24;
+                    const ph = piece.shape.length * 24;
+                    const pad = 20;
+                    if(s.mouseX >= piece.x - pad && s.mouseX <= piece.x + pw + pad && 
+                       s.mouseY >= piece.y - pad && s.mouseY <= piece.y + ph + pad) {
+                        s.selectedPiece = piece;
+                        s.dragOffset.x = (piece.shape[0].length * bCell) / 2;
+                        s.dragOffset.y = (piece.shape.length * bCell) / 2;
+                        GameApp.Audio.pick();
+                        break;
                     }
-                });
-                if (bestPiece) {
-                    s.selectedPiece = bestPiece;
-                    // 计算触摸点相对于方块左上角的偏移（精确跟随手指）
-                    s.dragOffset.x = s.mouseX - bestPiece.x;
-                    s.dragOffset.y = s.mouseY - bestPiece.y;
-                    GameApp.Audio.pick();
                 }
             },
 
