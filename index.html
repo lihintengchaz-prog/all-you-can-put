@@ -2612,7 +2612,7 @@
 
             getSnapCoordinates: function() {
                 const s = GameApp.State; const cellSize = GameApp.Config.bCellSize;
-                const mult = GameApp.Config.isTouchDevice ? 1.5 : 1.0; const targetX = s.dragStartX + (s.mouseX - s.dragStartX) * mult - s.dragOffset.x; const targetY = s.dragStartY + (s.mouseY - s.dragStartY) * mult - s.dragOffset.y; 
+                const mult = GameApp.Config.isTouchDevice ? 1.5 : 0.85; const targetX = s.dragStartX + (s.mouseX - s.dragStartX) * mult - s.dragOffset.x; const targetY = s.dragStartY + (s.mouseY - s.dragStartY) * mult - s.dragOffset.y; 
                 return { gridX: Math.round(targetX / cellSize), gridY: Math.round(targetY / cellSize) };
             },
 
@@ -3291,7 +3291,12 @@
                     }
                 }
 
-                    this.drawGame();
+                    // 无动画时跳过渲染（省GPU）
+                    if (s.particles.length > 0 || s.screenShakeTimer > 0 || s.scoreFlyouts.length > 0 || s.allClearFlashTimer > 0 || s.clearingCells.length > 0 || s.selectedPiece || s._hoverActive) {
+                        this.drawGame();
+                    } else if (s._frameCount % 6 === 0) {
+                        this.drawGame();
+                    }
                 }
                 requestAnimationFrame(this.gameTick.bind(this));
             },
@@ -3338,10 +3343,12 @@
                 grad.addColorStop(1, "rgba(0,0,0,0.35)");
                 renderCtx.fillStyle = grad; renderCtx.fill();
                 
-                // 顶部强高光（小条）
-                const hGrad = renderCtx.createLinearGradient(oy, ox, oy, ox + h * 0.35);
-                hGrad.addColorStop(0, "rgba(255,255,255,0.0)");
-                hGrad.addColorStop(1, "rgba(255,255,255,0.0)");
+                // 顶部高光使用预置渐变常量
+                var topHighlight = renderCtx.createLinearGradient(ox, oy, ox, oy + h * 0.35);
+                topHighlight.addColorStop(0, "rgba(255,255,255,0.3)");
+                topHighlight.addColorStop(1, "rgba(255,255,255,0)");
+                renderCtx.fillStyle = topHighlight;
+                renderCtx.fillRect(ox, oy, w, h * 0.35);
                 
                 // 内发光边框
                 renderCtx.strokeStyle = "rgba(255,255,255,0.25)"; renderCtx.lineWidth = 1.5;
@@ -3393,8 +3400,15 @@
                 const s = GameApp.State; const ctx = GameApp.UI.elements.ctx; const canvas = GameApp.UI.elements.canvas;
                 const bCell = GameApp.Config.bCellSize; const size = GameApp.Config.bGridSize;
 
-                ctx.clearRect(0, 0, canvas.width, canvas.height); 
-                ctx.fillStyle = s.currentTheme.canvasFill; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                // 离屏缓存静态网格背景（性能优化）
+                if (!this._gridCache || this._gridTheme !== s.currentTheme.canvasFill) {
+                    this._gridTheme = s.currentTheme.canvasFill;
+                    if (!this._gridCache) { this._gridCache = document.createElement('canvas'); this._gridCache.width = canvas.width; this._gridCache.height = canvas.height; }
+                    var gcCtx = this._gridCache.getContext('2d');
+                    gcCtx.clearRect(0, 0, canvas.width, canvas.height); 
+                    gcCtx.fillStyle = s.currentTheme.canvasFill; gcCtx.fillRect(0, 0, canvas.width, canvas.height);
+                }
+                ctx.drawImage(this._gridCache, 0, 0);
                 
                 for(let r=0; r<size; r++) {
                     for(let c=0; c<size; c++) {
@@ -3562,7 +3576,7 @@
                     // 完全自由跟随手指，不做任何绘制限制（手感与之前完全一致）
                     const pW = s.selectedPiece.shape[0].length * bCell;
                     const pH = s.selectedPiece.shape.length * bCell;
-                    const mult = GameApp.Config.isTouchDevice ? 1.5 : 1.0; const dx = s.dragStartX + (s.mouseX - s.dragStartX) * mult - s.dragOffset.x;
+                    const mult = GameApp.Config.isTouchDevice ? 1.5 : 0.85; const dx = s.dragStartX + (s.mouseX - s.dragStartX) * mult - s.dragOffset.x;
                     const dy = s.dragStartY + (s.mouseY - s.dragStartY) * mult - s.dragOffset.y;
                     ctx.save();
                     ctx.shadowColor = s.selectedPiece.color;
