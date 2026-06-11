@@ -1181,7 +1181,8 @@
                     prizeRowClearMid: " 行！倍數提升至 ",
                     prizeEmpty: "棋盤已空，送你 100 分！",
                     prizeWildswap: "獲得一組高級方塊！",
-                    prizeSelect: "挑選 3 個你最想要的形狀"
+                    prizeSelect: "挑選 3 個你最想要的形狀",
+                    prizeFullClear: "清空整個棋盤！倍率 ",
                 },
                 en: {
                     sub: "", 
@@ -1229,7 +1230,8 @@
                     prizeRowClearMid: "! Multiplier up to ",
                     prizeEmpty: "Board empty! Here's 100 bonus points!",
                     prizeWildswap: "Got a set of premium shapes!",
-                    prizeSelect: "Pick 3 shapes you want most"
+                    prizeSelect: "Pick 3 shapes you want most",
+                    prizeFullClear: "BOARD FULL CLEAR! Multiplier ",
                 }
             },
 
@@ -1824,22 +1826,44 @@
             },
 
             showGameOverModal: function(isWin) {
-                GameApp.State.isGameOver = true;
+                const s = GameApp.State;
+                s.isGameOver = true;
                 this.elements.gameoverOverlay.style.display = 'flex';
                 const t = GameApp.I18N;
+                const bCell = GameApp.Config.bCellSize;
+                const size = GameApp.Config.bGridSize;
                 
-                if (GameApp.State.currentMode === 'level') {
+                // 震撼级粒子爆发
+                for (let i = 0; i < 100; i++) {
+                    setTimeout(() => {
+                        s.particles.push({
+                            x: Math.random() * size * bCell,
+                            y: Math.random() * size * bCell,
+                            vx: (Math.random() - 0.5) * 30,
+                            vy: (Math.random() - 0.8) * 25,
+                            radius: Math.random() * 8 + 3,
+                            alpha: 1,
+                            color: ['#ff3377','#00e5ff','#ffea00','#d500f9','#ff6d00','#00ff66'][Math.floor(Math.random()*6)]
+                        });
+                    }, i * 10);
+                }
+                // 震撼级屏幕震动
+                s.screenShakeTimer = 1.2;
+                s.shakeIntensity = 3;
+                // 全屏白闪
+                s.allClearFlashTimer = 0.6;
+                
+                if (s.currentMode === 'level') {
                     this.elements.modalTitle.innerText = isWin ? t.getText('goWin') : t.getText('goLose');
-                    this.elements.modalScoreText.innerText = isWin ? `${t.getText('goWinDesc')} ${GameApp.State.targetScore}` : t.getText('goLoseDesc');
+                    this.elements.modalScoreText.innerText = isWin ? `${t.getText('goWinDesc')} ${s.targetScore}` : t.getText('goLoseDesc');
                 } else {
                     this.elements.modalTitle.innerText = t.getText('goOver');
-                    this.elements.modalScoreText.innerText = `${t.getText('goScore')}: ${GameApp.State.bScore}`;
+                    this.elements.modalScoreText.innerText = `${t.getText('goScore')}: ${s.bScore}`;
                     GameApp.Core.clearSavedGame();
                 }
-                // 跟进语言设置更新分数显示
                 this.updateScoreDisplay();
                 GameApp.Audio.gameOver();
-                GameApp.Vibe.heavy();
+                GameApp.Vibe.celebration();
                 GameApp.AdsManager.showInterstitial(null);
             }
         };
@@ -2433,9 +2457,9 @@
                     this.triggerHapticShock(80);
                     GameApp.Vibe.celebration();
                     GameApp.Audio.allClear();
-                    s.allClearFlashTimer = 1.0;
-                    s.screenShakeTimer = 0.8;
-                    s.shakeIntensity = 2;
+                    s.allClearFlashTimer = 1.2;
+                    s.screenShakeTimer = 1.0;
+                    s.shakeIntensity = 3;
                     GameApp.Core.showComboPopup(0);
                     const cx = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
                     const cy = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
@@ -2696,6 +2720,8 @@
                     }
                     if (s.currentMode === 'level' && s.bScore >= s.targetScore) GameApp.UI.showGameOverModal(true);
                     else if(this.checkGameOver()) GameApp.UI.showGameOverModal(false);
+                } else if (!s.isGameOver && !s.isCustomSelecting) {
+                    GameApp.Audio.invalid();
                 }
                 s.selectedPiece = null; 
             },
@@ -2814,7 +2840,7 @@
                                 s.particles.push({ x: Math.random() * 440, y: Math.random() * 440, vx: (Math.random() - 0.5) * 25, vy: (Math.random() - 0.8) * 20, radius: Math.random() * 6 + 2, alpha: 1, color: ['#ffd700','#ff3377','#00e5ff','#d500f9','#00ff66'][Math.floor(Math.random()*5)] });
                             }, i * 10);
                         }
-                        GameApp.Core.showPrize('🌈', 'FULL CLEAR!', '清空整個棋盤！倍率 ' + s.currentMultiplier.toFixed(1) + 'x', '#ffd700');
+                        GameApp.Core.showPrize('🌈', 'FULL CLEAR!', t.getText('prizeFullClear') + s.currentMultiplier.toFixed(1) + 'x', '#ffd700');
                     }},
                     { chance: 0.12, name: 'wildswap', exec: function() {
                         // 換牌：獲得一組高級形狀
