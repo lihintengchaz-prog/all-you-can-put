@@ -651,8 +651,8 @@
             80% { transform: translate(0, -1px); }
             100% { transform: translate(0, 0); }
         }
-        .screen-shake { animation: shakeGame 0.35s ease-out; }
-        .screen-shake-heavy { animation: shakeGame 0.6s ease-out; }
+        .screen-shake { animation: shakeGame 0.2s ease-out; will-change: transform; }
+        .screen-shake-heavy { animation: shakeGame 0.3s ease-out; will-change: transform; }
         #combo-overlay {
             position: absolute; top: 0; left: 0;
             width: 100%; height: 100%;
@@ -820,8 +820,8 @@
             75% { transform: translate(2px, -2px); }
             100% { transform: translate(0, 0); }
         }
-        .screen-shake { animation: shakeGame 0.5s ease-out; }
-        .screen-shake-heavy { animation: shakeGame 0.8s ease-out; }
+        .screen-shake { animation: shakeGame 0.25s ease-out; will-change: transform; }
+        .screen-shake-heavy { animation: shakeGame 0.35s ease-out; will-change: transform; }
 
         /* Game Over/胜利 弹窗 + 背景闪烁 */
         @keyframes gameOverBgPulse {
@@ -2610,7 +2610,7 @@
 
             getSnapCoordinates: function() {
                 const s = GameApp.State; const cellSize = GameApp.Config.bCellSize;
-                const targetX = s.dragStartX + (s.mouseX - s.dragStartX) * 1.6 - s.dragOffset.x; const targetY = s.dragStartY + (s.mouseY - s.dragStartY) * 1.6 - s.dragOffset.y; 
+                const targetX = s.dragStartX + (s.mouseX - s.dragStartX) * 1.5 - s.dragOffset.x; const targetY = s.dragStartY + (s.mouseY - s.dragStartY) * 1.5 - s.dragOffset.y; 
                 return { gridX: Math.round(targetX / cellSize), gridY: Math.round(targetY / cellSize) };
             },
 
@@ -2732,11 +2732,11 @@
                         const rx = Math.random() * 8 * bCell;
                         const ry = Math.random() * 8 * bCell;
                         if (i % 3 === 0) {
-                            s.particles.push({ x: rx, y: ry, vx: (Math.random() - 0.5) * 25, vy: (Math.random() - 0.8) * 18, radius: Math.random() * 7 + 3, alpha: 1, color: '#ffd700' });
+                            s.particles.push({ x: rx, y: ry, vx: (Math.random() - 0.5) * 16, vy: (Math.random() - 0.8) * 12, radius: Math.random() * 4 + 2, alpha: 1, color: '#ffd700' });
                         } else if (i % 3 === 1) {
-                            s.particles.push({ x: rx, y: ry, vx: (Math.random() - 0.5) * 22, vy: (Math.random() - 0.8) * 15, radius: Math.random() * 6 + 2, alpha: 1, color: '#00e5ff' });
+                            s.particles.push({ x: rx, y: ry, vx: (Math.random() - 0.5) * 14, vy: (Math.random() - 0.8) * 10, radius: Math.random() * 3 + 1.5, alpha: 1, color: '#00e5ff' });
                         } else {
-                            s.particles.push({ x: rx, y: ry, vx: (Math.random() - 0.5) * 24, vy: (Math.random() - 0.8) * 17, radius: Math.random() * 6 + 2, alpha: 1, color: '#ff3377' });
+                            s.particles.push({ x: rx, y: ry, vx: (Math.random() - 0.5) * 15, vy: (Math.random() - 0.8) * 11, radius: Math.random() * 3 + 1.5, alpha: 1, color: '#ff3377' });
                         }
                     }, i * 20);
                 }
@@ -2812,8 +2812,8 @@
                 if (!overlay) return;
                 const s = GameApp.State;
                 // 🚀 粒子爆发（同步创建，无setTimeout延迟）
-                for (let i = 0; i < 20; i++) {
-                    s.particles.push({ x: 40 + Math.random() * 360, y: 40 + Math.random() * 360, vx: (Math.random() - 0.5) * 16, vy: (Math.random() - 0.8) * 14, radius: Math.random() * 4 + 2, alpha: 0.8, color: color || '#ffd700' });
+                for (let i = 0; i < 12; i++) {
+                    s.particles.push({ x: 60 + Math.random() * 320, y: 60 + Math.random() * 320, vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.8) * 10, radius: Math.random() * 3 + 1.5, alpha: 0.7, color: color || '#ffd700' });
                 }
                 overlay.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;animation:prizePopIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;"><div style="font-size:clamp(3rem,10vw,5rem);filter:drop-shadow(0 0 20px ' + (color||'#ffd700') + ');animation:prizeIconBounce 1s ease-in-out infinite;">' + icon + '</div><div style="font-size:clamp(1.8rem,5vw,2.5rem);font-weight:900;color:#fff;text-shadow:0 0 20px ' + (color||'#ffd700') + ';margin-top:10px;">' + title + '</div><div style="font-size:clamp(0.9rem,2.5vw,1.2rem);color:rgba(255,255,255,0.8);margin-top:8px;">' + desc + '</div></div>';
                 // 屏幕闪（已缓存的DOM引用）
@@ -3508,7 +3508,7 @@
 
 
                 // 粒子上限 200 个，防止爆内存
-                while (s.particles.length > 150) s.particles.shift();
+                while (s.particles.length > 100) s.particles.shift();
                 s.particles.forEach(p => { ctx.save(); ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill(); ctx.restore(); });
                 
                 if (s.allClearFlashTimer > 0) {
@@ -3559,8 +3559,8 @@
                     // 完全自由跟随手指，不做任何绘制限制（手感与之前完全一致）
                     const pW = s.selectedPiece.shape[0].length * bCell;
                     const pH = s.selectedPiece.shape.length * bCell;
-                    const dx = s.dragStartX + (s.mouseX - s.dragStartX) * 1.6 - s.dragOffset.x;
-                    const dy = s.dragStartY + (s.mouseY - s.dragStartY) * 1.6 - s.dragOffset.y;
+                    const dx = s.dragStartX + (s.mouseX - s.dragStartX) * 1.5 - s.dragOffset.x;
+                    const dy = s.dragStartY + (s.mouseY - s.dragStartY) * 1.5 - s.dragOffset.y;
                     ctx.save();
                     ctx.shadowColor = s.selectedPiece.color;
                     ctx.shadowBlur = 25;
@@ -3582,13 +3582,22 @@
             GameApp.UI.init();
             GameApp.I18N.init();
             GameApp.Core.init();
-            GameApp.Audio.initOnLoad();
-            // 每次触摸都尝试恢复音频上下文（解决iOS声音问题）
-            document.addEventListener('touchstart', function() {
-                if (GameApp.Audio && GameApp.Audio.ctx && GameApp.Audio.ctx.state === 'suspended') {
-                    GameApp.Audio.ctx.resume();
-                }
-            }, { once: false, passive: true });
+            // iOS: 必须在用户触摸事件中创建 AudioContext
+            function ensureIOSAudio() {
+                try {
+                    if (!GameApp.Audio.ctx) {
+                        GameApp.Audio.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                    if (GameApp.Audio.ctx && GameApp.Audio.ctx.state === 'suspended') {
+                        GameApp.Audio.ctx.resume();
+                    }
+                } catch(e) {}
+            }
+            document.addEventListener('touchstart', ensureIOSAudio, { once: false, passive: true });
+            document.addEventListener('touchend', ensureIOSAudio, { once: false, passive: true });
+            document.addEventListener('click', ensureIOSAudio, { once: false, passive: true });
+            // 如果 AudioContext 可以直接创建，立即尝试
+            ensureIOSAudio();
             console.log("All You Can Put! Grand Master Edition Initialized.");
         };
 
