@@ -28,7 +28,7 @@
             --grid-empty: #1d223a;
             
             /* 預設海洋主題漸變 */
-            --bg-gradient: linear-gradient(135deg, #ff99ca 0%, #6fb9ff 40%, #2d4a7a 70%, #171b36 100%);
+            --bg-gradient: linear-gradient(135deg, #0f1428 0%, #1a1a40 20%, #2a1a45 40%, #1a2a50 60%, #0d1a30 80%, #0a0e1a 100%);
             --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
@@ -42,6 +42,8 @@
         body {
             font-family: var(--font-main);
             background: var(--bg-gradient);
+            background-size: 400% 400%;
+            animation: bgGradientShift 12s ease-in-out infinite;
             color: #fff;
             min-height: 100vh;
             display: flex;
@@ -83,10 +85,9 @@
         }
 
         .lobby-settings-btn {
-            position: absolute;
-            right: 6px;
-            top: 50%;
-            transform: translateY(-50%);
+            position: fixed;
+            right: 16px;
+            top: 16px;
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.25);
             color: #fff;
@@ -100,11 +101,12 @@
             align-items: center;
             backdrop-filter: blur(10px);
             transition: all 0.25s ease;
+            z-index: 100;
         }
 
         .lobby-settings-btn:hover {
             background: var(--blue);
-            transform: translateY(-50%) scale(1.08) rotate(45deg);
+            transform: scale(1.08) rotate(45deg);
             border-color: #fff;
             box-shadow: 0 0 15px var(--blue);
         }
@@ -837,6 +839,55 @@
             100% { transform: translateX(0) scaleY(1); }
         }
 
+        /* 动态背景渐变 */
+        @keyframes bgGradientShift {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 50% 0%; }
+            50% { background-position: 100% 50%; }
+            75% { background-position: 50% 100%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 浮动几何装饰（方块三角形等） */
+        .bg-float-shape {
+            position: absolute;
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.06);
+            animation: shapeFloat 20s ease-in-out infinite;
+            text-shadow: 0 0 20px currentColor;
+            pointer-events: none;
+        }
+        .shape-1 { top: 8%; left: 5%; animation-delay: 0s; font-size: 2.5rem; color: rgba(255, 51, 119, 0.1); }
+        .shape-2 { top: 20%; right: 8%; animation-delay: 3s; font-size: 1.8rem; color: rgba(0, 229, 255, 0.08); }
+        .shape-3 { top: 45%; left: 3%; animation-delay: 6s; font-size: 2.2rem; color: rgba(255, 234, 0, 0.07); }
+        .shape-4 { top: 65%; right: 5%; animation-delay: 9s; font-size: 2rem; color: rgba(0, 255, 102, 0.08); }
+        .shape-5 { top: 85%; left: 85%; animation-delay: 12s; font-size: 2.8rem; color: rgba(213, 0, 249, 0.07); }
+
+        @keyframes shapeFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.3; }
+            25% { transform: translateY(-30px) rotate(90deg) scale(1.1); opacity: 0.6; }
+            50% { transform: translateY(-60px) rotate(180deg) scale(0.9); opacity: 0.4; }
+            75% { transform: translateY(-20px) rotate(270deg) scale(1.05); opacity: 0.5; }
+        }
+
+        /* 动态光晕 */
+        .bg-glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: glowPulse 8s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+        .glow-1 { width: 300px; height: 300px; top: -10%; left: -5%; background: rgba(0, 229, 255, 0.06); animation-delay: 0s; }
+        .glow-2 { width: 250px; height: 250px; bottom: 5%; right: -8%; background: rgba(255, 51, 119, 0.05); animation-delay: 3s; }
+        .glow-3 { width: 200px; height: 200px; top: 40%; left: 40%; background: rgba(213, 0, 249, 0.04); animation-delay: 6s; }
+
+        @keyframes glowPulse {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.3; }
+            50% { transform: scale(1.3) translate(20px, -15px); opacity: 0.6; }
+            100% { transform: scale(0.9) translate(-15px, 10px); opacity: 0.4; }
+        }
+
         /* 浮动粒子（动态发光版本） */
         .particle {
             position: absolute;
@@ -868,6 +919,32 @@
     </style>
 </head>
 <body>
+    <!-- 背景装饰层：波浪 + 浮动粒子 + 发光方块 + 动态光晕 -->
+    <div class="bg-decoration">
+        <!-- 波浪 -->
+        <div class="wave wave-1"></div>
+        <div class="wave wave-2"></div>
+        <div class="wave wave-3"></div>
+        <!-- 浮动发光粒子 -->
+        <div class="particle p1">✦</div>
+        <div class="particle p2">✦</div>
+        <div class="particle p3">✦</div>
+        <div class="particle p4">✦</div>
+        <div class="particle p5">✦</div>
+        <div class="particle p6">✦</div>
+        <div class="particle p7">✦</div>
+        <div class="particle p8">✦</div>
+        <!-- 浮动几何装饰 -->
+        <div class="bg-float-shape shape-1">◈</div>
+        <div class="bg-float-shape shape-2">◇</div>
+        <div class="bg-float-shape shape-3">□</div>
+        <div class="bg-float-shape shape-4">△</div>
+        <div class="bg-float-shape shape-5">○</div>
+        <!-- 动态光晕 -->
+        <div class="bg-glow glow-1"></div>
+        <div class="bg-glow glow-2"></div>
+        <div class="bg-glow glow-3"></div>
+    </div>
 
     <div id="menu-screen">
         <div class="lobby-header">
@@ -1395,6 +1472,31 @@
         // ----------------------------------------------------------------------
         // MODULE: AUDIO — Web Audio API 合成音效 (無需音頻文件)
         // ----------------------------------------------------------------------
+        // iOS 首次触摸初始化 AudioContext（解决手机无音效问题）
+        (function initMobileAudio() {
+            var _audioReady = false;
+            function tryResume() {
+                if (_audioReady) return;
+                try {
+                    if (typeof GameApp !== 'undefined' && GameApp.Audio && !GameApp.Audio.ctx) {
+                        GameApp.Audio.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                    if (GameApp.Audio && GameApp.Audio.ctx && GameApp.Audio.ctx.state === 'suspended') {
+                        GameApp.Audio.ctx.resume();
+                    }
+                    _audioReady = true;
+                    document.removeEventListener('touchstart', tryResume);
+                    document.removeEventListener('click', tryResume);
+                    document.removeEventListener('touchend', tryResume);
+                    document.removeEventListener('pointerdown', tryResume);
+                } catch(e) {}
+            }
+            document.addEventListener('touchstart', tryResume, { once: true, passive: true });
+            document.addEventListener('touchend', tryResume, { once: true, passive: true });
+            document.addEventListener('click', tryResume, { once: true, passive: true });
+            document.addEventListener('pointerdown', tryResume, { once: true, passive: true });
+        })();
+
                 GameApp.Audio = {
             ctx: null,
             enabled: true,
@@ -1402,14 +1504,13 @@
 
             _ensure: function() {
                 if (this.ctx) {
-                    // iOS Safari 需要手动 resume
-                    if (this.ctx.state === 'suspended') { this.ctx.resume(); }
+                    // iOS Safari 每次都需要 resume
+                    try { if (this.ctx.state === 'suspended') { this.ctx.resume(); } } catch(e) {}
                     return true;
                 }
                 try {
                     this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                    // iOS 上 AudioContext 默認 suspended，立即 resume
-                    if (this.ctx.state === 'suspended') { this.ctx.resume(); }
+                    try { if (this.ctx.state === 'suspended') { this.ctx.resume(); } } catch(e) {}
                     return true;
                 } catch(e) { return false; }
             },
@@ -1947,8 +2048,8 @@
                 document.getElementById('game-screen').style.display = 'none';
                 GameApp.UI.elements.luckyMultiplierTag.style.display = 'none';
                 
-                // 🌟 返回主頁時還原粉藍漸變主題背景
-                document.body.style.background = 'var(--bg-gradient)'; 
+                // 返回主頁時還原動態背景
+                document.body.style.background = ''; 
                 
                 
             },
@@ -1991,11 +2092,51 @@
             },
 
             generateLevelConfig: function(lvl) {
-                let target = 150 + (lvl * 15); let obstacles = [];
-                if (lvl > 55) obstacles = [{r:2, c:2}, {r:2, c:5}, {r:5, c:2}, {r:5, c:5}, {r:3, c:3}];
-                else if (lvl > 35) obstacles = [{r:1, c:1}, {r:1, c:6}, {r:6, c:1}, {r:6, c:6}];
-                else if (lvl > 15) obstacles = [{r:3, c:2}, {r:3, c:3}, {r:3, c:4}];
-                else if (lvl > 5) obstacles = [{r:4, c:4}];
+                // 难度曲线：前期平缓，中期陡增，后期极难
+                let target, obstacles = [];
+                
+                // 目标分数曲线（指数增长）
+                if (lvl <= 5) {
+                    target = 200 + lvl * 20;        // L1-5: 220-300
+                    obstacles = [];
+                } else if (lvl <= 10) {
+                    target = 300 + (lvl - 5) * 40;  // L6-10: 340-500
+                    obstacles = [{r:3, c:4}];
+                } else if (lvl <= 15) {
+                    target = 500 + (lvl - 10) * 60; // L11-15: 560-800
+                    obstacles = [{r:2, c:2}, {r:5, c:5}];
+                } else if (lvl <= 20) {
+                    target = 800 + (lvl - 15) * 80; // L16-20: 880-1200
+                    obstacles = [{r:1, c:3}, {r:3, c:5}, {r:6, c:2}];
+                } else if (lvl <= 25) {
+                    target = 1200 + (lvl - 20) * 100; // L21-25: 1300-1700
+                    obstacles = [{r:1, c:1}, {r:2, c:5}, {r:5, c:2}, {r:6, c:6}];
+                } else if (lvl <= 30) {
+                    target = 1700 + (lvl - 25) * 150; // L26-30: 1850-2450
+                    obstacles = [{r:1, c:1}, {r:1, c:6}, {r:4, c:3}, {r:6, c:1}, {r:6, c:6}];
+                } else if (lvl <= 35) {
+                    target = 2500 + (lvl - 30) * 200; // L31-35: 2700-3500
+                    obstacles = [{r:0, c:3}, {r:2, c:0}, {r:2, c:7}, {r:5, c:1}, {r:5, c:6}, {r:7, c:4}];
+                } else if (lvl <= 40) {
+                    target = 3500 + (lvl - 35) * 300; // L36-40: 3800-5000
+                    obstacles = [{r:1, c:1}, {r:1, c:6}, {r:3, c:3}, {r:4, c:4}, {r:6, c:1}, {r:6, c:6}];
+                } else if (lvl <= 45) {
+                    target = 5000 + (lvl - 40) * 400; // L41-45: 5400-7000
+                    obstacles = [{r:1, c:1}, {r:1, c:6}, {r:3, c:2}, {r:3, c:5}, {r:5, c:3}, {r:6, c:1}, {r:6, c:6}];
+                } else if (lvl <= 50) {
+                    target = 7000 + (lvl - 45) * 600; // L46-50: 7600-10000
+                    obstacles = [{r:1, c:2}, {r:1, c:5}, {r:3, c:1}, {r:3, c:6}, {r:5, c:2}, {r:5, c:5}, {r:7, c:3}];
+                } else if (lvl <= 55) {
+                    target = 10000 + (lvl - 50) * 1000; // L51-55: 11000-15000
+                    obstacles = [{r:0, c:3}, {r:2, c:0}, {r:2, c:7}, {r:4, c:2}, {r:4, c:5}, {r:5, c:3}, {r:5, c:4}, {r:7, c:4}];
+                } else if (lvl <= 60) {
+                    target = 15000 + (lvl - 55) * 1500; // L56-60: 16500-22500
+                    obstacles = [{r:1, c:1}, {r:1, c:3}, {r:1, c:5}, {r:3, c:1}, {r:3, c:6}, {r:5, c:1}, {r:5, c:6}, {r:7, c:1}, {r:7, c:6}];
+                } else {
+                    // L61-66: 最难关卡 24000-50000+
+                    target = 24000 + (lvl - 60) * 5000; // L61: 24000, L66: 54000
+                    obstacles = [{r:1, c:0}, {r:1, c:2}, {r:1, c:5}, {r:1, c:7}, {r:3, c:3}, {r:3, c:4}, {r:5, c:0}, {r:5, c:2}, {r:5, c:5}, {r:5, c:7}, {r:7, c:3}, {r:7, c:4}];
+                }
                 return { target, obstacles };
             },
 
@@ -2066,9 +2207,9 @@
                 let difficultyTier;
 
                 if (s.currentMode === 'level') {
-                    if (s.currentLevel <= 50) { chosenPool = poolEasy; difficultyTier = 0; }
-                    else if (s.currentLevel <= 60) { chosenPool = poolMed; difficultyTier = 1; }
-                    else { chosenPool = [...M, ...H]; difficultyTier = 2; }
+                    if (s.currentLevel <= 20) { chosenPool = poolEasy; difficultyTier = 0; }
+                    else if (s.currentLevel <= 40) { chosenPool = poolMed; difficultyTier = 1; }
+                    else { chosenPool = poolAll; difficultyTier = 2; }
                 } else {
                     const sc = s.bScore;
                     // 经典模式比幸运模式稍微简单一点点：经典模式门槛+20%，幸运模式不加成
