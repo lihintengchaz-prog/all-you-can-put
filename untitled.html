@@ -2695,6 +2695,7 @@
                         s.dragOffset.y = (piece.shape.length * bCell) / 2 + 50;
                         s.dragStartX = s.mouseX;
                         s.dragStartY = s.mouseY;
+                        s.hasDragged = false;
                         GameApp.Audio.pick();
                         foundByPrecision = true;
                     }
@@ -2711,11 +2712,11 @@
                     });
                     if (bestPiece) {
                         s.selectedPiece = bestPiece;
-                        // 方块自动偏手指上方35px，拖的时候能看到下面
                         s.dragOffset.x = s.mouseX - bestPiece.x;
                         s.dragOffset.y = s.mouseY - bestPiece.y + 290;
                         s.dragStartX = s.mouseX;
                         s.dragStartY = s.mouseY;
+                        s.hasDragged = false;
                     }
                 }
             },
@@ -2725,6 +2726,10 @@
                 s.mouseX = pos.x; s.mouseY = pos.y;
                 
                 if (s.selectedPiece && !s.isGameOver) {
+                    // 检测是否有实际拖拽动作
+                    if (!s.hasDragged && (Math.abs(s.mouseX - s.dragStartX) > 8 || Math.abs(s.mouseY - s.dragStartY) > 8)) {
+                        s.hasDragged = true;
+                    }
                     // 每帧都震，配合节流自动控制频率，手指划过屏幕有连续沙沙感
                     GameApp.Vibe.light();
                     // 格子吸附震动（进新格子加额外反馈）
@@ -2754,7 +2759,7 @@
                 // 将吸附坐标限制在棋盘范围内（确保能放到顶部）
                 const clampedGridX = Math.max(0, Math.min(gridX, GameApp.Config.bGridSize - piece.shape[0].length));
                 const clampedGridY = Math.max(0, Math.min(gridY, GameApp.Config.bGridSize - piece.shape.length));
-                if (!s.isGameOver && !s.isCustomSelecting && this.canPlaceShape(piece.shape, clampedGridY, clampedGridX)) {
+                if (s.hasDragged && !s.isGameOver && !s.isCustomSelecting && this.canPlaceShape(piece.shape, clampedGridY, clampedGridX)) {
                     // 基础分 = 方块格数 × (10 + 格数×2)，大块高分小块低分
                     let cells = 0;
                     s.selectedPiece.shape.forEach(row => row.forEach(v => { if(v) cells++; }));
