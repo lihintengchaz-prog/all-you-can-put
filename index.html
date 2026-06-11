@@ -2673,7 +2673,7 @@
                 
                 s.hand.forEach(piece => {
                     if(piece.isUsed) return;
-                    if(s.mouseX >= piece.x - 48 && s.mouseX <= piece.x + 178 && s.mouseY >= piece.y - 42 && s.mouseY <= piece.y + 175) {
+                    if(s.mouseX >= piece.x - 55 && s.mouseX <= piece.x + 195 && s.mouseY >= piece.y - 50 && s.mouseY <= piece.y + 190) {
                         s.selectedPiece = piece;
                         s.dragOffset.x = (piece.shape[0].length * bCell) / 2;
                         s.dragOffset.y = (piece.shape.length * bCell) / 2;
