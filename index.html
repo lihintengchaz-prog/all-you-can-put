@@ -2703,9 +2703,9 @@
                     });
                     if (bestPiece) {
                         s.selectedPiece = bestPiece;
-                        // 保持方块在原位，记录手指到方块的实际偏移
+                        // 方块自动偏手指上方35px，拖的时候能看到下面
                         s.dragOffset.x = s.mouseX - bestPiece.x;
-                        s.dragOffset.y = s.mouseY - bestPiece.y;
+                        s.dragOffset.y = s.mouseY - bestPiece.y + 35;
                         s.dragStartX = s.mouseX;
                         s.dragStartY = s.mouseY;
                     }
