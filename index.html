@@ -2673,23 +2673,28 @@
                 s.mouseX = pos.x; s.mouseY = pos.y;
                 s.lastHoverR = -1; s.lastHoverC = -1;
                 
+                // 找出距离点击位置最近的未使用方块（避免重叠误触）
+                let bestPiece = null;
+                let bestDist = 200;
                 s.hand.forEach(piece => {
                     if(piece.isUsed) return;
-                    // 增大触控区域（移动端灵敏）
-                    const hitPad = 45; // 四周各扩大45px感应区
-                    const pieceW = Math.max(piece.shape[0].length, piece.shape.length) * 24;
-                    const pieceH = piece.shape.length * 24;
-                    if(s.mouseX >= piece.x - hitPad && s.mouseX <= piece.x + pieceW + hitPad && 
-                       s.mouseY >= piece.y - hitPad && s.mouseY <= piece.y + pieceH + hitPad) {
-                        s.selectedPiece = piece;
-                        // 计算触摸点相对于方块左上角的偏移（精确跟随手指）
-                        const pieceW = piece.shape[0].length * bCell;
-                        const pieceH = piece.shape.length * bCell;
-                        s.dragOffset.x = s.mouseX - piece.x;
-                        s.dragOffset.y = s.mouseY - piece.y;
-                        GameApp.Audio.pick();
+                    // 方块中心
+                    const cX = piece.x + (piece.shape[0].length * 24) / 2;
+                    const cY = piece.y + (piece.shape.length * 24) / 2;
+                    const dist = Math.sqrt((s.mouseX - cX) ** 2 + (s.mouseY - cY) ** 2);
+                    const maxDist = Math.max(piece.shape[0].length, piece.shape.length) * 24;
+                    if (dist < maxDist && dist < bestDist) {
+                        bestDist = dist;
+                        bestPiece = piece;
                     }
                 });
+                if (bestPiece) {
+                    s.selectedPiece = bestPiece;
+                    // 计算触摸点相对于方块左上角的偏移（精确跟随手指）
+                    s.dragOffset.x = s.mouseX - bestPiece.x;
+                    s.dragOffset.y = s.mouseY - bestPiece.y;
+                    GameApp.Audio.pick();
+                }
             },
 
             handleInputMove: function(pos) {
