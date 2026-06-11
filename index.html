@@ -3298,10 +3298,10 @@
                 for (let i = s.clearingCells.length - 1; i >= 0; i--) {
                     const cell = s.clearingCells[i];
                     if (cell.expanding) {
-                        cell.scale += 0.08;
+                        cell.scale += 0.15;
                         if (cell.scale >= 1.25) { cell.expanding = false; }
                     } else {
-                        cell.scale -= 0.06;
+                        cell.scale -= 0.12;
                     }
                     if (!cell.expanding && cell.scale < 0.05) s.clearingCells.splice(i, 1);
                 }
