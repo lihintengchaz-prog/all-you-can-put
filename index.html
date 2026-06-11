@@ -2064,11 +2064,11 @@
                     const adj = sc * diffMod;
                     // Phase 1 (0-10000): 纯简单池，先爽10000分再动脑
                     if (adj <= 10000) { chosenPool = poolEasy; difficultyTier = 0; }
-                    // Phase 2 (10000-15000): 开始混入中等形状（少量）
-                    else if (adj <= 15000) { 
+                    // Phase 2 (10000-20000): 开始混入中等形状（少量）
+                    else if (adj <= 20000) { 
                         chosenPool = Math.random() < 0.75 ? poolEasy : poolMed;
                         difficultyTier = 1;
-                    } else if (adj <= 25000) {
+                    } else if (adj <= 30000) {
                         const r = Math.random();
                         chosenPool = r < 0.45 ? poolEasy : r < 0.85 ? poolMed : poolAll;
                         difficultyTier = 2;
