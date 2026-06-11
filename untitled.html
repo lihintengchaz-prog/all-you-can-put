@@ -1358,11 +1358,11 @@
             },
 
             light: function() {
-                // 纯硬件震动，不产生音频触感（防止拖拽时无限创建振荡器导致卡死）
                 const now = Date.now();
                 if (now - this._lastTs < this._throttle) return;
                 this._lastTs = now;
-                this._vibrate(12);
+                if (navigator.vibrate) { this._vibrate(12); }
+                else { this._audioThump(0.1); }
             },
             medium: function() {
                 this._fire(25, 0.5);
@@ -1401,9 +1401,15 @@
             masterVolume: 0.38,
 
             _ensure: function() {
-                if (this.ctx) return true;
+                if (this.ctx) {
+                    // iOS Safari 需要手动 resume
+                    if (this.ctx.state === 'suspended') { this.ctx.resume(); }
+                    return true;
+                }
                 try {
                     this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    // iOS 上 AudioContext 默認 suspended，立即 resume
+                    if (this.ctx.state === 'suspended') { this.ctx.resume(); }
                     return true;
                 } catch(e) { return false; }
             },
@@ -2424,7 +2430,7 @@
 
             getSnapCoordinates: function() {
                 const s = GameApp.State; const cellSize = GameApp.Config.bCellSize;
-                const targetX = s.dragStartX + (s.mouseX - s.dragStartX) * 1.2 - s.dragOffset.x; const targetY = s.dragStartY + (s.mouseY - s.dragStartY) * 1.2 - s.dragOffset.y; 
+                const targetX = s.dragStartX + (s.mouseX - s.dragStartX) * 1.25 - s.dragOffset.x; const targetY = s.dragStartY + (s.mouseY - s.dragStartY) * 1.25 - s.dragOffset.y; 
                 return { gridX: Math.round(targetX / cellSize), gridY: Math.round(targetY / cellSize) };
             },
 
@@ -3198,7 +3204,7 @@
                     // 外发光（更亮更大）
                     ctx.shadowColor = cell.color || '#ffffff';
                     ctx.shadowBlur = 40 * Math.min(cell.scale * 1.5, 1.2);
-                    ctx.globalAlpha = Math.min(cell.scale * 1.2, 1);
+                    ctx.globalAlpha = Math.min(cell.scale * 1.25, 1);
                     this.drawTexturedCandyCell(ctx, cell.c * bCell, cell.r * bCell, bCell, cell.color, 
                         Math.min(cell.scale * 1.4, 1.25), Math.min(cell.scale * 1.4, 1.25));
                     ctx.restore();
@@ -3325,8 +3331,8 @@
                         s.particles.push({ x: tx, y: ty, vx: (Math.random() - 0.5) * 2, vy: -Math.random() * 3 - 1, radius: Math.random() * 3 + 1.5, alpha: 0.5, color: s.selectedPiece.color });
                     }
                     // 拖拽时加外发光，让方块更明显
-                    const dx = s.dragStartX + (s.mouseX - s.dragStartX) * 1.2 - s.dragOffset.x;
-                    const dy = s.dragStartY + (s.mouseY - s.dragStartY) * 1.2 - s.dragOffset.y;
+                    const dx = s.dragStartX + (s.mouseX - s.dragStartX) * 1.25 - s.dragOffset.x;
+                    const dy = s.dragStartY + (s.mouseY - s.dragStartY) * 1.25 - s.dragOffset.y;
                     ctx.save();
                     ctx.shadowColor = s.selectedPiece.color;
                     ctx.shadowBlur = 25;
