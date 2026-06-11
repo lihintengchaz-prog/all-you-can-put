@@ -2430,7 +2430,7 @@
 
             getSnapCoordinates: function() {
                 const s = GameApp.State; const cellSize = GameApp.Config.bCellSize;
-                const targetX = s.dragStartX + (s.mouseX - s.dragStartX) * 1.25 - s.dragOffset.x; const targetY = s.dragStartY + (s.mouseY - s.dragStartY) * 1.25 - s.dragOffset.y; 
+                const targetX = s.dragStartX + (s.mouseX - s.dragStartX) * 1.3 - s.dragOffset.x; const targetY = s.dragStartY + (s.mouseY - s.dragStartY) * 1.3 - s.dragOffset.y; 
                 return { gridX: Math.round(targetX / cellSize), gridY: Math.round(targetY / cellSize) };
             },
 
@@ -2677,6 +2677,8 @@
                 s.mouseX = pos.x; s.mouseY = pos.y;
                 s.lastHoverR = -1; s.lastHoverC = -1;
                 
+                // 第一步：精確點擊檢測（點在方塊範圍內）
+                let foundByPrecision = false;
                 s.hand.forEach(piece => {
                     if(piece.isUsed) return;
                     if(s.mouseX >= piece.x - 35 && s.mouseX <= piece.x + 155 && s.mouseY >= piece.y - 30 && s.mouseY <= piece.y + 150) {
@@ -2686,8 +2688,27 @@
                         s.dragStartX = s.mouseX;
                         s.dragStartY = s.mouseY;
                         GameApp.Audio.pick();
+                        foundByPrecision = true;
                     }
                 });
+                // 第二步：如果沒點中方塊但點在手牌區域附近，自動選最近的未用方塊
+                if (!foundByPrecision && s.mouseY > 400) {
+                    let bestPiece = null, bestDist = 999;
+                    s.hand.forEach(piece => {
+                        if(piece.isUsed) return;
+                        const cx = piece.x + (piece.shape[0].length * 24) / 2;
+                        const cy = piece.y + (piece.shape.length * 24) / 2;
+                        const dist = Math.sqrt((s.mouseX - cx) ** 2 + (s.mouseY - cy) ** 2);
+                        if (dist < bestDist) { bestDist = dist; bestPiece = piece; }
+                    });
+                    if (bestPiece) {
+                        s.selectedPiece = bestPiece;
+                        s.dragOffset.x = (bestPiece.shape[0].length * bCell) / 2;
+                        s.dragOffset.y = (bestPiece.shape.length * bCell) / 2;
+                        s.dragStartX = s.mouseX;
+                        s.dragStartY = s.mouseY;
+                    }
+                }
             },
 
             handleInputMove: function(pos) {
@@ -3331,8 +3352,8 @@
                         s.particles.push({ x: tx, y: ty, vx: (Math.random() - 0.5) * 2, vy: -Math.random() * 3 - 1, radius: Math.random() * 3 + 1.5, alpha: 0.5, color: s.selectedPiece.color });
                     }
                     // 拖拽时加外发光，让方块更明显
-                    const dx = s.dragStartX + (s.mouseX - s.dragStartX) * 1.25 - s.dragOffset.x;
-                    const dy = s.dragStartY + (s.mouseY - s.dragStartY) * 1.25 - s.dragOffset.y;
+                    const dx = s.dragStartX + (s.mouseX - s.dragStartX) * 1.3 - s.dragOffset.x;
+                    const dy = s.dragStartY + (s.mouseY - s.dragStartY) * 1.3 - s.dragOffset.y;
                     ctx.save();
                     ctx.shadowColor = s.selectedPiece.color;
                     ctx.shadowBlur = 25;
