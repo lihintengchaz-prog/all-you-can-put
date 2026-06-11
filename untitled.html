@@ -2719,7 +2719,9 @@
                 if (s.currentMode === 'lucky' && linesCount > 0) {
                     s.luckyLinesNeeded -= linesCount;
                     if (s.luckyLinesNeeded <= 0) {
-                        s.luckyLinesNeeded = GameApp.Config.luckyLineTarget;
+                        // 多消除的行数继承到下一次宝箱计数
+                        var carryOver = Math.min(Math.abs(s.luckyLinesNeeded), GameApp.Config.luckyLineTarget - 1);
+                        s.luckyLinesNeeded = GameApp.Config.luckyLineTarget - carryOver;
                         setTimeout(this.triggerChestPopup.bind(this), 500); 
                     }
                 }
