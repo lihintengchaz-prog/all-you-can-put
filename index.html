@@ -2615,19 +2615,17 @@
                 const overlay = document.getElementById('prize-overlay');
                 if (!overlay) return;
                 const s = GameApp.State;
-                // 全屏粒子爆发
-                for (let i = 0; i < 30; i++) {
-                    setTimeout(() => {
-                        s.particles.push({ x: 40 + Math.random() * 360, y: 40 + Math.random() * 360, vx: (Math.random() - 0.5) * 20, vy: (Math.random() - 0.8) * 16, radius: Math.random() * 5 + 2, alpha: 1, color: color || '#ffd700' });
-                    }, i * 15);
+                // 🚀 粒子爆发（同步创建，无setTimeout延迟）
+                for (let i = 0; i < 20; i++) {
+                    s.particles.push({ x: 40 + Math.random() * 360, y: 40 + Math.random() * 360, vx: (Math.random() - 0.5) * 16, vy: (Math.random() - 0.8) * 14, radius: Math.random() * 4 + 2, alpha: 0.8, color: color || '#ffd700' });
                 }
-                overlay.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;animation:prizePopIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;"><div style="font-size:clamp(3rem,10vw,5rem);filter:drop-shadow(0 0 30px ' + (color||'#ffd700') + ');animation:prizeIconBounce 1s ease-in-out infinite;">' + icon + '</div><div style="font-size:clamp(1.8rem,5vw,2.5rem);font-weight:900;color:#fff;text-shadow:0 0 30px ' + (color||'#ffd700') + ',0 0 60px ' + (color||'#ffd700') + ';margin-top:10px;">' + title + '</div><div style="font-size:clamp(0.9rem,2.5vw,1.2rem);color:rgba(255,255,255,0.8);margin-top:8px;text-shadow:0 0 20px rgba(0,0,0,0.5);">' + desc + '</div></div>';
-                // 屏幕闪 + 震动
-                const flash = document.getElementById('gameArenaPanel');
-                if (flash) { flash.style.transition = 'box-shadow 0.2s'; flash.style.boxShadow = 'inset 0 0 60px ' + (color||'#ffd700'); setTimeout(() => { flash.style.boxShadow = ''; }, 400); }
-                s.screenShakeTimer = 0.3;
-                GameApp.Vibe.celebration();
-                setTimeout(() => { overlay.innerHTML = ''; }, 1800);
+                overlay.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;animation:prizePopIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;"><div style="font-size:clamp(3rem,10vw,5rem);filter:drop-shadow(0 0 20px ' + (color||'#ffd700') + ');animation:prizeIconBounce 1s ease-in-out infinite;">' + icon + '</div><div style="font-size:clamp(1.8rem,5vw,2.5rem);font-weight:900;color:#fff;text-shadow:0 0 20px ' + (color||'#ffd700') + ';margin-top:10px;">' + title + '</div><div style="font-size:clamp(0.9rem,2.5vw,1.2rem);color:rgba(255,255,255,0.8);margin-top:8px;">' + desc + '</div></div>';
+                // 屏幕闪（已缓存的DOM引用）
+                const cached = GameApp.UI._arenaCached;
+                if (cached) { cached.style.transition = 'box-shadow 0.15s'; cached.style.boxShadow = 'inset 0 0 40px ' + (color||'#ffd700'); setTimeout(() => { cached.style.boxShadow = ''; }, 300); }
+                s.screenShakeTimer = 0.25;
+                GameApp.Vibe.triple();
+                setTimeout(() => { overlay.innerHTML = ''; }, 1500);
             },
 
             bindEvents: function() {
@@ -3019,9 +3017,12 @@
                 const s = GameApp.State; const size = GameApp.Config.bGridSize;
                 
                 if (document.getElementById('game-screen').style.display === 'flex') {
+                    // 粒子更新：隔帧处理（帧率翻倍感）
+                    if (s._frameCount % 2 === 0) {
                     for (let i = s.particles.length - 1; i >= 0; i--) {
                         let p = s.particles[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.35; p.alpha -= 0.02; p.radius *= 0.96; 
                         if (p.alpha <= 0) s.particles.splice(i, 1);
+                    }
                     }
                     // 消除动画：从0.3爆涨到1.25，再缩小消失
                 for (let i = s.clearingCells.length - 1; i >= 0; i--) {
@@ -3035,12 +3036,14 @@
                     if (!cell.expanding && cell.scale < 0.05) s.clearingCells.splice(i, 1);
                 }
                     s._frameCount = (s._frameCount || 0) + 1;
-                    // 弹跳物理每帧都算（这个影响视觉不能省），但代码已优化为一趟循环
+                    // 弹跳物理：隔帧计算（性能优化，视觉无感知差异）
+                    if (s._frameCount % 2 === 0) {
                     for(let r=0; r<size; r++) {
                         for(let c=0; c<size; c++) {
                             let ax = (1 - s.gridBounceX[r][c]) * 0.28; s.gridVelocityX[r][c] += ax; s.gridVelocityX[r][c] *= 0.65; s.gridBounceX[r][c] += s.gridVelocityX[r][c];
                             let ay = (1 - s.gridBounceY[r][c]) * 0.28; s.gridVelocityY[r][c] += ay; s.gridVelocityY[r][c] *= 0.65; s.gridBounceY[r][c] += s.gridVelocityY[r][c];
                         }
+                    }
                     }
                     if (s.allClearFlashTimer > 0) s.allClearFlashTimer -= 0.04;
                 // 屏幕震动
