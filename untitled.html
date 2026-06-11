@@ -2058,21 +2058,22 @@
                     else { chosenPool = [...M, ...H]; difficultyTier = 2; }
                 } else {
                     const sc = s.bScore;
-                    // 幸运模式比无尽模式稍微难一点点（门槛降低20%）
-                    const diffMod = s.currentMode === 'lucky' ? 0.8 : 1.0;
+                    // 经典模式比幸运模式稍微简单一点点：经典模式门槛+20%，幸运模式不加成
+                    // 两模式都在10000分以上才开始慢慢变难
+                    const diffMod = s.currentMode === 'endless' ? 1.2 : 1.0;
                     const adj = sc * diffMod;
-                    // Phase 1 (0-5000): 纯简单，先爽再动脑
-                    if (adj <= 5000) { chosenPool = poolEasy; difficultyTier = 0; }
-                    // Phase 2 (5000-10000): 开始混入中等
-                    else if (adj <= 10000) { 
-                        chosenPool = Math.random() < 0.7 ? poolEasy : poolMed;
+                    // Phase 1 (0-10000): 纯简单池，先爽10000分再动脑
+                    if (adj <= 10000) { chosenPool = poolEasy; difficultyTier = 0; }
+                    // Phase 2 (10000-15000): 开始混入中等形状（少量）
+                    else if (adj <= 15000) { 
+                        chosenPool = Math.random() < 0.75 ? poolEasy : poolMed;
                         difficultyTier = 1;
-                    } else if (adj <= 20000) {
+                    } else if (adj <= 25000) {
                         const r = Math.random();
-                        chosenPool = r < 0.4 ? poolEasy : r < 0.8 ? poolMed : poolAll;
+                        chosenPool = r < 0.45 ? poolEasy : r < 0.85 ? poolMed : poolAll;
                         difficultyTier = 2;
                     } else {
-                        chosenPool = Math.random() < 0.3 ? poolMed : [...M, ...H];
+                        chosenPool = Math.random() < 0.35 ? poolMed : [...M, ...H];
                         difficultyTier = 3;
                     }
                 }
