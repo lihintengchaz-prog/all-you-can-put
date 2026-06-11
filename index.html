@@ -2610,7 +2610,7 @@
 
             getSnapCoordinates: function() {
                 const s = GameApp.State; const cellSize = GameApp.Config.bCellSize;
-                const targetX = s.dragStartX + (s.mouseX - s.dragStartX) * 1.3 - s.dragOffset.x; const targetY = s.dragStartY + (s.mouseY - s.dragStartY) * 1.3 - s.dragOffset.y; 
+                const targetX = s.dragStartX + (s.mouseX - s.dragStartX) * 1.6 - s.dragOffset.x; const targetY = s.dragStartY + (s.mouseY - s.dragStartY) * 1.6 - s.dragOffset.y; 
                 return { gridX: Math.round(targetX / cellSize), gridY: Math.round(targetY / cellSize) };
             },
 
@@ -2874,7 +2874,7 @@
                     if(s.mouseX >= piece.x - 35 && s.mouseX <= piece.x + 155 && s.mouseY >= piece.y - 30 && s.mouseY <= piece.y + 150) {
                         s.selectedPiece = piece;
                         s.dragOffset.x = (piece.shape[0].length * bCell) / 2;
-                        s.dragOffset.y = (piece.shape.length * bCell) / 3;
+                        s.dragOffset.y = (piece.shape.length * bCell) / 2 + 15;
                         s.dragStartX = s.mouseX;
                         s.dragStartY = s.mouseY;
                         s.hasDragged = false;
@@ -3559,8 +3559,8 @@
                     // 完全自由跟随手指，不做任何绘制限制（手感与之前完全一致）
                     const pW = s.selectedPiece.shape[0].length * bCell;
                     const pH = s.selectedPiece.shape.length * bCell;
-                    const dx = s.dragStartX + (s.mouseX - s.dragStartX) * 1.3 - s.dragOffset.x;
-                    const dy = s.dragStartY + (s.mouseY - s.dragStartY) * 1.3 - s.dragOffset.y;
+                    const dx = s.dragStartX + (s.mouseX - s.dragStartX) * 1.6 - s.dragOffset.x;
+                    const dy = s.dragStartY + (s.mouseY - s.dragStartY) * 1.6 - s.dragOffset.y;
                     ctx.save();
                     ctx.shadowColor = s.selectedPiece.color;
                     ctx.shadowBlur = 25;
