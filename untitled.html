@@ -3248,7 +3248,7 @@
                     ctx.restore();
                 });
 
-                if (s.selectedPiece && !s.isGameOver && s.hasDragged) {
+                if (s.selectedPiece && !s.isGameOver) {
                     const { gridX, gridY } = GameApp.Core.getSnapCoordinates();
                     // 限制預覽在棋盤範圍內（防止顯示到邊界外）
                     const size = GameApp.Config.bGridSize;
@@ -3367,26 +3367,22 @@
 
 
                 if (s.selectedPiece && !s.isGameOver) {
-                    // 拖拽粒子轨迹（仅拖拽时显示）
-                    if (s.hasDragged && Math.random() > 0.9) {
+                    // 拖拽粒子轨迹（降频，每帧概率降低到10%）
+                    if (Math.random() > 0.9) {
                         const tx = s.mouseX + (Math.random() - 0.5) * 25;
                         const ty = s.mouseY + (Math.random() - 0.5) * 25;
                         s.particles.push({ x: tx, y: ty, vx: (Math.random() - 0.5) * 2, vy: -Math.random() * 3 - 1, radius: Math.random() * 3 + 1.5, alpha: 0.5, color: s.selectedPiece.color });
                     }
                     // 拖拽时加外发光，让方块更明显
-                    let dx, dy;
-                    if (!s.hasDragged) {
-                        // 未拖拽時保持方塊在手牌原始位置，不跳入棋盤
-                        dx = s.selectedPiece.x;
-                        dy = s.selectedPiece.y;
-                    } else {
-                        const rawDx = s.dragStartX + (s.mouseX - s.dragStartX) * 1.2 - s.dragOffset.x;
-                        const rawDy = s.dragStartY + (s.mouseY - s.dragStartY) * 1.2 - s.dragOffset.y;
-                        const pW = s.selectedPiece.shape[0].length * bCell;
-                        const pH = s.selectedPiece.shape.length * bCell;
-                        dx = Math.max(0, Math.min(rawDx, 440 - pW));
-                        dy = Math.max(0, Math.min(rawDy, 440 - pH));
-                    }
+                    const rawDx = s.dragStartX + (s.mouseX - s.dragStartX) * 1.2 - s.dragOffset.x;
+                    const rawDy = s.dragStartY + (s.mouseY - s.dragStartY) * 1.2 - s.dragOffset.y;
+                    // 空氣牆：只防止方塊超出棋盤視覺邊界，但允許自由移動回手牌區
+                    const canvasW = canvas.width;
+                    const canvasH = canvas.height;
+                    const pW = s.selectedPiece.shape[0].length * bCell;
+                    const pH = s.selectedPiece.shape.length * bCell;
+                    const dx = Math.max(-pW * 0.3, Math.min(rawDx, canvasW - pW * 0.7));
+                    const dy = Math.max(-pH * 0.3, Math.min(rawDy, canvasH - pH * 0.7));
                     ctx.save();
                     ctx.shadowColor = s.selectedPiece.color;
                     ctx.shadowBlur = 25;
