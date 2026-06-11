@@ -1005,7 +1005,8 @@
                     { name: "t-shape", matrix: [[1,1,1],[0,1,0]], color: '#d500f9' },
                     { name: "l-shape", matrix: [[1,0],[1,0],[1,1]], color: '#ff3377' },
                     { name: "z-shape", matrix: [[1,1,0],[0,1,1]], color: '#ffea00' },
-                    { name: "big-l-3x3", matrix: [[1,0,0],[1,0,0],[1,1,1]], color: '#ff6d00' }
+                    { name: "big-l-3x3", matrix: [[1,0,0],[1,0,0],[1,1,1]], color: '#ff6d00' },
+                    { name: "big-square-3x3", matrix: [[1,1,1],[1,1,1],[1,1,1]], color: '#d500f9' }
                 ],
                 hard: [
                 ],
@@ -1995,6 +1996,20 @@
                                     { shape: [[1,1,1],[1,1,1]], color: '#00e5ff' } :  // 3x2
                                     { shape: [[1,1],[1,1],[1,1]], color: '#00e5ff' };  // 2x3
                                 helpers.push(bigRect);
+                            }
+                        }
+                    }
+                    // 3x3大正方形空缺
+                    if (Math.random() > 0.5) {
+                        for (let r = 0; r < size - 2; r++) {
+                            for (let c = 0; c < size - 2; c++) {
+                                let empty = true;
+                                for (let dr = 0; dr < 3 && empty; dr++)
+                                    for (let dc = 0; dc < 3 && empty; dc++)
+                                        if (s.bGrid[r+dr][c+dc] !== 0) empty = false;
+                                if (empty) {
+                                    helpers.push({ shape: [[1,1,1],[1,1,1],[1,1,1]], color: '#d500f9', priority: 7 });
+                                }
                             }
                         }
                     }
