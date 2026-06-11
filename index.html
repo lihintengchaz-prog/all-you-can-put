@@ -28,7 +28,7 @@
             --grid-empty: #1d223a;
             
             /* 預設海洋主題漸變 */
-            --bg-gradient: linear-gradient(135deg, #ff99ca 0%, #4facfe 50%, #171b36 100%);
+            --bg-gradient: linear-gradient(135deg, #ff99ca 0%, #6fb9ff 40%, #2d4a7a 70%, #171b36 100%);
             --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
@@ -84,7 +84,7 @@
 
         .lobby-settings-btn {
             position: absolute;
-            right: 15px;
+            right: 25px;
             top: 50%;
             transform: translateY(-50%);
             background: rgba(255, 255, 255, 0.15);
@@ -283,7 +283,7 @@
         }
 
         .home-icon-btn:hover { background: var(--pink); transform: scale(1.06); border-color: #fff; }
-        .settings-gear-btn { margin-right: 4px; }
+        .settings-gear-btn { margin-right: 12px; }
         .settings-gear-btn:hover { background: var(--blue); transform: scale(1.06) rotate(45deg); border-color: #fff; }
 
         .score-left-box {
@@ -769,6 +769,67 @@
         .chest-anim:hover {
             animation: chestWobbleLoop 0.15s ease infinite alternate;
         }
+
+        /* ==========================================================================
+           5. AMBIENT BACKGROUND EFFECTS (环境动效装饰)
+           ========================================================================== */
+        .bg-decoration {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        /* 波浪 */
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50% 50% 0 0;
+            animation: waveMove 6s ease-in-out infinite;
+        }
+        .wave-1 { bottom: -10px; animation-duration: 5s; opacity: 0.4; }
+        .wave-2 { bottom: 10px; animation-duration: 7s; opacity: 0.25; background: rgba(0, 229, 255, 0.04); }
+        .wave-3 { bottom: -5px; animation-duration: 9s; opacity: 0.15; background: rgba(255, 51, 119, 0.04); }
+
+        @keyframes waveMove {
+            0% { transform: translateX(0) scaleY(1); }
+            25% { transform: translateX(-5%) scaleY(1.2); }
+            50% { transform: translateX(-10%) scaleY(0.8); }
+            75% { transform: translateX(-5%) scaleY(1.1); }
+            100% { transform: translateX(0) scaleY(1); }
+        }
+
+        /* 浮动粒子 */
+        .particle {
+            position: absolute;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.08);
+            animation: particleFloat 12s ease-in-out infinite;
+        }
+        .p1 { top: 15%; left: 10%; animation-delay: 0s; font-size: 1.2rem; }
+        .p2 { top: 25%; right: 15%; animation-delay: 2s; font-size: 0.8rem; }
+        .p3 { top: 60%; left: 5%; animation-delay: 4s; font-size: 1.5rem; }
+        .p4 { top: 50%; right: 8%; animation-delay: 1s; font-size: 0.9rem; }
+        .p5 { top: 80%; left: 20%; animation-delay: 3s; font-size: 1.1rem; }
+        .p6 { top: 10%; right: 25%; animation-delay: 5s; font-size: 0.7rem; }
+        .p7 { top: 70%; left: 80%; animation-delay: 2.5s; font-size: 1.3rem; }
+        .p8 { top: 40%; right: 5%; animation-delay: 4.5s; font-size: 1rem; }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.08; }
+            25% { transform: translateY(-30px) rotate(15deg); opacity: 0.15; }
+            50% { transform: translateY(-60px) rotate(30deg); opacity: 0.06; }
+            75% { transform: translateY(-30px) rotate(15deg); opacity: 0.12; }
+        }
+
+        /* 主内容在装饰之上 */
+        #menu-screen, #game-screen { position: relative; z-index: 10; }
 
     </style>
 </head>
