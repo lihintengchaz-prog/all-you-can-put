@@ -84,7 +84,7 @@
 
         .lobby-settings-btn {
             position: absolute;
-            right: 20px;
+            right: 8px;
             top: 50%;
             transform: translateY(-50%);
             background: rgba(255, 255, 255, 0.15);
@@ -129,8 +129,8 @@
 
         .mode-card {
             background: var(--panel-bg);
-            border-radius: 22px;
-            padding: 14px 22px;
+            border-radius: 28px;
+            padding: 20px 25px;
             cursor: pointer;
             backdrop-filter: blur(15px);
             box-shadow: 0 20px 45px rgba(0,0,0,0.3);
@@ -164,7 +164,7 @@
         }
 
         .mode-card h3 {
-            font-size: 1.3rem;
+            font-size: 1.6rem;
             margin-bottom: 0;
             font-weight: 800;
             letter-spacing: 1px;
@@ -922,7 +922,6 @@
                 <canvas id="blockCanvas" width="440" height="660"></canvas>
             <div id="combo-overlay"></div>
             <div id="prize-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:60;display:flex;justify-content:center;align-items:center;"></div>
-            <div id="achievement-banner" style="position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:55;pointer-events:none;display:none;"></div>
             </div>
         </div>
 
@@ -1004,10 +1003,10 @@
                     { name: "vbar-4", matrix: [[1],[1],[1],[1]], color: '#ff6d00' },
                     { name: "t-shape", matrix: [[1,1,1],[0,1,0]], color: '#d500f9' },
                     { name: "l-shape", matrix: [[1,0],[1,0],[1,1]], color: '#ff3377' },
-                    { name: "z-shape", matrix: [[1,1,0],[0,1,1]], color: '#ffea00' },
-                    { name: "big-l-3x3", matrix: [[1,0,0],[1,0,0],[1,1,1]], color: '#ff6d00' }
+                    { name: "z-shape", matrix: [[1,1,0],[0,1,1]], color: '#ffea00' }
                 ],
                 hard: [
+                    { name: "big-l-3x3", matrix: [[1,0,0],[1,0,0],[1,1,1]], color: '#ff6d00' }
                 ],
                 // 隱藏VIP款（僅限自選面板出現）
                 special: [
@@ -1049,7 +1048,6 @@
         GameApp.State = {
             bGrid: [],
             bScore: 0,
-            lastAchievement: null,
             bBestScore: 0,
             hand: [],
             selectedPiece: null,
@@ -1757,9 +1755,7 @@
                     // 幸运模式比无尽模式稍微难一点点（门槛降低20%）
                     const diffMod = s.currentMode === 'lucky' ? 0.8 : 1.0;
                     const adj = sc * diffMod;
-                    // Phase 1 (0-5000): 纯简单，先爽再动脑
                     if (adj <= 5000) { chosenPool = poolEasy; difficultyTier = 0; }
-                    // Phase 2 (5000-10000): 开始混入中等
                     else if (adj <= 10000) { 
                         chosenPool = Math.random() < 0.7 ? poolEasy : poolMed;
                         difficultyTier = 1;
@@ -1776,7 +1772,7 @@
                 // 🎯 优先找一个能立即消除行列的形狀（所有难度都尝试，低分时更积极）  
                 let lineClearPiece = null;
                 if (s.currentMode === 'endless' || s.currentMode === 'lucky') {
-                    let searchPool = [...E, ...M, ...H, ...S];
+                    let searchPool = (difficultyTier <= 1 || s.bScore <= 100) ? [...E, ...M, ...S] : [...E, ...M, ...H];
                     searchPool.sort(() => Math.random() - 0.5);
                     for (let p of searchPool) {
                         for (let r = 0; r < size; r++) {
@@ -1870,27 +1866,6 @@
                         s.hand[i].shape = m;
                     }
                 }
-                // 🔄 50% chance to randomly rotate non-critical shapes (helps clear lines)
-                for (let i = 0; i < s.hand.length; i++) {
-                    if (!s.hand[i].isUsed && Math.random() > 0.45) {
-                        // Rotate 0-3 times (90° each)
-                        const rotations = Math.floor(Math.random() * 4);
-                        let mat = s.hand[i].shape;
-                        for (let r = 0; r < rotations; r++) {
-                            const rows = mat.length;
-                            const cols = mat[0].length;
-                            const newMat = [];
-                            for (let c = 0; c < cols; c++) {
-                                newMat[c] = [];
-                                for (let rr = rows - 1; rr >= 0; rr--) {
-                                    newMat[c].push(mat[rr][c]);
-                                }
-                            }
-                            mat = newMat;
-                        }
-                        s.hand[i].shape = mat;
-                    }
-                }
                 this._giveHelpfulPieces(chosenPool);
                 // 保底机制：如果所有手牌都无法放置，自动替换为可放置的简单形状
                 this._ensurePlayableHand();
@@ -1906,7 +1881,7 @@
 
                 // 智能辅助：混搭有益形状，不暴露 AI 痕迹
                 // 先找完全能消行的形状（最高优先级，但只替换1张）
-                const allShapes = [...E, ...GameApp.Config.Shapes.medium, ...GameApp.Config.Shapes.hard];
+                const allShapes = [...E, ...GameApp.Config.Shapes.medium];
                 let lineClearPick = null;
                 
                 for (let p of allShapes) {
@@ -1954,37 +1929,13 @@
                     }
                 }
 
-                // 检测2x2方块空缺和3x2空缺，给对应形状
-                if (Math.random() > 0.4) {
+                // 有时给2x2方块（不总是检测）
+                if (Math.random() > 0.5) {
                     for (let r = 0; r < size - 1; r++) {
                         for (let c = 0; c < size - 1; c++) {
                             if (s.bGrid[r][c] === 0 && s.bGrid[r][c+1] === 0 && 
                                 s.bGrid[r+1][c] === 0 && s.bGrid[r+1][c+1] === 0) {
                                 helpers.push({ shape: [[1,1],[1,1]], color: '#ff3377', priority: 6 });
-                            }
-                        }
-                    }
-                    // 3x2矩形空缺
-                    for (let r = 0; r < size - 2; r++) {
-                        for (let c = 0; c < size - 1; c++) {
-                            if (s.bGrid[r][c] === 0 && s.bGrid[r][c+1] === 0 &&
-                                s.bGrid[r+1][c] === 0 && s.bGrid[r+1][c+1] === 0 &&
-                                s.bGrid[r+2][c] === 0 && s.bGrid[r+2][c+1] === 0) {
-                                const bigRect = Math.random() > 0.5 ? 
-                                    { shape: [[1,1,1],[1,1,1]], color: '#00e5ff' } :  // 3x2
-                                    { shape: [[1,1],[1,1],[1,1]], color: '#00e5ff' };  // 2x3
-                                helpers.push(bigRect);
-                            }
-                        }
-                    }
-                    // 偶尔给3x3大L
-                    if (Math.random() > 0.6) {
-                        for (let r = 0; r < size - 2; r++) {
-                            for (let c = 0; c < size - 2; c++) {
-                                if (s.bGrid[r][c] === 0 && s.bGrid[r+1][c] === 0 && s.bGrid[r+2][c] === 0 &&
-                                    s.bGrid[r+2][c+1] === 0 && s.bGrid[r+2][c+2] === 0) {
-                                    helpers.push({ shape: [[1,0,0],[1,0,0],[1,1,1]], color: '#ff6d00', priority: 5 });
-                                }
                             }
                         }
                     }
@@ -2160,16 +2111,16 @@
                     GameApp.Audio.multiClear(linesCount);
                     this.triggerHapticShock(35 * linesCount);
                     GameApp.Core.showComboPopup(linesCount);
-                    s.screenShakeTimer = 0.4 + linesCount * 0.08;
-                    s.shakeIntensity = linesCount >= 5 ? 3 : linesCount >= 3 ? 2 : 1;
+                    s.screenShakeTimer = 0.3 + linesCount * 0.05;
+                    s.shakeIntensity = linesCount >= 3 ? 2 : 1;
                     const cx = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
                     const cy = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
                     // 同时消除行数直接做倍数：清1行=100分，2行=400分，3行=900分，4行=1600分
                     const comboMult = linesCount * linesCount;
                     const bonus = Math.round(comboMult * 100 * (s.currentMode === 'lucky' ? s.currentMultiplier : 1));
-                    // 消除分数飞字更大更持久（增强版）
-                    const flyFontSize = bonus > 1000 ? 48 : bonus > 500 ? 40 : bonus > 200 ? 34 : 28;
-                    s.scoreFlyouts.push({ x: cx, y: cy + 10, vy: 1.2, text: "+" + bonus, color: linesCount >= 4 ? "#d500f9" : linesCount >= 3 ? "#ffd700" : "#00e5ff", timer: 1.6 });
+                    // 消除分数飞字更大更持久
+                    const flyFontSize = bonus > 1000 ? 40 : bonus > 500 ? 34 : bonus > 200 ? 28 : 24;
+                    s.scoreFlyouts.push({ x: cx, y: cy + 10, vy: 1.5, text: "+" + bonus, color: linesCount >= 4 ? "#d500f9" : linesCount >= 3 ? "#ffd700" : "#00e5ff", timer: 1.4 });
                 }
 
                 const bCell = GameApp.Config.bCellSize;
@@ -2288,9 +2239,8 @@
                 });
                 
                 window.addEventListener('mouseup', () => {
-                    if (GameApp.State.selectedPiece) {
-                        this.handleInputEnd();
-                    }
+                    if (this.isInteractionBlocked() && !GameApp.State.selectedPiece) return;
+                    this.handleInputEnd();
                 });
 
                 canvas.addEventListener('touchstart', (e) => {
@@ -2304,9 +2254,8 @@
                 }, { passive: false });
                 
                 window.addEventListener('touchend', () => {
-                    if (GameApp.State.selectedPiece) {
-                        this.handleInputEnd();
-                    }
+                    if (this.isInteractionBlocked() && !GameApp.State.selectedPiece) return;
+                    this.handleInputEnd();
                 });
             },
 
@@ -2350,13 +2299,12 @@
             handleInputEnd: function() {
                 const s = GameApp.State;
                 s.lastHoverR = -1; s.lastHoverC = -1;
-                const piece = s.selectedPiece;
-                if (!piece) return;
+                if (!s.selectedPiece) return;
                 
                 const bCell = GameApp.Config.bCellSize;
                 const { gridX, gridY } = this.getSnapCoordinates();
                 
-                if (!s.isGameOver && !s.isCustomSelecting && this.canPlaceShape(piece.shape, gridY, gridX)) {
+                if(this.canPlaceShape(s.selectedPiece.shape, gridY, gridX)) {
                     // 基础分 = 方块格数 × (10 + 格数×2)，大块高分小块低分
                     let cells = 0;
                     s.selectedPiece.shape.forEach(row => row.forEach(v => { if(v) cells++; }));
@@ -2533,10 +2481,8 @@
                 
                 if (linesCount >= 5) {
                     overlay.innerHTML = '<div style="position:relative;display:flex;flex-direction:column;align-items:center;"><div style="position:absolute;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,0.5) 0%,rgba(255,215,0,0) 70%);top:50%;left:50%;transform:translate(-50%,-50%);"></div><div class="combo-popup combo-color-gold" style="font-size:clamp(3.5rem,12vw,7rem);position:relative;font-weight:900;">💎 JACKPOT!<br><span class="combo-label" style="font-size:clamp(1.2rem,4vw,2.2rem);">🔥 SCORE DOUBLED! 🔥</span></div></div>';
-                    // 全屏爆炸粒子（增强版）
-                    s.screenShakeTimer = 1.0;
-                    s.shakeIntensity = 3;
-                    for (let i = 0; i < 80; i++) {
+                    // 全屏爆炸粒子
+                    for (let i = 0; i < 50; i++) {
                         setTimeout(() => {
                             s.particles.push({ x: Math.random() * 440, y: Math.random() * 440, vx: (Math.random() - 0.5) * 25, vy: (Math.random() - 0.8) * 20, radius: Math.random() * 6 + 2, alpha: 1, color: ['#ffd700','#ff3377','#00e5ff','#d500f9','#00ff66'][Math.floor(Math.random()*5)] });
                         }, i * 15);
@@ -2548,9 +2494,8 @@
                     const color = s.allClearCount >= 4 ? 'combo-color-gold' : s.allClearCount >= 3 ? 'combo-color-pink' : s.allClearCount >= 2 ? 'combo-color-cyan' : 'combo-color-gold';
                     const multText = s.currentMode === 'lucky' ? ('⚡ ' + s.currentMultiplier.toFixed(1) + 'x MULTIPLIER ⚡') : ('✨ BOARD CLEAR ✨');
                     overlay.innerHTML = '<div class="combo-popup ' + color + '" style="font-size:clamp(3rem,10vw,6rem);">' + tier + '<br><span class="combo-label">' + multText + '</span></div>';
-                    // 全清粒子爆花（增强版）
-                    s.screenShakeTimer = 0.8;
-                    for (let i = 0; i < 60; i++) {
+                    // 全清粒子爆花
+                    for (let i = 0; i < 30; i++) {
                         setTimeout(() => {
                             s.particles.push({ x: Math.random() * 440, y: Math.random() * 440, vx: (Math.random() - 0.5) * 20, vy: (Math.random() - 0.8) * 16, radius: Math.random() * 5 + 2, alpha: 1, color: ['#ffd700','#ff3377','#00e5ff'][Math.floor(Math.random()*3)] });
                         }, i * 20);
@@ -2713,31 +2658,20 @@
             drawPiece: function(piece, startX, startY, cellSize) {
                 const ctx = GameApp.UI.elements.ctx;
                 ctx.save();
-                // 手牌阴影（增强）
+                // 手牌阴影
                 piece.shape.forEach((row, rIdx) => {
                     row.forEach((val, cIdx) => {
                         if(val) {
-                            ctx.fillStyle = "rgba(0,0,0,0.35)";
+                            ctx.fillStyle = "rgba(0,0,0,0.25)";
                             ctx.beginPath();
-                            ctx.arc(startX + cIdx * cellSize + cellSize/2 + 3, startY + rIdx * cellSize + cellSize/2 + 3, cellSize*0.4, 0, Math.PI*2);
+                            ctx.arc(startX + cIdx * cellSize + cellSize/2 + 2, startY + rIdx * cellSize + cellSize/2 + 2, cellSize*0.35, 0, Math.PI*2);
                             ctx.fill();
                         }
                     });
                 });
                 piece.shape.forEach((row, rIdx) => {
                     row.forEach((val, cIdx) => {
-                        if(val) {
-                            // 底部发光
-                            const glow = ctx.createRadialGradient(
-                                startX + cIdx * cellSize + cellSize/2, startY + rIdx * cellSize + cellSize/2, 0,
-                                startX + cIdx * cellSize + cellSize/2, startY + rIdx * cellSize + cellSize/2, cellSize
-                            );
-                            glow.addColorStop(0, piece.color + '40');
-                            glow.addColorStop(1, 'transparent');
-                            ctx.fillStyle = glow;
-                            ctx.fillRect(startX + cIdx * cellSize - 5, startY + rIdx * cellSize - 5, cellSize + 10, cellSize + 10);
-                            this.drawTexturedCandyCell(ctx, startX + cIdx * cellSize, startY + rIdx * cellSize, cellSize, piece.color, 1, 1);
-                        }
+                        if(val) this.drawTexturedCandyCell(ctx, startX + cIdx * cellSize, startY + rIdx * cellSize, cellSize, piece.color, 1, 1);
                     });
                 });
                 ctx.restore();
@@ -2752,11 +2686,10 @@
                 
                 for(let r=0; r<size; r++) {
                     for(let c=0; c<size; c++) {
-                        let cellVal = s.bGrid[r][c];
-                        // 跳过正在消除动画的格子（它们在后面单独渲染）
                         if(s.clearingCells.some(cell => cell.r === r && cell.c === c)) continue;
-                        if (cellVal && cellVal !== '#4e566d') this.drawTexturedCandyCell(ctx, c * bCell, r * bCell, bCell, cellVal, s.gridBounceX[r][c], s.gridBounceY[r][c]);
-                        else if (!cellVal) { 
+                        let cellVal = s.bGrid[r][c];
+                        if (cellVal) this.drawTexturedCandyCell(ctx, c * bCell, r * bCell, bCell, cellVal, s.gridBounceX[r][c], s.gridBounceY[r][c]);
+                        else { 
                         ctx.fillStyle = s.currentTheme.emptyCell;
                         const eR = 4;
                         ctx.beginPath();
@@ -2775,15 +2708,13 @@
                     }
                 }
 
-                // 消除动画：先放大再缩小（终极增强版）
+                // 消除动画：先放大再缩小（增强版）
                 s.clearingCells.forEach(cell => {
                     ctx.save();
                     // 外发光（更亮更大）
                     ctx.shadowColor = cell.color || '#ffffff';
-                    ctx.shadowBlur = 40 * Math.min(cell.scale * 1.5, 1.2);
-                    ctx.globalAlpha = Math.min(cell.scale * 1.2, 1);
-                    this.drawTexturedCandyCell(ctx, cell.c * bCell, cell.r * bCell, bCell, cell.color, 
-                        Math.min(cell.scale * 1.4, 1.25), Math.min(cell.scale * 1.4, 1.25));
+                    ctx.shadowBlur = 25 * cell.scale;
+                    this.drawTexturedCandyCell(ctx, cell.c * bCell, cell.r * bCell, bCell, cell.color, Math.min(cell.scale * 1.3, 1.2), Math.min(cell.scale * 1.3, 1.2));
                     ctx.restore();
                 });
 
@@ -2806,30 +2737,24 @@
                     ctx.globalAlpha = Math.min(fl.timer * 2, 1);
                     // 分数越大字号越大
                     const scoreNum = parseInt(fl.text.replace(/\D/g,'')) || 0;
-                    const fontSize = scoreNum > 500 ? 48 : scoreNum > 200 ? 38 : scoreNum > 80 ? 32 : 28;
+                    const fontSize = scoreNum > 500 ? 38 : scoreNum > 200 ? 32 : scoreNum > 80 ? 28 : 24;
                     ctx.font = `bold ${fontSize}px -apple-system, sans-serif`;
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    // 外发光（分层）- 增强版
+                    // 外发光（分层）
                     ctx.shadowColor = fl.color || '#ffd700';
-                    ctx.shadowBlur = 50;
+                    ctx.shadowBlur = 30;
                     ctx.fillStyle = '#ffffff';
-                    ctx.fillText(fl.text, fl.x + 2, fl.y + 2);
-                    ctx.shadowBlur = 35;
+                    ctx.fillText(fl.text, fl.x + 1, fl.y + 1);
+                    ctx.shadowBlur = 20;
                     ctx.fillStyle = fl.color || '#ffd700';
-                    ctx.fillText(fl.text, fl.x, fl.y);
-                    // 第二层超大光晕
-                    ctx.shadowColor = fl.color || '#ffd700';
-                    ctx.shadowBlur = 80;
-                    ctx.globalAlpha = 0.3;
-                    ctx.fillStyle = '#ffffff';
                     ctx.fillText(fl.text, fl.x, fl.y);
                     ctx.restore();
                 }
 
 
                 // 粒子上限 200 个，防止爆内存
-                while (s.particles.length > 300) s.particles.shift();
+                while (s.particles.length > 200) s.particles.shift();
                 s.particles.forEach(p => { ctx.save(); ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill(); ctx.restore(); });
                 
                 if (s.allClearFlashTimer > 0) {
@@ -2848,23 +2773,6 @@
                 }
 
                 ctx.fillStyle = "rgba(0,0,0,0.4)"; ctx.fillRect(0, canvas.width, canvas.width, canvas.height - canvas.width);
-                // 成就横幅渲染（Canvas内）
-                if (s.lastAchievement && s.lastAchievement.timer > 0) {
-                    s.lastAchievement.timer -= 0.03;
-                    if (s.lastAchievement.timer <= 0) s.lastAchievement = null;
-                    else {
-                        ctx.save();
-                        ctx.globalAlpha = Math.min(s.lastAchievement.timer * 2, 0.9);
-                        ctx.fillStyle = s.lastAchievement.color;
-                        ctx.shadowColor = s.lastAchievement.color;
-                        ctx.shadowBlur = 40;
-                        ctx.font = 'bold 22px -apple-system, sans-serif';
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'top';
-                        ctx.fillText(s.lastAchievement.icon + ' ' + s.lastAchievement.title, canvas.width/2, 8);
-                        ctx.restore();
-                    }
-                }
                 s.hand.forEach(piece => { if (!piece.isUsed && piece !== s.selectedPiece) this.drawPiece(piece, piece.x, piece.y, 24); });
                 
 

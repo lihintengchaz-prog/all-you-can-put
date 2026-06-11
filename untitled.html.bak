@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALL YOU CAN PUT! - Smart Assist Edition</title>
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <style>
+        /* ==========================================================================
+           1. CORE CSS ARCHITECTURE (GLOBAL VARIABLES & THEME ENGINE)
+           ========================================================================== */
+        :root {
+            /* 商業級高對比色彩庫 */
+            --pink: #ff3377;
+            --blue: #00e5ff;
+            --yellow: #ffea00;
+            --purple: #d500f9;
+            --orange: #ff6d00;
+            --green: #00ff66;
+            --danger: #ff1744;
+            
+            /* 介面與陰影 */
+            --panel-bg: rgba(22, 27, 49, 0.88);
+            --modal-bg: #1c2136;
+            --grid-dark: #121626;
+            --grid-empty: #1d223a;
+            
+            /* 預設海洋主題漸變 */
+            --bg-gradient: linear-gradient(135deg, #ff99ca 0%, #4facfe 50%, #171b36 100%);
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-gradient);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: background 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* ==========================================================================
+           2. UI LAYOUT & MENUS (LOBBY ARCHITECTURE)
+           ========================================================================== */
+        #menu-screen {
+            text-align: center;
+            max-width: 900px;
+            width: 100%;
+            padding: 30px 20px;
+            z-index: 10;
+            animation: appStartContainer 0.5s ease-out;
+        }
+
+        .lobby-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        .logo-title {
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffffff, var(--blue), var(--pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+            filter: drop-shadow(3px 5px 12px rgba(0,0,0,0.4));
+        }
+
+        .lobby-settings-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #fff;
+            font-size: 1.5rem;
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.25s ease;
+        }
+
+        .lobby-settings-btn:hover {
+            background: var(--blue);
+            transform: translateY(-50%) scale(1.08) rotate(45deg);
+            border-color: #fff;
+            box-shadow: 0 0 15px var(--blue);
+        }
+
+        .subtitle {
+            color: #1a223d;
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            margin-bottom: 40px;
+            letter-spacing: 5px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .mode-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+        }
+
+        .mode-card {
+            background: var(--panel-bg);
+            border-radius: 32px;
+            padding: 35px 25px;
+            cursor: pointer;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 20px 45px rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.08);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--blue);
+            box-shadow: 0 30px 60px rgba(0,242,254,0.2);
+        }
+
+        .mode-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .mode-card p {
+            color: #bbc6e0;
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            text-align: center;
+            height: 75px;
+        }
+
+        .play-btn {
+            background: linear-gradient(45deg, var(--pink), var(--blue));
+            color: #fff;
+            border: none;
+            padding: 14px 45px;
+            font-weight: 800;
+            border-radius: 16px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(255, 51, 119, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 25px rgba(0, 229, 255, 0.4);
+        }
+
+        .continue-btn {
+            background: linear-gradient(45deg, var(--yellow), var(--orange));
+            color: #000;
+            margin: 0 auto 30px auto;
+            display: none;
+            font-weight: 900;
+            letter-spacing: 1px;
+            border: 2px solid #000;
+            box-shadow: 0 10px 25px rgba(255, 234, 0, 0.4);
+            animation: pulseGlowAnimation 1.6s infinite alternate;
+        }
+
+        /* 66關選擇面板樣式 */
+        #level-select-panel {
+            display: none;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 25px;
+            width: 100%;
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 20px;
+            box-sizing: border-box;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        #level-select-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #level-select-panel::-webkit-scrollbar-thumb {
+            background: var(--pink);
+            border-radius: 3px;
+        }
+
+        .lvl-btn {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 10px;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .lvl-btn:hover {
+            background: var(--pink);
+            border-color: #fff;
+            transform: scale(1.08);
+            box-shadow: 0 0 12px var(--pink);
+        }
+
+        /* ==========================================
+           3. GAME INTERFACE & CANVARENA LAYOUT
+           ========================================== */
+        #game-screen {
+            display: none;
+            width: 100%;
+            max-width: 850px;
+            gap: 30px;
+            padding: 15px;
+            box-sizing: border-box;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .main-game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 460px;
+        }
+
+        .score-board-top {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 0 8px;
+            box-sizing: border-box;
+        }
+
+        .left-nav-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .home-icon-btn, .settings-gear-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #fff;
+            font-size: 1.4rem;
+            width: 46px;
+            height: 46px;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+            transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .home-icon-btn:hover { background: var(--pink); transform: scale(1.06); border-color: #fff; }
+        .settings-gear-btn:hover { background: var(--blue); transform: scale(1.06) rotate(45deg); border-color: #fff; }
+
+        .score-left-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-score-text {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+            text-shadow: 2px 3px 6px rgba(0,0,0,0.3);
+        }
+
+        .top-best-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a223d;
+            margin-top: 2px;
+        }
+
+        .status-indicators-bar {
+            width: 100%;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        .indicator-tag {
+            flex: 1;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            text-align: center;
+            box-sizing: border-box;
+            border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+
+        #lucky-progress-bar { display: none; color: var(--yellow); border-color: rgba(255, 234, 0, 0.25); }
+        #clear-multiplier-tag { color: var(--green); border-color: rgba(0, 255, 102, 0.25); }
+
+        .arena {
+            background: var(--panel-bg);
+            backdrop-filter: blur(15px);
+            padding: 18px;
+            border-radius: 36px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background 0.6s ease, box-shadow 0.6s ease;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            border-radius: 24px;
+            max-width: 100%;
+            border: 1px solid rgba(255,255,255,0.05);
+            background: var(--grid-dark);
+            z-index: 1;
+        }
+
+        /* ==========================================
+           4. 🔮 RIGHT SELECT PANEL (PIXEL PERFECT ADAPTATION)
+           ========================================== */
+        #custom-select-panel {
+            display: none;
+            flex-direction: column;
+            background: var(--panel-bg);
+            border-radius: 28px;
+            padding: 18px;
+            border: 2px solid var(--purple);
+            max-height: 700px;
+            overflow-y: auto;
+            width: 240px;
+            box-sizing: border-box;
+            gap: 15px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            align-items: center;
+            animation: panelSlideIn 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        #custom-select-panel::-webkit-scrollbar { width: 5px; }
+        #custom-select-panel::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
+
+        .select-item-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .select-item-card {
+            background: #111422;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 12px;
+            border-radius: 18px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            width: 170px;
+            height: 140px;
+            transition: all 0.2s ease;
+        }
+
+        .select-item-card:hover {
+            border-color: var(--purple);
+            background: rgba(213, 0, 249, 0.12);
+            transform: scale(1.04);
+        }
+
+        .select-item-name {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #9aa7c4;
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ==========================================
+           5. PREMIUM OVERLAY MODALS (ANTI-PENETRATION & HIGH Z-INDEX)
+           ========================================== */
+        .overlay-window {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(6, 7, 15, 0.88);
+            z-index: 999999; /* 絕對死鎖超高層級，防止事件穿透 */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: auto;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-box {
+            background: #1c2136;
+            padding: 35px 40px;
+            border-radius: 32px;
+            text-align: center;
+            box-shadow: 0 25px 55px rgba(0,0,0,0.6);
+            max-width: 350px;
+            width: 90%;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            animation: modalPopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-box h2 {
+            margin-bottom: 18px;
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .modal-box p {
+            margin-bottom: 25px;
+            font-size: 1.15rem;
+            color: #a2aed4;
+            font-weight: bold;
+            line-height: 1.5;
+        }
+
+        .modal-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .modal-btn {
+            padding: 14px;
+            border-radius: 16px;
+            border: none;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-retry { background: linear-gradient(45deg, var(--pink), var(--blue)); color: #fff; box-shadow: 0 6px 15px rgba(255,51,119,0.3); }
+        .btn-menu { background: #2d3554; color: #fff; border: 1px solid rgba(255,255,255,0.05); }
+        .btn-close { background: #475070; color: #fff; }
+        
+        .btn-retry:hover { box-shadow: 0 10px 20px rgba(0,229,255,0.4); }
+        .btn-menu:hover { background: #384268; }
+
+        /* 語言切換盒子 */
+        .lang-toggle-box {
+            margin: 5px 0 25px 0;
+            background: rgba(0,0,0,0.2);
+            padding: 14px 18px;
+            border-radius: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .lang-label { font-size: 1rem; font-weight: 700; color: #a4b3dc; }
+        .lang-btn-group { display: flex; gap: 10px; }
+        
+        .lang-sub-btn {
+            background: #2a314e;
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .lang-sub-btn.active {
+            background: var(--blue);
+            color: #000;
+            border-color: #fff;
+            box-shadow: 0 0 10px rgba(0,229,255,0.5);
+        }
+
+        /* 幸運寶箱抖動動畫 */
+        .chest-anim {
+            font-size: 6rem;
+            margin-bottom: 15px;
+            display: inline-block;
+            animation: chestWobbleLoop 0.4s ease infinite alternate;
+            cursor: pointer;
+            filter: drop-shadow(0 8px 25px rgba(255,234,0,0.4));
+            transition: transform 0.2s;
+        }
+
+        .chest-anim:hover {
+            transform: scale(1.15);
+        }
+
+        /* ==========================================================================
+           6. ADVANCED KEYFRAMES & ANIMATIONS
+           ========================================================================== */
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: scale(0.96); } 
+            to { opacity: 1; transform: scale(1); } 
+        }
+        @keyframes appStartContainer { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        @keyframes panelSlideIn { 
+            from { opacity: 0; transform: translateX(40px); } 
+            to { opacity: 1; transform: translateX(0); } 
+        }
+        @keyframes modalPopIn { 
+            from { opacity: 0; transform: scale(0.85) translateY(40px); } 
+            to { opacity: 1; transform: scale(1) translateY(0); } 
+        }
+        @keyframes chestWobbleLoop { 
+            from { transform: rotate(-8deg); } 
+            to { transform: rotate(8deg); } 
+        }
+        @keyframes pulseGlowAnimation { 
+            from { box-shadow: 0 0 10px var(--yellow); } 
+            to { box-shadow: 0 0 35px var(--orange); transform: scale(1.03); } 
+        }
+    </style>
+</head>
+<body>
+
+    <div id="menu-screen">
+        <div class="lobby-header">
+            <div class="logo-title">ALL YOU CAN PUT!</div>
+            <button class="lobby-settings-btn" onclick="GameApp.UI.openSettingsModal()">⚙️</button>
+        </div>
+        <div class="subtitle" id="lobby-sub">AI智能爽快全清 ‧ 三連自選改命版</div>
+        
+        <button class="play-btn continue-btn" id="lobby-continue-btn" onclick="GameApp.Core.loadSavedGame()">CONTINUE</button>
+
+        <div class="mode-container">
+            <div class="mode-card" onclick="GameApp.Core.startLuckyMode()">
+                <h3 id="mode-lucky-title">幸運模式 (Lucky)</h3>
+                <p id="mode-lucky-desc">每消除滿 3 行即可抽取幸運寶箱！觸發高額分數翻倍與方塊自選改命！</p>
+                <button class="play-btn" style="background: linear-gradient(45deg, var(--yellow), var(--orange)); color: #000;">LUCKY PLAY</button>
+            </div>
+            
+            <div class="mode-card" onclick="GameApp.Core.startEndlessMode()">
+                <h3 id="mode-endless-title">無盡模式 (Endless)</h3>
+                <p id="mode-endless-desc">經典刷分。AI 智能放水輔助清屏，享受滿屏極速全清棋盤的無限爽感！</p>
+                <button class="play-btn">START</button>
+            </div>
+            
+            <div class="mode-card" id="level-card">
+                <h3 id="mode-level-title">闖關模式 (Levels)</h3>
+                <p id="mode-level-desc">挑戰由淺入深的 66 道經典關卡！繞開固定死局障礙鐵塊，衝擊通關目標。</p>
+                <button class="play-btn" onclick="GameApp.UI.toggleLevelSelect(event)">STAGES</button>
+                <div id="level-select-panel">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-screen">
+        <div class="main-game-area">
+            
+            <div class="score-board-top">
+                <div class="left-nav-group">
+                    <button class="home-icon-btn" onclick="GameApp.Core.exitToMenu()">🏠</button>
+                    <div class="score-left-box">
+                        <div class="top-score-text" id="topScoreText">SCORE: 0</div>
+                        <div class="top-best-text" id="topBestText">BEST: 0</div>
+                    </div>
+                </div>
+                <button class="settings-gear-btn" onclick="GameApp.UI.openSettingsModal()">⚙️</button>
+            </div>
+
+            <div class="status-indicators-bar">
+                <div id="clear-multiplier-tag" class="indicator-tag">清屏倍率: 1.0x</div>
+                <div id="lucky-progress-bar" class="indicator-tag">距離寶箱還剩: 3 行</div>
+            </div>
+
+            <div class="arena" id="gameArenaPanel">
+                <canvas id="blockCanvas" width="440" height="660"></canvas>
+            </div>
+        </div>
+
+        <div id="custom-select-panel">
+            <div style="text-align:center; font-size:1.05rem; font-weight:900; color:var(--purple); margin-bottom:10px; letter-spacing:1px;" id="panel-select-title">🔮 挑選 3 個形狀</div>
+            </div>
+    </div>
+
+    <div id="lucky-chest-overlay" class="overlay-window">
+        <div class="modal-box" style="border: 3px solid var(--yellow);" onclick="event.stopPropagation()">
+            <div class="chest-anim" id="chest-gift-box" onclick="GameApp.Core.drawLuckyChest()">🎁</div>
+            <h2 style="color: var(--yellow); margin-bottom: 8px;" id="chest-title">幸運寶箱！</h2>
+            <p style="color: #fff; font-size: 1.05rem; margin-bottom:25px;" id="chest-desc">消除滿 3 行解鎖，點擊開啟逆天改命</p>
+            <div class="modal-btns">
+                <button class="modal-btn btn-retry" style="background: linear-gradient(45deg, var(--yellow), var(--orange)); color:#000; box-shadow: 0 5px 15px rgba(255,234,0,0.4);" id="chest-open-btn" onclick="GameApp.Core.drawLuckyChest()">開 啟 寶 箱</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-overlay" class="overlay-window">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <h2 style="color: var(--blue);" id="settings-title">遊戲設置</h2>
+            
+            <div class="lang-toggle-box">
+                <span class="lang-label" id="lang-label-text">語言 / Language</span>
+                <div class="lang-btn-group">
+                    <button class="lang-sub-btn" id="lang-zh" onclick="GameApp.I18N.changeLanguage('zh')">中文</button>
+                    <button class="lang-sub-btn" id="lang-en" onclick="GameApp.I18N.changeLanguage('en')">EN</button>
+                </div>
+            </div>
+
+            <div class="modal-btns">
+                <button class="modal-btn btn-retry" id="settings-retry" onclick="GameApp.UI.triggerReplayFromSettings()">🔄 重新開始</button>
+                <button class="modal-btn btn-menu" id="settings-lobby" onclick="GameApp.UI.triggerMenuFromSettings()">🚪 返回主頁</button>
+                <button class="modal-btn btn-close" id="settings-close" onclick="GameApp.UI.closeSettingsModal()">關閉面板</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameover-overlay" class="overlay-window">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <h2 id="modalTitle" style="color: var(--pink);">遊戲結束</h2>
+            <p id="modalScoreText">最終得分: 0</p>
+            <div class="modal-btns">
+                <button class="modal-btn btn-retry" id="go-retry" onclick="GameApp.Core.resetGame()">再開一局</button>
+                <button class="modal-btn btn-menu" id="go-lobby" onclick="GameApp.Core.exitToMenu()">返回大廳</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * ALL YOU CAN PUT! - CORE ENGINE
+         * 採用物件導向與模組化設計，增強可讀性、擴展性，並為商業變現做準備。
+         */
+        const GameApp = {};
+
+        // ----------------------------------------------------------------------
+        // MODULE: CONFIGURATION & CONSTANTS
+        // ----------------------------------------------------------------------
+        GameApp.Config = {
+            bGridSize: 8,
+            bCellSize: 440 / 8, // 55px
+            maxLevel: 66,
+            luckyLineTarget: 3,
+            
+            // 🌟 核心修改：單點與十字架移出普通池，改為隱藏款
+            Shapes: {
+                easy: [
+                    { name: "square", matrix: [[1,1],[1,1]], color: '#ff3377' }, 
+                    { name: "bar-3", matrix: [[1,1,1]], color: '#00e5ff' },      
+                    { name: "vbar-3", matrix: [[1],[1],[1]], color: '#00e5ff' }, 
+                    { name: "bar-2", matrix: [[1,1]], color: '#ffea00' }
+                ],
+                medium: [
+                    { name: "bar-4", matrix: [[1,1,1,1]], color: '#ff6d00' }, 
+                    { name: "vbar-4", matrix: [[1],[1],[1],[1]], color: '#ff6d00' },
+                    { name: "t-shape", matrix: [[1,1,1],[0,1,0]], color: '#d500f9' }, 
+                    { name: "l-shape", matrix: [[1,0],[1,0],[1,1]], color: '#ff3377' },
+                    { name: "z-shape", matrix: [[1,1,0],[0,1,1]], color: '#ffea00' }
+                ],
+                hard: [
+                    { name: "big-l-3x3", matrix: [[1,0,0],[1,0,0],[1,1,1]], color: '#ff6d00' }
+                ],
+                // 隱藏VIP款（僅限自選面板出現）
+                special: [
+                    { name: "dot", matrix: [[1]], color: '#00ff66' },
+                    { name: "cross-3x3", matrix: [[0,1,0],[1,1,1],[0,1,0]], color: '#d500f9' }
+                ]
+            },
+
+            Themes: {
+                sea: { 
+                    bg: 'linear-gradient(135deg, #ff99ca 0%, #4facfe 50%, #171b36 100%)', 
+                    panel: 'rgba(22, 27, 49, 0.85)', 
+                    emptyCell: '#1d223a',
+                    canvasFill: '#121626'
+                },
+                grass: { 
+                    bg: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', 
+                    panel: 'rgba(17, 43, 31, 0.85)', 
+                    emptyCell: '#1e382b',
+                    canvasFill: '#0d2117'
+                },
+                sunset: { 
+                    bg: 'linear-gradient(135deg, #ff7b54 0%, #ffb26b 50%, #6b4f4f 100%)', 
+                    panel: 'rgba(66, 43, 43, 0.85)', 
+                    emptyCell: '#3c2828',
+                    canvasFill: '#241818'
+                },
+                universe: { 
+                    bg: 'linear-gradient(135deg, #0f051d 0%, #05020a 100%)', 
+                    panel: 'rgba(25, 12, 43, 0.9)', 
+                    emptyCell: '#211534',
+                    canvasFill: '#0c0616'
+                }
+            }
+        };
+
+        // ----------------------------------------------------------------------
+        // MODULE: STATE MANAGEMENT
+        // ----------------------------------------------------------------------
+        GameApp.State = {
+            bGrid: [],
+            bScore: 0,
+            bBestScore: 0,
+            hand: [],
+            selectedPiece: null,
+            
+            currentMode: 'endless', 
+            currentLevel: 1,
+            targetScore: 0,
+            isGameOver: false,
+            
+            luckyLinesNeeded: 3,
+            isCustomSelecting: false,
+            customPicksLeft: 0, // 新增：記錄自選剩餘次數
+            allClearCount: 0,
+            currentMultiplier: 1.0,
+            
+            particles: [],
+            clearingCells: [],
+            allClearFlashTimer: 0,
+            currentTheme: GameApp.Config.Themes.sea,
+            
+            mouseX: 0, mouseY: 0,
+            dragOffset: { x: 0, y: 0 },
+            
+            gridBounceX: [], gridBounceY: [],
+            gridVelocityX: [], gridVelocityY: [],
+            loopActive: false
+        };
+
+        // ----------------------------------------------------------------------
+        // MODULE: I18N (INTERNATIONALIZATION)
+        // ----------------------------------------------------------------------
+        GameApp.I18N = {
+            dictionary: {
+                zh: {
+                    sub: "AI智能爽快全清 ‧ 三連自選改命版", 
+                    luckyTitle: "幸運模式 (Lucky)", 
+                    luckyDesc: "每消除滿 3 行即可抽取幸運寶箱！觸發高額分數翻倍與方塊自選改命！",
+                    endlessTitle: "無盡模式 (Endless)", 
+                    endlessDesc: "經典刷分。AI 智能放水輔助清屏，享受滿屏極速全清棋盤的無限爽感！",
+                    levelTitle: "闖關模式 (Levels)", 
+                    levelDesc: "挑戰由淺入深的 66 道經典關卡！繞開固定死局障礙鐵塊，衝擊通關目標。",
+                    stagesBtn: "選關大廳", 
+                    score: "當前得分", 
+                    best: "最高紀錄", 
+                    stage: "關卡", 
+                    multiplier: "清屏倍率", 
+                    luckyProgress: "距離寶箱還剩", 
+                    rows: "行",
+                    selectTitle: "🔮 請挑選 3 個形狀", 
+                    selectAlert: "🔮 請在右側面板挑選 3 個你要的方塊！", 
+                    settingsTitle: "遊戲設置", 
+                    btnRetry: "🔄 重新開始", 
+                    btnLobby: "🚪 返回主頁",
+                    btnClose: "關閉面板", 
+                    goWin: "STAGE CLEAR! 順利通關", 
+                    goLose: "挑戰失敗", 
+                    goOver: "遊戲結束", 
+                    goScore: "最終得分", 
+                    goWinDesc: "成功攻克本關分數目標！", 
+                    goLoseDesc: "死局！格子塞滿且未達目標分。",
+                    alertX2: "✨ 神話降臨！當前分數直接翻倍（x2）！", 
+                    alertDot: "🎯 幸運！下回合手牌全部轉化為【單點救局方塊】！", 
+                    alertSelect: "🔮 靈魂自選！右側已解鎖全圖形庫，請自由挑選 3 個方塊！",
+                    chestTitle: "幸運寶箱！", 
+                    chestDesc: "消除滿3行解鎖，點擊開啟逆天改命", 
+                    chestOpen: "開 啟 寶 箱", 
+                    goRetryBtn: "再開一局", 
+                    goLobbyBtn: "返回大廳", 
+                    continueBtn: "繼續上次遊戲 ➔"
+                },
+                en: {
+                    sub: "SMART AI ASSIST ‧ PICK-3 SYSTEM", 
+                    luckyTitle: "Lucky Mode", 
+                    luckyDesc: "Clear 3 lines to pop a Lucky Chest! Explode your score x2 or select your dream shapes!",
+                    endlessTitle: "Endless Mode", 
+                    endlessDesc: "Smart AI helps you clear the board! Enjoy satisfying screen clears and endless high score runs!",
+                    levelTitle: "Level Mode", 
+                    levelDesc: "Conquer 66 progressive stages. Place wisely around obstacles.",
+                    stagesBtn: "STAGES", 
+                    score: "SCORE", 
+                    best: "BEST", 
+                    stage: "STAGE", 
+                    multiplier: "Multiplier", 
+                    luckyProgress: "Chest in", 
+                    rows: "Lines",
+                    selectTitle: "🔮 PICK 3 SHAPES", 
+                    selectAlert: "🔮 Pick 3 shapes from the right panel to fill your hand!", 
+                    settingsTitle: "SETTINGS", 
+                    btnRetry: "🔄 REPLAY", 
+                    btnLobby: "🚪 LOBBY",
+                    btnClose: "CLOSE", 
+                    goWin: "STAGE CLEAR! 🏆", 
+                    goLose: "STAGE FAILED", 
+                    goOver: "GAME OVER", 
+                    goScore: "FINAL SCORE", 
+                    goWinDesc: "Target score has been reached successfully!", 
+                    goLoseDesc: "No more moves! Target not reached.",
+                    alertX2: "✨ MYTHIC! Current score multiplied by 2x!", 
+                    alertDot: "🎯 LUCKY! Next hand turned into [1x1 Rescue Dots]!", 
+                    alertSelect: "🔮 SELECTOR! Shape index unlocked, pick 3 shapes!",
+                    chestTitle: "LUCKY CHEST!", 
+                    chestDesc: "Unlocked by 3 line clears. Open to change your destiny.", 
+                    chestOpen: "OPEN CHEST", 
+                    goRetryBtn: "PLAY AGAIN", 
+                    goLobbyBtn: "LOBBY", 
+                    continueBtn: "CONTINUE GAME ➔"
+                }
+            },
+
+            init: function() {
+                this.currentLang = localStorage.getItem('block_put_lang') || 'zh';
+                this.applyLanguage();
+            },
+
+            changeLanguage: function(lang) {
+                this.currentLang = lang;
+                localStorage.setItem('block_put_lang', lang);
+                this.applyLanguage();
+            },
+
+            applyLanguage: function() {
+                const t = this.dictionary[this.currentLang];
+                
+                document.getElementById('lobby-sub').innerText = t.sub;
+                document.getElementById('mode-lucky-title').innerText = t.luckyTitle;
+                document.getElementById('mode-lucky-desc').innerText = t.luckyDesc;
+                document.getElementById('mode-endless-title').innerText = t.endlessTitle;
+                document.getElementById('mode-endless-desc').innerText = t.endlessDesc;
+                document.getElementById('mode-level-title').innerText = t.levelTitle;
+                document.getElementById('mode-level-desc').innerText = t.levelDesc;
+                document.getElementById('level-card').querySelector('.play-btn').innerText = t.stagesBtn;
+                document.getElementById('lobby-continue-btn').innerText = t.continueBtn;
+                
+                document.getElementById('panel-select-title').innerText = t.selectTitle;
+                document.getElementById('settings-title').innerText = t.settingsTitle;
+                document.getElementById('settings-retry').innerText = t.btnRetry;
+                document.getElementById('settings-lobby').innerText = t.btnLobby;
+                document.getElementById('settings-close').innerText = t.btnClose;
+                document.getElementById('chest-title').innerText = t.chestTitle;
+                document.getElementById('chest-desc').innerText = t.chestDesc;
+                document.getElementById('chest-open-btn').innerText = t.chestOpen;
+                document.getElementById('go-retry').innerText = t.goRetryBtn;
+                document.getElementById('go-lobby').innerText = t.goLobbyBtn;
+                
+                document.getElementById('lang-zh').className = 'lang-sub-btn' + (this.currentLang === 'zh' ? ' active' : '');
+                document.getElementById('lang-en').className = 'lang-sub-btn' + (this.currentLang === 'en' ? ' active' : '');
+                
+                GameApp.UI.updateScoreDisplay();
+                GameApp.Core.checkSavedGameExists();
+            },
+
+            getText: function(key) {
+                return this.dictionary[this.currentLang][key];
+            }
+        };
+
+        // ----------------------------------------------------------------------
+        // MODULE: ADS & MONETIZATION ENGINE (商業變現模擬)
+        // ----------------------------------------------------------------------
+        GameApp.AdsManager = {
+            init: function() {
+                console.log("[AdsManager] Monetization SDK Ready.");
+            },
+            showInterstitial: function(callback) {
+                // Future Implementation: crazygames.showInterstitial().then(callback);
+                if(callback) callback();
+            }
+        };
+
+        // ----------------------------------------------------------------------
+        // MODULE: USER INTERFACE (UI) & MODALS
+        // ----------------------------------------------------------------------
+        GameApp.UI = {
+            elements: {},
+
+            init: function() {
+                this.elements.canvas = document.getElementById('blockCanvas');
+                this.elements.ctx = this.elements.canvas.getContext('2d');
+                this.elements.topScoreText = document.getElementById('topScoreText');
+                this.elements.topBestText = document.getElementById('topBestText');
+                this.elements.gameoverOverlay = document.getElementById('gameover-overlay');
+                this.elements.settingsOverlay = document.getElementById('settings-overlay');
+                this.elements.luckyChestOverlay = document.getElementById('lucky-chest-overlay');
+                this.elements.luckyProgressBar = document.getElementById('lucky-progress-bar');
+                this.elements.clearMultiplierTag = document.getElementById('clear-multiplier-tag');
+                this.elements.customSelectPanel = document.getElementById('custom-select-panel');
+                this.elements.modalTitle = document.getElementById('modalTitle');
+                this.elements.modalScoreText = document.getElementById('modalScoreText');
+                this.elements.levelPanel = document.getElementById('level-select-panel');
+
+                this.generateLevelButtons();
+                this.generateCustomShapePanel();
+            },
+
+            generateLevelButtons: function() {
+                for (let i = 1; i <= GameApp.Config.maxLevel; i++) {
+                    let btn = document.createElement('button');
+                    btn.className = 'lvl-btn';
+                    btn.innerText = i < 10 ? '0' + i : i;
+                    btn.onclick = (e) => { e.stopPropagation(); GameApp.Core.startLevelMode(i); };
+                    this.elements.levelPanel.appendChild(btn);
+                }
+            },
+
+            generateCustomShapePanel: function() {
+                // 將特殊形狀也加入圖庫供玩家挑選
+                const ALL_SHAPES = [
+                    ...GameApp.Config.Shapes.easy, 
+                    ...GameApp.Config.Shapes.medium, 
+                    ...GameApp.Config.Shapes.hard,
+                    ...GameApp.Config.Shapes.special
+                ];
+
+                ALL_SHAPES.forEach((item) => {
+                    let wrapper = document.createElement('div');
+                    wrapper.className = 'select-item-wrapper';
+                    
+                    let itemCard = document.createElement('div');
+                    itemCard.className = 'select-item-card';
+                    
+                    const selectCellSize = 26; 
+                    const maxMatrixDim = 3; 
+                    
+                    itemCard.innerHTML = `<canvas width="${maxMatrixDim * selectCellSize}" height="${maxMatrixDim * selectCellSize}"></canvas>`;
+                    let sCtx = itemCard.querySelector('canvas').getContext('2d');
+                    
+                    // 繪製背景暗格
+                    for(let r=0; r<maxMatrixDim; r++) {
+                        for(let c=0; c<maxMatrixDim; c++) {
+                            sCtx.fillStyle = "rgba(255,255,255,0.05)";
+                            sCtx.fillRect(c * selectCellSize + 1, r * selectCellSize + 1, selectCellSize - 2, selectCellSize - 2);
+                        }
+                    }
+                    
+                    // 繪製實體圖形
+                    item.matrix.forEach((row, r) => {
+                        row.forEach((v, c) => { 
+                            if(v) GameApp.Render.drawTexturedCandyCell(sCtx, c * selectCellSize, r * selectCellSize, selectCellSize, item.color, 1, 1);
+                        });
+                    });
+                    
+                    itemCard.onclick = function() { GameApp.Core.selectThisCustomShape(item, this); };
+                    wrapper.appendChild(itemCard);
+                    
+                    let nameTag = document.createElement('span');
+                    nameTag.className = 'select-item-name';
+                    nameTag.innerText = item.name;
+                    wrapper.appendChild(nameTag);
+                    
+                    this.elements.customSelectPanel.appendChild(wrapper);
+                });
+            },
+
+            updateScoreDisplay: function() {
+                const t = GameApp.I18N;
+                const s = GameApp.State;
+                
+                this.elements.topScoreText.innerText = `${t.getText('score')}: ${s.bScore}`;
+                if (s.currentMode === 'level') { 
+                    this.elements.topScoreText.innerText = `${t.getText('stage')} ${s.currentLevel}: ${s.bScore} / ${s.targetScore}`; 
+                }
+                if (s.currentMode === 'lucky') { 
+                    this.elements.luckyProgressBar.innerText = `${t.getText('luckyProgress')}: ${s.luckyLinesNeeded} ${t.getText('rows')}`; 
+                }
+                
+                this.elements.clearMultiplierTag.innerText = `${t.getText('multiplier')}: ${s.currentMultiplier.toFixed(1)}x`;
+                this.elements.topBestText.innerText = `${t.getText('best')}: ${s.bBestScore}`;
+            },
+
+            openSettingsModal: function() { this.elements.settingsOverlay.style.display = 'flex'; },
+            closeSettingsModal: function() { this.elements.settingsOverlay.style.display = 'none'; },
+            
+            triggerReplayFromSettings: function() {
+                this.closeSettingsModal();
+                GameApp.AdsManager.showInterstitial(() => {
+                    GameApp.Core.clearSavedGame();
+                    GameApp.Core.resetGame();
+                });
+            },
+            
+            triggerMenuFromSettings: function() {
+                this.closeSettingsModal();
+                GameApp.Core.saveCurrentGame();
+                GameApp.Core.exitToMenu();
+            },
+            
+            toggleLevelSelect: function(e) {
+                e.stopPropagation();
+                const panel = this.elements.levelPanel;
+                panel.style.display = panel.style.display === 'grid' ? 'none' : 'grid';
+            },
+
+            showGameOverModal: function(isWin) {
+                GameApp.State.isGameOver = true;
+                this.elements.gameoverOverlay.style.display = 'flex';
+                const t = GameApp.I18N;
+                
+                if (GameApp.State.currentMode === 'level') {
+                    this.elements.modalTitle.innerText = isWin ? t.getText('goWin') : t.getText('goLose');
+                    this.elements.modalScoreText.innerText = isWin ? `${t.getText('goWinDesc')} ${GameApp.State.targetScore}` : t.getText('goLoseDesc');
+                } else {
+                    this.elements.modalTitle.innerText = t.getText('goOver');
+                    this.elements.modalScoreText.innerText = `${t.getText('goScore')}: ${GameApp.State.bScore}`;
+                    GameApp.Core.clearSavedGame();
+                }
+                GameApp.AdsManager.showInterstitial(null);
+            }
+        };
+
+        // ----------------------------------------------------------------------
+        // MODULE: CORE ENGINE LOGIC
+        // ----------------------------------------------------------------------
+        GameApp.Core = {
+            init: function() {
+                this.loadBestScore();
+                GameApp.AdsManager.init();
+                this.bindEvents();
+            },
+
+            loadBestScore: function() {
+                GameApp.State.bBestScore = localStorage.getItem('all_you_can_put_best_v5') ? parseInt(localStorage.getItem('all_you_can_put_best_v5')) : 0;
+            },
+
+            saveBestScore: function() {
+                localStorage.setItem('all_you_can_put_best_v5', GameApp.State.bBestScore);
+            },
+
+            saveCurrentGame: function() {
+                const s = GameApp.State;
+                if (s.isGameOver || s.currentMode === 'level') return;
+                const stateObj = {
+                    bGrid: s.bGrid, bScore: s.bScore, hand: s.hand,
+                    currentMode: s.currentMode, luckyLinesNeeded: s.luckyLinesNeeded,
+                    allClearCount: s.allClearCount, currentMultiplier: s.currentMultiplier
+                };
+                localStorage.setItem('all_you_can_put_save_v5', JSON.stringify(stateObj));
+            },
+
+            checkSavedGameExists: function() {
+                const saved = localStorage.getItem('all_you_can_put_save_v5');
+                document.getElementById('lobby-continue-btn').style.display = saved ? 'inline-block' : 'none';
+            },
+
+            loadSavedGame: function() {
+                const saved = localStorage.getItem('all_you_can_put_save_v5');
+                if (!saved) return;
+                const stateObj = JSON.parse(saved);
+                const s = GameApp.State;
+                
+                document.getElementById('menu-screen').style.display = 'none';
+                document.getElementById('game-screen').style.display = 'flex';
+                
+                s.bGrid = stateObj.bGrid; s.bScore = stateObj.bScore; s.hand = stateObj.hand;
+                s.currentMode = stateObj.currentMode; s.luckyLinesNeeded = stateObj.luckyLinesNeeded;
+                s.allClearCount = stateObj.allClearCount; s.currentMultiplier = stateObj.currentMultiplier;
+                
+                s.isGameOver = false; s.isCustomSelecting = false; s.selectedPiece = null;
+                GameApp.UI.elements.luckyProgressBar.style.display = s.currentMode === 'lucky' ? 'block' : 'none';
+                
+                GameApp.I18N.applyLanguage();
+                this.checkAndApplyDynamicTheme();
+                if (!s.loopActive) { s.loopActive = true; GameApp.Render.gameTick(); }
+            },
+
+            clearSavedGame: function() {
+                localStorage.removeItem('all_you_can_put_save_v5');
+                this.checkSavedGameExists();
+            },
+
+            exitToMenu: function() {
+                this.saveCurrentGame();
+                GameApp.UI.elements.gameoverOverlay.style.display = 'none';
+                GameApp.UI.elements.settingsOverlay.style.display = 'none';
+                document.getElementById('menu-screen').style.display = 'block';
+                document.getElementById('game-screen').style.display = 'none';
+                
+                // 🌟 返回主頁時還原粉藍漸變主題背景
+                document.body.style.background = 'var(--bg-gradient)'; 
+                
+                this.checkSavedGameExists();
+            },
+
+            startLuckyMode: function() {
+                this.clearSavedGame(); GameApp.State.currentMode = 'lucky';
+                GameApp.UI.elements.topBestText.style.display = 'block';
+                GameApp.UI.elements.luckyProgressBar.style.display = 'block';
+                GameApp.UI.elements.customSelectPanel.style.display = 'none';
+                this.enterArena();
+            },
+
+            startEndlessMode: function() {
+                this.clearSavedGame(); GameApp.State.currentMode = 'endless';
+                GameApp.UI.elements.topBestText.style.display = 'block';
+                GameApp.UI.elements.luckyProgressBar.style.display = 'none';
+                GameApp.UI.elements.customSelectPanel.style.display = 'none';
+                this.enterArena();
+            },
+
+            startLevelMode: function(lvlNum) {
+                GameApp.State.currentMode = 'level'; GameApp.State.currentLevel = lvlNum;
+                GameApp.State.targetScore = this.generateLevelConfig(lvlNum).target;
+                GameApp.UI.elements.topBestText.style.display = 'none';
+                GameApp.UI.elements.luckyProgressBar.style.display = 'none';
+                GameApp.UI.elements.customSelectPanel.style.display = 'none';
+                this.enterArena();
+            },
+
+            enterArena: function() {
+                document.getElementById('menu-screen').style.display = 'none';
+                document.getElementById('game-screen').style.display = 'flex';
+                this.resetGame(); GameApp.I18N.applyLanguage();
+                if (!GameApp.State.loopActive) { GameApp.State.loopActive = true; GameApp.Render.gameTick(); }
+            },
+
+            generateLevelConfig: function(lvl) {
+                let target = 150 + (lvl * 15); let obstacles = [];
+                if (lvl > 55) obstacles = [{r:2, c:2}, {r:2, c:5}, {r:5, c:2}, {r:5, c:5}, {r:3, c:3}];
+                else if (lvl > 35) obstacles = [{r:1, c:1}, {r:1, c:6}, {r:6, c:1}, {r:6, c:6}];
+                else if (lvl > 15) obstacles = [{r:3, c:2}, {r:3, c:3}, {r:3, c:4}];
+                else if (lvl > 5) obstacles = [{r:4, c:4}];
+                return { target, obstacles };
+            },
+
+            resetGame: function() {
+                const s = GameApp.State; const size = GameApp.Config.bGridSize;
+                GameApp.UI.elements.gameoverOverlay.style.display = 'none';
+                GameApp.UI.elements.luckyChestOverlay.style.display = 'none';
+                GameApp.UI.elements.customSelectPanel.style.display = 'none';
+                
+                s.bGrid = Array(size).fill(null).map(() => Array(size).fill(0));
+                s.bScore = 0; s.isGameOver = false; s.luckyLinesNeeded = 3; s.isCustomSelecting = false; s.allClearCount = 0; s.currentMultiplier = 1.0; s.allClearFlashTimer = 0; s.selectedPiece = null;
+                s.particles = []; s.clearingCells = [];
+                s.gridBounceX = Array(size).fill().map(() => Array(size).fill(1)); s.gridBounceY = Array(size).fill().map(() => Array(size).fill(1));
+                s.gridVelocityX = Array(size).fill().map(() => Array(size).fill(0)); s.gridVelocityY = Array(size).fill().map(() => Array(size).fill(0));
+
+                if (s.currentMode === 'level') this.generateLevelConfig(s.currentLevel).obstacles.forEach(obs => { s.bGrid[obs.r][obs.c] = '#4e566d'; });
+                
+                this.checkAndApplyDynamicTheme(); GameApp.UI.updateScoreDisplay(); this.generateHand();
+            },
+
+            // 🧠 核心：模擬消除測試 (用於 AI 放水)
+            simulateLineClear: function(shape, targetR, targetC) {
+                const s = GameApp.State;
+                const size = GameApp.Config.bGridSize;
+                let tempGrid = s.bGrid.map(row => [...row]);
+                
+                // 假裝放進去
+                for(let r=0; r<shape.length; r++) {
+                    for(let c=0; c<shape[r].length; c++) {
+                        if(shape[r][c]) tempGrid[targetR+r][targetC+c] = 1;
+                    }
+                }
+
+                // 檢查是否達成整行或整列
+                for(let r=0; r<size; r++) {
+                    if(tempGrid[r].every(cell => cell !== 0 && cell !== '#4e566d')) return true;
+                }
+                for(let c=0; c<size; c++) {
+                    let m = true;
+                    for(let r=0; r<size; r++) {
+                        if(tempGrid[r][c] === 0 || tempGrid[r][c] === '#4e566d') m = false;
+                    }
+                    if(m) return true;
+                }
+                return false;
+            },
+
+            // 🧠 核心：AI 智能讀心放水系統 & 牌組生成
+            generateHand: function() {
+                const s = GameApp.State;
+                s.hand = [];
+                
+                // --- 1. AI 智能檢測與保底 ---
+                let smartPiece = null;
+                // 分數越低，AI越幫你作弊；超過 1500分 AI不再干預
+                let assistChance = 0;
+                if (s.bScore < 600) assistChance = 1.0;      // 100% 幫忙
+                else if (s.bScore < 1500) assistChance = 0.4; // 40% 幫忙
+                
+                if (Math.random() < assistChance && (s.currentMode === 'endless' || s.currentMode === 'lucky')) {
+                    // 將容易拼接的形狀洗牌
+                    let pool = [...GameApp.Config.Shapes.easy, ...GameApp.Config.Shapes.medium].sort(() => Math.random() - 0.5);
+                    
+                    // 掃描棋盤找出可以立刻消除的空缺
+                    for(let piece of pool) {
+                        let canClear = false;
+                        for(let r=0; r<GameApp.Config.bGridSize; r++) {
+                            for(let c=0; c<GameApp.Config.bGridSize; c++) {
+                                if(this.canPlaceShape(piece.matrix, r, c)) {
+                                    if (this.simulateLineClear(piece.matrix, r, c)) {
+                                        smartPiece = piece;
+                                        canClear = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if(canClear) break;
+                        }
+                        if(smartPiece) break;
+                    }
+                }
+
+                // --- 2. 常規發牌 ---
+                for(let i=0; i<3; i++) {
+                    // 如果有智能方塊，強制塞入第一個位置
+                    if (i === 0 && smartPiece) {
+                        s.hand.push({ shape: smartPiece.matrix, color: smartPiece.color, x: 35, y: 520, origX: 35, origY: 520, isUsed: false });
+                        continue;
+                    }
+                    
+                    let pool = GameApp.Config.Shapes.easy;
+                    let roll = Math.random();
+                    
+                    if (s.currentMode === 'endless' || s.currentMode === 'lucky') {
+                        if (s.bScore >= 1200) pool = roll < 0.2 ? GameApp.Config.Shapes.hard : GameApp.Config.Shapes.medium;
+                        else if (s.bScore >= 500) pool = roll < 0.35 ? GameApp.Config.Shapes.medium : GameApp.Config.Shapes.easy;
+                    } else {
+                        if (s.currentLevel > 40) pool = roll < 0.25 ? GameApp.Config.Shapes.hard : GameApp.Config.Shapes.medium;
+                    }
+                    
+                    const target = pool[Math.floor(Math.random() * pool.length)];
+                    s.hand.push({ shape: target.matrix, color: target.color, x: 35 + i * 140, y: 520, origX: 35 + i * 140, origY: 520, isUsed: false });
+                }
+                this.saveCurrentGame();
+            },
+
+            triggerHapticShock: function(duration) {
+                if (navigator.vibrate) {
+                    try { navigator.vibrate(duration); } catch(e) {}
+                }
+            },
+
+            checkAndApplyDynamicTheme: function() {
+                const body = document.body;
+                const arenaPanel = document.getElementById('gameArenaPanel');
+                const s = GameApp.State;
+                const t = GameApp.Config.Themes;
+                
+                if (s.bScore >= 1000) s.currentTheme = t.universe;
+                else if (s.bScore >= 600) s.currentTheme = t.sunset;
+                else if (s.bScore >= 300) s.currentTheme = t.grass;
+                else s.currentTheme = t.sea;
+
+                body.style.background = s.currentTheme.bg;
+                arenaPanel.style.background = s.currentTheme.panel;
+            },
+
+            getSnapCoordinates: function() {
+                const s = GameApp.State; const cellSize = GameApp.Config.bCellSize;
+                const targetX = s.mouseX - s.dragOffset.x; const targetY = s.mouseY - s.dragOffset.y - 85; 
+                return { gridX: Math.round(targetX / cellSize), gridY: Math.round(targetY / cellSize) };
+            },
+
+            canPlaceShape: function(shape, targetR, targetC) {
+                const s = GameApp.State; const size = GameApp.Config.bGridSize;
+                for(let r=0; r<shape.length; r++) {
+                    for(let c=0; c<shape[r].length; c++) {
+                        if(shape[r][c]) {
+                            let nr = targetR + r; let nc = targetC + c;
+                            if(nr < 0 || nr >= size || nc < 0 || nc >= size || s.bGrid[nr][nc] !== 0) return false;
+                        }
+                    }
+                }
+                return true;
+            },
+
+            placeShape: function(shape, targetR, targetC, color, scoreGain) {
+                const s = GameApp.State;
+                for(let r=0; r<shape.length; r++) {
+                    for(let c=0; c<shape[r].length; c++) {
+                        if(shape[r][c]) s.bGrid[targetR+r][targetC+c] = color;
+                    }
+                }
+                s.bScore += Math.round(scoreGain * s.currentMultiplier);
+                GameApp.UI.updateScoreDisplay(); this.checkAndApplyDynamicTheme();
+            },
+
+            checkAllClearCondition: function() {
+                const s = GameApp.State; const size = GameApp.Config.bGridSize;
+                let isBoardEmpty = true;
+                for(let r=0; r<size; r++) {
+                    for(let c=0; c<size; c++) {
+                        if(s.bGrid[r][c] !== 0 && s.bGrid[r][c] !== '#4e566d') { isBoardEmpty = false; break; }
+                    }
+                    if(!isBoardEmpty) break;
+                }
+                if (isBoardEmpty) {
+                    s.allClearCount++;
+                    if (s.allClearCount === 1) s.currentMultiplier = 1.2;
+                    else if (s.allClearCount === 2) s.currentMultiplier = 1.4;
+                    else if (s.allClearCount === 3) s.currentMultiplier = 1.6;
+                    else s.currentMultiplier = 2.0; 
+                    
+                    this.triggerHapticShock(80); 
+                    s.allClearFlashTimer = 1.0; 
+                    GameApp.UI.updateScoreDisplay();
+                }
+            },
+
+            checkLineClears: function() {
+                const s = GameApp.State; const size = GameApp.Config.bGridSize;
+                let rows = []; let cols = [];
+                
+                for(let r=0; r<size; r++) if(s.bGrid[r].every(cell => cell !== 0 && cell !== '#4e566d')) rows.push(r);
+                for(let c=0; c<size; c++) {
+                    let m = true;
+                    for(let r=0; r<size; r++) if(s.bGrid[r][c] === 0 || s.bGrid[r][c] === '#4e566d') m = false;
+                    if(m) cols.push(c);
+                }
+                
+                let linesCount = rows.length + cols.length;
+                
+                if (s.currentMode === 'lucky' && linesCount > 0) {
+                    s.luckyLinesNeeded -= linesCount;
+                    if (s.luckyLinesNeeded <= 0) {
+                        s.luckyLinesNeeded = GameApp.Config.luckyLineTarget;
+                        setTimeout(this.triggerChestPopup.bind(this), 500); 
+                    }
+                }
+
+                if (linesCount > 0) this.triggerHapticShock(35 * linesCount);
+
+                const bCell = GameApp.Config.bCellSize;
+                rows.forEach((r, rIndex) => {
+                    setTimeout(() => {
+                        for(let c=0; c<size; c++) {
+                            s.clearingCells.push({ r: r, c: c, color: s.bGrid[r][c], scale: 1 });
+                            this.generateParticles(c * bCell + bCell/2, r * bCell + bCell/2, s.bGrid[r][c]);
+                        }
+                    }, rIndex * 80);
+                });
+
+                cols.forEach((c, cIndex) => {
+                    setTimeout(() => {
+                        for(let r=0; r<size; r++) {
+                            if(!s.clearingCells.some(cell => cell.r === r && cell.c === c)) {
+                                s.clearingCells.push({ r: r, c: c, color: s.bGrid[r][c], scale: 1 });
+                                this.generateParticles(c * bCell + bCell/2, r * bCell + bCell/2, s.bGrid[r][c]);
+                            }
+                        }
+                    }, cIndex * 80);
+                });
+
+                rows.forEach(r => s.bGrid[r].fill(0));
+                cols.forEach(c => { for(let r=0; r<size; r++) s.bGrid[r][c] = 0; });
+                
+                if(linesCount > 0) {
+                    s.bScore += Math.round(linesCount * 120 * s.currentMultiplier);
+                    GameApp.UI.updateScoreDisplay();
+                }
+            },
+
+            generateParticles: function(x, y, color) {
+                const s = GameApp.State;
+                for(let i=0; i<20; i++) {
+                    s.particles.push({ x: x, y: y, vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.8) * 12, radius: Math.random() * 4.5 + 1.5, alpha: 1, color: color });
+                }
+            },
+
+            checkGameOver: function() {
+                const s = GameApp.State; const size = GameApp.Config.bGridSize;
+                let remains = s.hand.filter(p => !p.isUsed);
+                if(remains.length === 0) return false;
+                for(let piece of remains) {
+                    for(let r=0; r<size; r++) {
+                        for(let c=0; c<size; c++) {
+                            if(this.canPlaceShape(piece.shape, r, c)) return false; 
+                        }
+                    }
+                }
+                return true; 
+            },
+
+            getEventPos: function(e) {
+                const canvas = GameApp.UI.elements.canvas;
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            },
+
+            isInteractionBlocked: function() {
+                const ui = GameApp.UI.elements; const s = GameApp.State;
+                return (s.isGameOver || ui.settingsOverlay.style.display === 'flex' || ui.luckyChestOverlay.style.display === 'flex' || s.isCustomSelecting);
+            },
+
+            bindEvents: function() {
+                const canvas = GameApp.UI.elements.canvas;
+                
+                canvas.addEventListener('mousedown', (e) => {
+                    if (this.isInteractionBlocked()) return;
+                    this.handleInputStart(this.getEventPos(e));
+                });
+                
+                canvas.addEventListener('mousemove', (e) => {
+                    if (this.isInteractionBlocked()) return;
+                    this.handleInputMove(this.getEventPos(e));
+                });
+                
+                window.addEventListener('mouseup', () => {
+                    if (this.isInteractionBlocked() && !GameApp.State.selectedPiece) return;
+                    this.handleInputEnd();
+                });
+
+                canvas.addEventListener('touchstart', (e) => {
+                    if (this.isInteractionBlocked()) return; e.preventDefault();
+                    this.handleInputStart(this.getEventPos(e));
+                }, { passive: false });
+                
+                canvas.addEventListener('touchmove', (e) => {
+                    if (this.isInteractionBlocked()) return; e.preventDefault();
+                    this.handleInputMove(this.getEventPos(e));
+                }, { passive: false });
+                
+                window.addEventListener('touchend', () => {
+                    if (this.isInteractionBlocked() && !GameApp.State.selectedPiece) return;
+                    this.handleInputEnd();
+                });
+            },
+
+            handleInputStart: function(pos) {
+                const s = GameApp.State; const bCell = GameApp.Config.bCellSize;
+                s.mouseX = pos.x; s.mouseY = pos.y;
+                
+                s.hand.forEach(piece => {
+                    if(piece.isUsed) return;
+                    if(s.mouseX >= piece.x - 20 && s.mouseX <= piece.x + 120 && s.mouseY >= piece.y - 20 && s.mouseY <= piece.y + 120) {
+                        s.selectedPiece = piece;
+                        s.dragOffset.x = (piece.shape[0].length * bCell) / 2;
+                        s.dragOffset.y = (piece.shape.length * bCell) / 2;
+                    }
+                });
+            },
+
+            handleInputMove: function(pos) { GameApp.State.mouseX = pos.x; GameApp.State.mouseY = pos.y; },
+
+            handleInputEnd: function() {
+                const s = GameApp.State;
+                if (!s.selectedPiece) return;
+                
+                const { gridX, gridY } = this.getSnapCoordinates();
+                
+                if(this.canPlaceShape(s.selectedPiece.shape, gridY, gridX)) {
+                    let baseGain = 15; let finalGain = Math.round(baseGain * s.currentMultiplier);
+                    this.placeShape(s.selectedPiece.shape, gridY, gridX, s.selectedPiece.color, finalGain);
+                    GameApp.Render.triggerSoftJelly(gridY, gridX, s.selectedPiece.shape);
+                    s.selectedPiece.isUsed = true;
+                    this.triggerHapticShock(20); 
+                    
+                    this.checkLineClears(); this.checkAllClearCondition();
+                    if(s.hand.every(p => p.isUsed)) this.generateHand();
+                    
+                    if (s.currentMode === 'endless' || s.currentMode === 'lucky') {
+                        if (s.bScore > s.bBestScore) { s.bBestScore = s.bScore; this.saveBestScore(); GameApp.UI.elements.topBestText.innerText = `${GameApp.I18N.getText('best')}: ${s.bBestScore}`; }
+                        this.saveCurrentGame();
+                    }
+                    if (s.currentMode === 'level' && s.bScore >= s.targetScore) GameApp.UI.showGameOverModal(true);
+                    else if(this.checkGameOver()) GameApp.UI.showGameOverModal(false);
+                }
+                s.selectedPiece = null; 
+            },
+
+            // ======================================================================
+            // 🔮 寶箱與自選 3 連抽系統 (PICK 3 SYSTEM)
+            // ======================================================================
+            triggerChestPopup: function() {
+                const s = GameApp.State;
+                s.selectedPiece = null; 
+                GameApp.UI.elements.luckyChestOverlay.style.display = 'flex';
+            },
+
+            drawLuckyChest: function() {
+                GameApp.UI.elements.luckyChestOverlay.style.display = 'none';
+                const s = GameApp.State; const t = GameApp.I18N;
+                let rng = Math.random();
+                
+                if (rng < 0.05) { 
+                    s.bScore = s.bScore * 2; alert(t.getText('alertX2')); 
+                } else if (rng < 0.50) { 
+                    alert(t.getText('alertDot')); s.hand = []; 
+                    for(let i=0; i<3; i++) s.hand.push({ shape: [[1]], color: '#00ff66', x: 35 + i * 140, y: 520, origX: 35 + i * 140, origY: 520, isUsed: false });
+                } else { 
+                    alert(t.getText('alertSelect')); 
+                    
+                    // 🌟 啟動自選 3 連抽
+                    s.isCustomSelecting = true; 
+                    s.hand = []; // 清空手牌
+                    s.customPicksLeft = 3; // 給予3次挑選機會
+                    
+                    // 恢復所有面板卡片為可選狀態
+                    document.querySelectorAll('.select-item-card').forEach(el => {
+                        el.style.opacity = '1';
+                        el.style.pointerEvents = 'auto';
+                        el.style.filter = 'grayscale(0%)';
+                    });
+                    
+                    GameApp.UI.elements.customSelectPanel.style.display = 'flex'; 
+                }
+                
+                GameApp.UI.updateScoreDisplay(); this.saveCurrentGame();
+            },
+
+            selectThisCustomShape: function(item, uiElement) {
+                const s = GameApp.State;
+                if (!s.isCustomSelecting) return;
+                
+                // 如果已經點過，不允許重複選擇
+                if (uiElement.style.opacity === '0.3') return;
+                
+                // 把選擇的形狀加入手牌 (按照挑選順序排列 0, 1, 2)
+                let slotIndex = 3 - s.customPicksLeft;
+                s.hand.push({ 
+                    shape: item.matrix, 
+                    color: item.color, 
+                    x: 35 + slotIndex * 140, 
+                    y: 520, 
+                    origX: 35 + slotIndex * 140, 
+                    origY: 520, 
+                    isUsed: false 
+                });
+                
+                // 將該卡片變暗，標記為已使用
+                uiElement.style.opacity = '0.3';
+                uiElement.style.pointerEvents = 'none';
+                uiElement.style.filter = 'grayscale(100%)';
+                
+                s.customPicksLeft--;
+                
+                // 如果 3 次選完了，關閉面板
+                if (s.customPicksLeft <= 0) {
+                    s.isCustomSelecting = false; 
+                    GameApp.UI.elements.customSelectPanel.style.display = 'none'; 
+                }
+                
+                GameApp.UI.updateScoreDisplay(); this.saveCurrentGame();
+            }
+        };
+
+        // ----------------------------------------------------------------------
+        // MODULE: RENDERING ENGINE (渲染引擎)
+        // ----------------------------------------------------------------------
+        GameApp.Render = {
+            gameTick: function() {
+                const s = GameApp.State; const size = GameApp.Config.bGridSize;
+                
+                if (document.getElementById('game-screen').style.display === 'flex') {
+                    for (let i = s.particles.length - 1; i >= 0; i--) {
+                        let p = s.particles[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.35; p.alpha -= 0.02; p.radius *= 0.96; 
+                        if (p.alpha <= 0) s.particles.splice(i, 1);
+                    }
+                    for (let i = s.clearingCells.length - 1; i >= 0; i--) { 
+                        s.clearingCells[i].scale -= 0.08; 
+                        if (s.clearingCells[i].scale <= 0) s.clearingCells.splice(i, 1); 
+                    }
+                    for(let r=0; r<size; r++) {
+                        for(let c=0; c<size; c++) {
+                            let ax = (1 - s.gridBounceX[r][c]) * 0.28; s.gridVelocityX[r][c] += ax; s.gridVelocityX[r][c] *= 0.65; s.gridBounceX[r][c] += s.gridVelocityX[r][c];
+                            let ay = (1 - s.gridBounceY[r][c]) * 0.28; s.gridVelocityY[r][c] += ay; s.gridVelocityY[r][c] *= 0.65; s.gridBounceY[r][c] += s.gridVelocityY[r][c];
+                        }
+                    }
+                    if (s.allClearFlashTimer > 0) s.allClearFlashTimer -= 0.04;
+                    this.drawGame();
+                }
+                requestAnimationFrame(this.gameTick.bind(this));
+            },
+
+            triggerSoftJelly: function(row, col, matrix) {
+                const s = GameApp.State; const size = GameApp.Config.bGridSize;
+                for(let r=0; r<matrix.length; r++) {
+                    for(let c=0; c<matrix[r].length; c++) {
+                        if(matrix[r][c]) {
+                            let tr = row + r; let tc = col + c; 
+                            if(tr >= 0 && tr < size && tc >= 0 && tc < size) { s.gridBounceX[tr][tc] = 1.25; s.gridBounceY[tr][tc] = 0.75; }
+                        }
+                    }
+                }
+            },
+
+            drawTexturedCandyCell: function(renderCtx, x, y, size, color, scaleX, scaleY) {
+                renderCtx.save();
+                const w = (size - 4) * scaleX; const h = (size - 4) * scaleY;
+                const ox = x + 2 + (size - 4 - w)/2; const oy = y + 2 + (size - 4 - h)/2;
+                
+                renderCtx.fillStyle = color; renderCtx.fillRect(ox, oy, w, h);
+                let grad = renderCtx.createLinearGradient(ox, oy, ox, oy + h);
+                grad.addColorStop(0, "rgba(255,255,255,0.5)"); grad.addColorStop(0.3, "rgba(255,255,255,0.05)"); grad.addColorStop(1, "rgba(0,0,0,0.25)");
+                renderCtx.fillStyle = grad; renderCtx.fillRect(ox, oy, w, h);
+                
+                renderCtx.strokeStyle = "rgba(255,255,255,0.3)"; renderCtx.lineWidth = 1.5; renderCtx.strokeRect(ox + 1, oy + 1, w - 2, h - 2);
+                renderCtx.restore();
+            },
+
+            drawPiece: function(piece, startX, startY, cellSize) {
+                piece.shape.forEach((row, rIdx) => {
+                    row.forEach((val, cIdx) => {
+                        if(val) this.drawTexturedCandyCell(GameApp.UI.elements.ctx, startX + cIdx * cellSize, startY + rIdx * cellSize, cellSize, piece.color, 1, 1);
+                    });
+                });
+            },
+
+            drawGame: function() {
+                const s = GameApp.State; const ctx = GameApp.UI.elements.ctx; const canvas = GameApp.UI.elements.canvas;
+                const bCell = GameApp.Config.bCellSize; const size = GameApp.Config.bGridSize;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height); 
+                ctx.fillStyle = s.currentTheme.canvasFill; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                for(let r=0; r<size; r++) {
+                    for(let c=0; c<size; c++) {
+                        if(s.clearingCells.some(cell => cell.r === r && cell.c === c)) continue;
+                        let cellVal = s.bGrid[r][c];
+                        if (cellVal) this.drawTexturedCandyCell(ctx, c * bCell, r * bCell, bCell, cellVal, s.gridBounceX[r][c], s.gridBounceY[r][c]);
+                        else { ctx.fillStyle = s.currentTheme.emptyCell; ctx.fillRect(c * bCell + 2, r * bCell + 2, bCell - 4, bCell - 4); }
+                    }
+                }
+
+                s.clearingCells.forEach(cell => {
+                    ctx.save(); this.drawTexturedCandyCell(ctx, cell.c * bCell, cell.r * bCell, bCell, cell.color, cell.scale, cell.scale); ctx.restore();
+                });
+
+                if (s.selectedPiece && !s.isGameOver) {
+                    const { gridX, gridY } = GameApp.Core.getSnapCoordinates();
+                    if (GameApp.Core.canPlaceShape(s.selectedPiece.shape, gridY, gridX)) {
+                        ctx.fillStyle = "rgba(255, 255, 255, 0.2)"; 
+                        s.selectedPiece.shape.forEach((row, rIdx) => {
+                            row.forEach((val, cIdx) => { if(val) ctx.fillRect((gridX+cIdx)*bCell+2, (gridY+rIdx)*bCell+2, bCell-4, bCell-4); });
+                        });
+                    }
+                }
+
+                s.particles.forEach(p => { ctx.save(); ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill(); ctx.restore(); });
+                
+                if (s.allClearFlashTimer > 0) {
+                    ctx.save(); ctx.globalAlpha = s.allClearFlashTimer; ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.restore();
+                }
+
+                ctx.fillStyle = "rgba(0,0,0,0.4)"; ctx.fillRect(0, canvas.width, canvas.width, canvas.height - canvas.width);
+                s.hand.forEach(piece => { if (!piece.isUsed && piece !== s.selectedPiece) this.drawPiece(piece, piece.x, piece.y, 24); });
+                
+                if (s.selectedPiece && !s.isGameOver) {
+                    this.drawPiece(s.selectedPiece, s.mouseX - s.dragOffset.x, s.mouseY - s.dragOffset.y - 85, bCell);
+                }
+            }
+        };
+
+        // ==========================================================================
+        // 9. BOOTSTRAP INITIALIZATION
+        // ==========================================================================
+        window.onload = function() {
+            GameApp.UI.init();
+            GameApp.I18N.init();
+            GameApp.Core.init();
+            console.log("All You Can Put! Grand Master Edition Initialized.");
+        };
+
+    </script>
+</body>
+</html>
