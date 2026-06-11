@@ -2673,11 +2673,10 @@
                 
                 s.hand.forEach(piece => {
                     if(piece.isUsed) return;
-                    if(s.mouseX >= piece.x - 55 && s.mouseX <= piece.x + 195 && s.mouseY >= piece.y - 50 && s.mouseY <= piece.y + 190) {
+                    if(s.mouseX >= piece.x - 35 && s.mouseX <= piece.x + 155 && s.mouseY >= piece.y - 30 && s.mouseY <= piece.y + 150) {
                         s.selectedPiece = piece;
-                        // 精准偏移：用实际点击位置，不用格子中心（方块不跳）
-                        s.dragOffset.x = s.mouseX - piece.x;
-                        s.dragOffset.y = s.mouseY - piece.y;
+                        s.dragOffset.x = (piece.shape[0].length * bCell) / 2;
+                        s.dragOffset.y = (piece.shape.length * bCell) / 2;
                         GameApp.Audio.pick();
                     }
                 });
@@ -3325,7 +3324,7 @@
                     }
                     // 拖拽时加外发光，让方块更明显
                     const dx = s.mouseX - s.dragOffset.x;
-                    const dy = s.mouseY - s.dragOffset.y;
+                    const dy = s.mouseY - s.dragOffset.y - 50;
                     ctx.save();
                     ctx.shadowColor = s.selectedPiece.color;
                     ctx.shadowBlur = 25;
