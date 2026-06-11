@@ -588,6 +588,96 @@
         @keyframes chestWobbleLoop { 
             from { transform: rotate(-8deg); } 
             to { transform: rotate(8deg); } 
+        }        /* 命运卡牌选择弹窗 */
+        .fate-draft-box {
+            background: linear-gradient(145deg, #1a1040, #0f0a2a);
+            padding: 30px 30px 25px;
+            border-radius: 32px;
+            text-align: center;
+            box-shadow: 0 30px 80px rgba(213, 0, 249, 0.3);
+            max-width: 480px;
+            width: 92%;
+            border: 2px solid rgba(213, 0, 249, 0.2);
+            animation: modalPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .fate-draft-box::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(transparent, rgba(213,0,249,0.05), transparent, rgba(0,229,255,0.05), transparent);
+            animation: fateGlowRotate 6s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes fateGlowRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .fate-cards-container {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+        .fate-card {
+            background: linear-gradient(145deg, #1c1a40, #12102a);
+            border: 2px solid rgba(213, 0, 249, 0.15);
+            border-radius: 18px;
+            padding: 16px 12px 14px;
+            cursor: pointer;
+            flex: 1;
+            max-width: 140px;
+            min-width: 100px;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .fate-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            border-color: var(--purple);
+            box-shadow: 0 15px 40px rgba(213,0,249,0.25);
+        }
+        .fate-card:active { transform: scale(0.95); }
+        .fate-card .card-icon { font-size: 2.8rem; margin-bottom: 6px; }
+        .fate-card .card-name { font-size: 1.1rem; font-weight: 900; color: #fff; margin-bottom: 3px; }
+        .fate-card .card-desc { font-size: 0.75rem; color: #8896c0; line-height: 1.3; }
+        .fate-card .card-tier {
+            font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+            padding: 2px 10px; border-radius: 20px; display: inline-block; margin-bottom: 8px;
+        }
+        .fate-card.tier-common .card-tier { background: rgba(0, 229, 255, 0.15); color: var(--blue); }
+        .fate-card.tier-rare .card-tier { background: rgba(213, 0, 249, 0.2); color: var(--purple); }
+        .fate-card.tier-legendary .card-tier { background: rgba(255, 234, 0, 0.2); color: var(--yellow); }
+        .fate-card.tier-common { border-color: rgba(0, 229, 255, 0.2); }
+        .fate-card.tier-rare { border-color: rgba(213, 0, 249, 0.3); }
+        .fate-card.tier-legendary { border-color: rgba(255, 234, 0, 0.3); box-shadow: 0 0 20px rgba(255,234,0,0.1); }
+        .fate-card.tier-legendary:hover { box-shadow: 0 15px 40px rgba(255,234,0,0.25); }
+        
+        .fate-active-list {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .fate-active-badge {
+            background: rgba(213, 0, 249, 0.1);
+            border: 1px solid rgba(213, 0, 249, 0.15);
+            border-radius: 14px;
+            padding: 6px 14px 6px 10px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            animation: badgePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            color: #c4d0f0;
+        }
+        @keyframes badgePop {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
         }
         @keyframes pulseGlowAnimation { 
             from { box-shadow: 0 0 10px var(--yellow); } 
@@ -1019,6 +1109,18 @@
         </div>
     </div>
 
+    <div id="fate-draft-overlay" class="overlay-window" style="z-index: 999998;">
+        <div class="fate-draft-box" onclick="event.stopPropagation()">
+            <h2 id="fate-draft-title" style="color: var(--purple); font-size: 2rem; margin-bottom: 8px;">✦ 命运抉择 ✦</h2>
+            <p id="fate-draft-sub" style="color: #a4b3dc; font-size: 1rem; margin-bottom: 20px;">清屏成功！从3张命运卡中选择1张永久强化</p>
+            <div id="fate-cards-container" class="fate-cards-container"></div>
+            <div id="fate-active-cards" class="fate-active-cards" style="margin-top: 18px;">
+                <div style="font-size: 0.85rem; color: #7886b0; margin-bottom: 6px;" id="fate-active-label">已激活的命运卡：</div>
+                <div id="fate-active-list" class="fate-active-list"></div>
+            </div>
+        </div>
+    </div>
+
     <div id="settings-overlay" class="overlay-window">
         <div class="modal-box" onclick="event.stopPropagation()">
             <h2 style="color: var(--blue);" id="settings-title">遊戲設置</h2>
@@ -1066,6 +1168,25 @@
             bCellSize: 440 / 8, // 55px
             maxLevel: 66,
             luckyLineTarget: 5,
+            
+            // 命运卡牌系统 - 永久被动增益（抽卡选择，构筑你的能力组）
+            FateCards: [
+                // 普通卡（始终可出）
+                { id: 'bounty',   nameZh: '丰饶',     nameEn: 'Bounty',    tier: 'common',   icon: '💰', descZh: '所有放置得分+50%', descEn: '+50% score from all placements', apply: function(s) { s._fate_bounty = true; } },
+                { id: 'spark',    nameZh: '火花',     nameEn: 'Spark',     tier: 'common',   icon: '⚡', descZh: '每消除3行额外摧毁1个随机格子', descEn: 'Every 3 line clears destroys 1 random cell', apply: function(s) { s._fate_spark = (s._fate_spark||0) + 1; } },
+                { id: 'ripple',   nameZh: '涟漪',     nameEn: 'Ripple',    tier: 'common',   icon: '🌊', descZh: '消除行时额外清除上方1格', descEn: 'Line clear also clears 1 cell above', apply: function(s) { s._fate_ripple = true; } },
+                { id: 'growth',   nameZh: '增长',     nameEn: 'Growth',    tier: 'common',   icon: '🌱', descZh: '手牌+1（4张）', descEn: '+1 hand size (hold 4 pieces)', apply: function(s) { s._fate_growth = true; } },
+                { id: 'echo',     nameZh: '回响',     nameEn: 'Echo',      tier: 'common',   icon: '🔊', descZh: '放置后20%概率自动填充1个相邻空格', descEn: '20% to auto-fill 1 adjacent cell after placement', apply: function(s) { s._fate_echo = true; } },
+                { id: 'magnet',   nameZh: '磁铁',     nameEn: 'Magnet',    tier: 'common',   icon: '🧲', descZh: '消除后相邻格子有15%概率自动清除', descEn: '15% for adjacent cells to clear after line clear', apply: function(s) { s._fate_magnet = true; } },
+                // 稀有卡（3次清屏后出现）
+                { id: 'vortex',   nameZh: '漩涡',     nameEn: 'Vortex',    tier: 'rare',     icon: '🌀', descZh: '消除后随机2个空格填充匹配颜色', descEn: 'After clear, 2 empty cells fill with matching color', apply: function(s) { s._fate_vortex = true; } },
+                { id: 'bloom',    nameZh: '绽放',     nameEn: 'Bloom',     tier: 'rare',     icon: '🌸', descZh: '2x2完整方块区域自动消除', descEn: '2x2 filled areas auto-clear', apply: function(s) { s._fate_bloom = true; } },
+                { id: 'shield',   nameZh: '护盾',     nameEn: 'Shield',    tier: 'rare',     icon: '🛡️', descZh: '免死一次（用后消失）', descEn: 'Survive game over once', apply: function(s) { s._fate_shield = (s._fate_shield||0)+1; } },
+                { id: 'chain',    nameZh: '连锁',     nameEn: 'Chain',     tier: 'rare',     icon: '⛓️', descZh: '消除时连击结算2次', descEn: 'Line clear triggers twice', apply: function(s) { s._fate_chain = true; } },
+                // 传说卡（5次清屏后出现）
+                { id: 'phoenix',  nameZh: '凤凰',     nameEn: 'Phoenix',   tier: 'legendary', icon: '🔥', descZh: '全屏清空时获得50%分数奖励', descEn: 'Full board clear grants +50% score bonus', apply: function(s) { s._fate_phoenix = true; } },
+                { id: 'infinity', nameZh: '无限',     nameEn: 'Infinity',  tier: 'legendary', icon: '♾️', descZh: '每次清屏减少宝箱需求1行', descEn: 'Each clear reduces chest requirement by 1', apply: function(s) { s._fate_infinity = true; } },
+            ],
             
             // 🌟 核心修改：單點與十字架移出普通池，改為隱藏款
             Shapes: {
@@ -1183,8 +1304,11 @@
             
             luckyLinesNeeded: 3,
             isCustomSelecting: false,
-            customPicksLeft: 0, // 新增：記錄自選剩餘次數
+            customPicksLeft: 0,
             allClearCount: 0,
+            fateCardCount: 0,
+            activeFateCards: [],
+            fateDraftOffered: [],
             currentMultiplier: 1.0,
             
             particles: [],
@@ -1245,7 +1369,27 @@
                     alertSelect: "🔮 靈魂自選！右側已解鎖全圖形庫，請自由挑選 3 個方塊！",
                     chestTitle: "幸運寶箱！", 
                     chestDesc: "消除滿 5 行解鎖，點擊開啟逆天改命", 
-                    chestOpen: "開 啟 寶 箱", 
+                    chestOpen: "開 啟 寶 箱",
+                    fateTitle: "✦ 命运抉择 ✦",
+                    fateSub: "清屏成功！从3张命运卡中选择1张永久强化你的游戏！",
+                    fateLabel: "已激活的命运卡：",
+                    fateNone: "暂无",
+                    fateCommon: "普通",
+                    fateRare: "稀有",
+                    fateLegendary: "传说",
+                    // 命运卡牌描述（中文）
+                    fateBounty: "所有放置得分+50%",
+                    fateSpark: "每消除3行额外摧毁1个随机格子",
+                    fateRipple: "消除行时额外清除上方1格",
+                    fateGrowth: "手牌+1（4张）",
+                    fateEcho: "放置后20%概率自动填充1个相邻空格",
+                    fateMagnet: "消除后相邻格子有15%概率自动清除",
+                    fateVortex: "消除后随机2个空格填充匹配颜色",
+                    fateBloom: "2x2完整方块区域自动消除",
+                    fateShield: "免死一次（用后消失）",
+                    fateChain: "消除时连击结算2次",
+                    fatePhoenix: "全屏清空时获得50%分数奖励",
+                    fateInfinity: "每次清屏减少宝箱需求1行",
                     goRetryBtn: "再開一局", 
                     goLobbyBtn: "返回大廳", 
                     continueBtn: "繼續上次遊戲 ➔",
@@ -1294,7 +1438,27 @@
                     alertSelect: "🔮 SELECTOR! Shape index unlocked, pick 3 shapes!",
                     chestTitle: "LUCKY CHEST!", 
                     chestDesc: "Unlocked by 5 line clears. Open to change your destiny.", 
-                    chestOpen: "OPEN CHEST", 
+                    chestOpen: "OPEN CHEST",
+                    fateTitle: "✦ FATE DRAFT ✦",
+                    fateSub: "Board cleared! Pick 1 Fate Card to empower your run!",
+                    fateLabel: "Active Fate Cards:",
+                    fateNone: "None",
+                    fateCommon: "Common",
+                    fateRare: "Rare",
+                    fateLegendary: "Legendary",
+                    // 命运卡牌描述（英文）
+                    fateBounty: "+50% score from all placements",
+                    fateSpark: "Every 3 line clears destroys 1 random cell",
+                    fateRipple: "Line clear also clears 1 cell above",
+                    fateGrowth: "+1 hand piece (hold 4)",
+                    fateEcho: "20% to auto-fill 1 adjacent cell after place",
+                    fateMagnet: "15% for adjacent cells to clear after line clear",
+                    fateVortex: "After clear, 2 empty cells fill with color",
+                    fateBloom: "2x2 filled areas auto-clear",
+                    fateShield: "Survive game over once",
+                    fateChain: "Line clear triggers twice",
+                    fatePhoenix: "Full board clear grants 50% score bonus",
+                    fateInfinity: "Each all-clear reduces chest requirement by 1",
                     goRetryBtn: "PLAY AGAIN", 
                     goLobbyBtn: "LOBBY", 
                     continueBtn: "CONTINUE GAME ➔",
@@ -2005,10 +2169,14 @@
                 const stateObj = {
                     bGrid: s.bGrid, bScore: s.bScore, hand: s.hand,
                     currentMode: s.currentMode, luckyLinesNeeded: s.luckyLinesNeeded,
-                    allClearCount: s.allClearCount, currentMultiplier: s.currentMultiplier,
+                    allClearCount: s.allClearCount, fateCardCount: s.fateCardCount,
+                    activeFateCardIds: s.activeFateCards.map(function(c) { return c.id; }),
+                    currentMultiplier: s.currentMultiplier,
                     bBestScoreEndless: s.bBestScoreEndless, bBestScoreLucky: s.bBestScoreLucky
                 };
                 localStorage.setItem('all_you_can_put_save_v5', JSON.stringify(stateObj));
+                // 同时保存命运卡牌数据
+                this.saveFateCards();
             },
 
 
@@ -2024,7 +2192,17 @@
                 
                 s.bGrid = stateObj.bGrid; s.bScore = stateObj.bScore; s.hand = stateObj.hand;
                 s.currentMode = stateObj.currentMode; s.luckyLinesNeeded = stateObj.luckyLinesNeeded;
-                s.allClearCount = stateObj.allClearCount; s.currentMultiplier = stateObj.currentMultiplier;
+                s.allClearCount = stateObj.allClearCount; s.fateCardCount = stateObj.fateCardCount || 0; s.currentMultiplier = stateObj.currentMultiplier;
+                
+                // 恢复命运卡牌
+                s.activeFateCards = [];
+                if (stateObj.activeFateCardIds) {
+                    var allCards = GameApp.Config.FateCards;
+                    stateObj.activeFateCardIds.forEach(function(id) {
+                        var card = allCards.find(function(c2) { return c2.id === id; });
+                        if (card) { card.apply(s); s.activeFateCards.push(card); }
+                    });
+                }
                 
                 s.isGameOver = false; s.isCustomSelecting = false; s.selectedPiece = null;
                 GameApp.UI.elements.luckyMultiplierTag.style.display = s.currentMode === 'lucky' ? 'block' : 'none';
@@ -2049,7 +2227,13 @@
                 GameApp.UI.elements.luckyMultiplierTag.style.display = 'none';
                 
                 // 返回主頁時還原動態背景
-                document.body.style.background = ''; 
+                document.body.style.background = '';
+                
+                // 更新命运卡牌显示
+                if (s.activeFateCards.length > 0) {
+                    document.getElementById('fate-draft-overlay').style.display = 'flex';
+                    GameApp.Core._renderFateDraftUI(s.fateDraftOffered.length > 0 ? s.fateDraftOffered : GameApp.Config.FateCards.slice(0, 3));
+                } 
                 
                 
             },
@@ -2147,7 +2331,11 @@
                 GameApp.UI.elements.customSelectPanel.style.display = 'none';
                 
                 s.bGrid = Array(size).fill(null).map(() => Array(size).fill(0));
-                s.bScore = 0; s.isGameOver = false; s.luckyLinesNeeded = 5; s.isCustomSelecting = false; s.allClearCount = 0; s.currentMultiplier = 1.0; s.allClearFlashTimer = 0; s.selectedPiece = null;
+                s.bScore = 0; s.isGameOver = false; s.luckyLinesNeeded = 5; s.isCustomSelecting = false; s.allClearCount = 0; s.fateCardCount = 0; s.activeFateCards = []; s.currentMultiplier = 1.0; s.allClearFlashTimer = 0; s.selectedPiece = null;
+                // 重置命运卡牌状态变量
+                s._fate_bounty = false; s._fate_spark = 0; s._fate_ripple = false; s._fate_growth = false; s._fate_echo = false; s._fate_magnet = false;
+                s._fate_vortex = false; s._fate_bloom = false; s._fate_shield = 0; s._fate_chain = false; s._fate_phoenix = false; s._fate_infinity = false;
+                s._fate_spark_counter = 0;
                 s.particles = []; s.clearingCells = [];
                 s.gridBounceX = Array(size).fill().map(() => Array(size).fill(1)); s.gridBounceY = Array(size).fill().map(() => Array(size).fill(1));
                 s.gridVelocityX = Array(size).fill().map(() => Array(size).fill(0)); s.gridVelocityY = Array(size).fill().map(() => Array(size).fill(0));
@@ -2621,6 +2809,22 @@
                     // 幸运模式：每次清屏+0.2倍，最高2.0
                     if (s.currentMode === 'lucky') {
                         s.currentMultiplier = Math.min(2.0, s.currentMultiplier + 0.2);
+                        // 🃏 命运卡牌：清屏后触发命运抉择
+                        setTimeout(function() {
+                            GameApp.Core.offerFateDraft();
+                        }, 800);
+                        // 无限卡：每次清屏减少宝箱需求
+                        if (s._fate_infinity) {
+                            s.luckyLinesNeeded = Math.max(1, s.luckyLinesNeeded - 1);
+                        }
+                    }
+                    // 凤凰卡：全屏清空时获得50%分数奖励
+                    if (s._fate_phoenix) {
+                        var bonus = Math.floor(s.bScore * 0.5);
+                        s.bScore += bonus;
+                        var cx = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
+                        var cy = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
+                        s.scoreFlyouts.push({ x: cx, y: cy, vy: 2.2, text: "🔥 PHOENIX +" + bonus, color: "#ff6d00", timer: 1.5 });
                     }
                     
                     this.triggerHapticShock(80);
@@ -2650,12 +2854,22 @@
                 
                 let linesCount = rows.length + cols.length;
                 
+                // 🃏 命运卡牌：连锁 - 双倍结算
+                if (s._fate_chain && linesCount > 0) {
+                    linesCount *= 2;
+                }
+                
                 if (s.currentMode === 'lucky' && linesCount > 0) {
                     s.luckyLinesNeeded -= linesCount;
                     if (s.luckyLinesNeeded <= 0) {
                         s.luckyLinesNeeded = GameApp.Config.luckyLineTarget;
                         setTimeout(this.triggerChestPopup.bind(this), 500); 
                     }
+                }
+                
+                // 🃏 命运卡牌：清屏效果整合
+                if (linesCount > 0) {
+                    this.applyFateClearEffects(rows, cols);
                 }
 
                 if (linesCount > 0) {
@@ -2904,8 +3118,12 @@
                     // 基础分 = 方块格数 × (10 + 格数×2)，大块高分小块低分
                     let cells = 0;
                     s.selectedPiece.shape.forEach(row => row.forEach(v => { if(v) cells++; }));
-                    let baseGain = cells * (10 + cells * 2); let finalGain = Math.round(baseGain * s.currentMultiplier);
+                    let baseGain = cells * (10 + cells * 2); 
+                    let fateMult = this.getFateScoreMultiplier();
+                    let finalGain = Math.round(baseGain * s.currentMultiplier * fateMult);
                     this.placeShape(s.selectedPiece.shape, clampedGridY, clampedGridX, s.selectedPiece.color, finalGain);
+                    // 🃏 命运卡牌：放置效果
+                    this.applyFatePlaceEffects(clampedGridY, clampedGridX, s.selectedPiece.shape);
                     // 放置分数飞字
                     const fcx = gridX * bCell + (s.selectedPiece.shape[0].length * bCell) / 2;
                     const fcy = gridY * bCell - 10;
@@ -2949,7 +3167,14 @@
                         this.saveCurrentGame();
                     }
                     if (s.currentMode === 'level' && s.bScore >= s.targetScore) GameApp.UI.showGameOverModal(true);
-                    else if(this.checkGameOver()) GameApp.UI.showGameOverModal(false);
+                    else if(this.checkGameOver()) {
+                        // 🃏 命运卡牌：护盾免死
+                        if (this.checkFateShield()) {
+                            // 护盾触发，不清除
+                        } else {
+                            GameApp.UI.showGameOverModal(false);
+                        }
+                    }
                 } else if (!s.isGameOver && !s.isCustomSelecting) {
                     GameApp.Audio.invalid();
                 }
@@ -3111,7 +3336,384 @@
                 GameApp.UI.updateScoreDisplay(); this.saveCurrentGame();
             },
 
+            // ============================================================
+            // 🃏 命运卡牌系统 — 绝对自创玩法！清屏后选择命运卡，永久强化
+            // ============================================================
 
+            offerFateDraft: function() {
+                const s = GameApp.State; const t = GameApp.I18N;
+                const cards = GameApp.Config.FateCards;
+                const allClearCnt = s.allClearCount;
+                
+                // 根据清屏次数决定卡池品质
+                let pool;
+                if (allClearCnt <= 3) {
+                    pool = cards.filter(c => c.tier === 'common');
+                } else if (allClearCnt <= 5) {
+                    pool = cards.filter(c => c.tier === 'common' || c.tier === 'rare');
+                } else {
+                    pool = cards.filter(c => c.tier !== 'legendary' || allClearCnt % 2 === 0 ? true : false);
+                    // 每2次清屏后传说卡出现概率提高
+                    if (allClearCnt >= 6 && Math.random() > 0.4) pool = cards;
+                    else pool = cards.filter(c => c.tier !== 'legendary');
+                }
+                
+                // 排除已拥有的卡牌（传说和稀有可重复叠加）
+                const owned = new Set(s.activeFateCards.map(c => c.id));
+                const available = pool.filter(c => !owned.has(c.id));
+                
+                // 抽取3张（如果池子不够就重复抽取）
+                const offered = [];
+                const tempPool = [...(available.length >= 3 ? available : pool)];
+                for (let i = 0; i < 3 && tempPool.length > 0; i++) {
+                    const idx = Math.floor(Math.random() * tempPool.length);
+                    offered.push(tempPool.splice(idx, 1)[0]);
+                }
+                
+                s.fateDraftOffered = offered;
+                this._renderFateDraftUI(offered);
+            },
+
+            _renderFateDraftUI: function(offeredCards) {
+                const s = GameApp.State; const t = GameApp.I18N;
+                const lang = GameApp.I18N.currentLang;
+                const container = document.getElementById('fate-cards-container');
+                const activeList = document.getElementById('fate-active-list');
+                const overlay = document.getElementById('fate-draft-overlay');
+                if (!container || !overlay) return;
+                
+                // 渲染标题
+                document.getElementById('fate-draft-title').textContent = lang === 'zh' ? '✦ 命运抉择 ✦' : '✦ FATE DRAFT ✦';
+                document.getElementById('fate-draft-sub').textContent = lang === 'zh' ? '清屏成功！从3张命运卡中选择1张永久强化你的游戏！' : 'Board cleared! Pick 1 Fate Card to permanently empower your run!';
+                document.getElementById('fate-active-label').textContent = lang === 'zh' ? '已激活的命运卡：' : 'Active Fate Cards:';
+                
+                // 渲染3张卡
+                container.innerHTML = '';
+                offeredCards.forEach((card, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'fate-card tier-' + card.tier;
+                    div.innerHTML = '<div class="card-tier">' + (lang === 'zh' ? 
+                        (card.tier === 'common' ? '普通' : card.tier === 'rare' ? '稀有' : '传说') :
+                        (card.tier.charAt(0).toUpperCase() + card.tier.slice(1))) + '</div>' +
+                        '<div class="card-icon">' + card.icon + '</div>' +
+                        '<div class="card-name">' + (lang === 'zh' ? card.nameZh : card.nameEn) + '</div>' +
+                        '<div class="card-desc">' + (lang === 'zh' ? card.descZh : card.descEn) + '</div>';
+                    div.onclick = function() { GameApp.Core.selectFateCard(card, idx); };
+                    container.appendChild(div);
+                    // 入场动画
+                    div.style.animation = 'cardEntrance 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
+                    div.style.animationDelay = (idx * 0.1) + 's';
+                    div.style.opacity = '0';
+                });
+                
+                // 渲染已激活卡牌
+                this._renderActiveBadges(activeList);
+                
+                overlay.style.display = 'flex';
+                GameApp.Audio.milestone();
+                GameApp.Vibe.celebration();
+            },
+
+            _renderActiveBadges: function(container) {
+                const s = GameApp.State; const lang = GameApp.I18N.currentLang;
+                if (!container) container = document.getElementById('fate-active-list');
+                if (!container) return;
+                container.innerHTML = '';
+                s.activeFateCards.forEach(card => {
+                    const badge = document.createElement('span');
+                    badge.className = 'fate-active-badge';
+                    badge.textContent = card.icon + ' ' + (lang === 'zh' ? card.nameZh : card.nameEn);
+                    container.appendChild(badge);
+                });
+                if (s.activeFateCards.length === 0) {
+                    container.innerHTML = '<span style="color:#566088; font-size:0.85rem;">' + (lang === 'zh' ? '暂无' : 'None') + '</span>';
+                }
+            },
+
+            selectFateCard: function(card, idx) {
+                const s = GameApp.State;
+                // 应用卡牌效果
+                card.apply(s);
+                s.activeFateCards.push(card);
+                s.fateCardCount++;
+                
+                // 关闭面板
+                document.getElementById('fate-draft-overlay').style.display = 'none';
+                
+                // 炫酷选中特效
+                GameApp.Vibe.celebration();
+                GameApp.Audio.milestone();
+                GameApp.Core.showPrize(card.icon, lang === 'zh' ? card.nameZh : card.nameEn, 
+                    lang === 'zh' ? card.descZh : card.descEn, 
+                    card.tier === 'legendary' ? '#ffd700' : card.tier === 'rare' ? '#d500f9' : '#00e5ff');
+                
+                // 如果选了增长，增加手牌
+                if (card.id === 'growth') {
+                    this._applyGrowthEffect();
+                }
+                
+                this.saveCurrentGame();
+            },
+
+            _applyGrowthEffect: function() {
+                const s = GameApp.State;
+                // 生成额外第4张手牌
+                if (s.hand.length < 4) {
+                    const E = GameApp.Config.Shapes.easy;
+                    const pool = [...E];
+                    const pick = pool[Math.floor(Math.random() * pool.length)];
+                    s.hand.push({ shape: pick.matrix, color: pick.color, x: 35 + s.hand.length * 110, y: 520, origX: 35 + s.hand.length * 110, origY: 520, isUsed: false });
+                }
+            },
+
+            // 在checkLineClears中调用的命运卡效果
+            applySparkEffect: function() {
+                const s = GameApp.State;
+                if (!s._fate_spark) return;
+                // spark计数器
+                if (!s._fate_spark_counter) s._fate_spark_counter = 0;
+                s._fate_spark_counter++;
+                if (s._fate_spark_counter >= 3) {
+                    s._fate_spark_counter = 0;
+                    // 清除1个随机格子
+                    const size = GameApp.Config.bGridSize;
+                    let empties = [];
+                    for (let r = 0; r < size; r++) {
+                        for (let c = 0; c < size; c++) {
+                            if (s.bGrid[r][c] !== 0 && s.bGrid[r][c] !== '#4e566d') empties.push({r,c});
+                        }
+                    }
+                    if (empties.length > 0) {
+                        const target = empties[Math.floor(Math.random() * empties.length)];
+                        s.bGrid[target.r][target.c] = 0;
+                        const bCell = GameApp.Config.bCellSize;
+                        GameApp.Core.generateParticles(target.c * bCell + bCell/2, target.r * bCell + bCell/2, '#ffea00');
+                        s.scoreFlyouts.push({ x: target.c * bCell, y: target.r * bCell, vy: 1.5, text: '⚡', color: '#ffea00', timer: 0.8 });
+                    }
+                }
+            },
+
+            applyRippleEffect: function(clearedRows, clearedCols) {
+                const s = GameApp.State;
+                if (!s._fate_ripple) return;
+                const size = GameApp.Config.bGridSize;
+                // 每个清除行上方1格也清除
+                clearedRows.forEach(r => {
+                    if (r > 0) {
+                        for (let c = 0; c < size; c++) {
+                            if (s.bGrid[r-1][c] !== 0 && s.bGrid[r-1][c] !== '#4e566d') {
+                                s.bGrid[r-1][c] = 0;
+                                const bCell = GameApp.Config.bCellSize;
+                                GameApp.Core.generateParticles(c * bCell + bCell/2, (r-1) * bCell + bCell/2, '#00e5ff');
+                            }
+                        }
+                    }
+                });
+                clearedCols.forEach(c => {
+                    if (c > 0) {
+                        for (let r = 0; r < size; r++) {
+                            if (s.bGrid[r][c-1] !== 0 && s.bGrid[r][c-1] !== '#4e566d') {
+                                s.bGrid[r][c-1] = 0;
+                            }
+                        }
+                    }
+                });
+            },
+
+            applyEchoEffect: function(placeR, placeC, shape) {
+                const s = GameApp.State;
+                if (!s._fate_echo) return;
+                if (Math.random() > 0.2) return;
+                const size = GameApp.Config.bGridSize;
+                // 寻找相邻空格
+                const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
+                const adj = [];
+                for (let r = 0; r < shape.length; r++) {
+                    for (let c = 0; c < shape[r].length; c++) {
+                        if (shape[r][c]) {
+                            const gr = placeR + r, gc = placeC + c;
+                            dirs.forEach(d => {
+                                const nr = gr + d[0], nc = gc + d[1];
+                                if (nr >= 0 && nr < size && nc >= 0 && nc < size && s.bGrid[nr][nc] === 0) {
+                                    adj.push({r: nr, c: nc});
+                                }
+                            });
+                        }
+                    }
+                }
+                if (adj.length > 0) {
+                    const pick = adj[Math.floor(Math.random() * adj.length)];
+                    s.bGrid[pick.r][pick.c] = s.selectedPiece ? s.selectedPiece.color : '#00e5ff';
+                    const bCell = GameApp.Config.bCellSize;
+                    for (let i = 0; i < 5; i++) {
+                        s.particles.push({ x: pick.c * bCell + Math.random() * bCell, y: pick.r * bCell + Math.random() * bCell, vx: (Math.random()-0.5)*4, vy: -Math.random()*4-1, radius: 2, alpha: 0.6, color: '#00e5ff' });
+                    }
+                }
+            },
+
+            applyVortexEffect: function() {
+                const s = GameApp.State;
+                if (!s._fate_vortex) return;
+                const size = GameApp.Config.bGridSize;
+                const themeColors = s.currentTheme.colors;
+                let emptyCells = [];
+                for (let r = 0; r < size; r++) {
+                    for (let c = 0; c < size; c++) {
+                        if (s.bGrid[r][c] === 0) emptyCells.push({r,c});
+                    }
+                }
+                // 随机填充2个空格
+                for (let i = 0; i < 2 && emptyCells.length > 0; i++) {
+                    const idx = Math.floor(Math.random() * emptyCells.length);
+                    const cell = emptyCells.splice(idx, 1)[0];
+                    s.bGrid[cell.r][cell.c] = themeColors[Math.floor(Math.random() * themeColors.length)];
+                    const bCell = GameApp.Config.bCellSize;
+                    for (let pi = 0; pi < 8; pi++) {
+                        s.particles.push({ x: cell.c * bCell + bCell/2, y: cell.r * bCell + bCell/2, vx: (Math.random()-0.5)*6, vy: -Math.random()*4, radius: 2, alpha: 0.5, color: '#d500f9' });
+                    }
+                }
+            },
+
+            applyMagnetEffect: function(clearedRows, clearedCols) {
+                const s = GameApp.State;
+                if (!s._fate_magnet) return;
+                const size = GameApp.Config.bGridSize;
+                const dirs = [[-1,0],[1,0],[0,-1],[0,1],[ -1,-1],[-1,1],[1,-1],[1,1]];
+                const adjCells = new Set();
+                clearedRows.forEach(r => {
+                    for (let c = 0; c < size; c++) {
+                        dirs.forEach(d => {
+                            const nr = r + d[0], nc = c + d[1];
+                            if (nr >= 0 && nr < size && nc >= 0 && nc < size && s.bGrid[nr][nc] !== 0 && s.bGrid[nr][nc] !== '#4e566d') {
+                                if (Math.random() < 0.15) adjCells.add(nr + ',' + nc);
+                            }
+                        });
+                    }
+                });
+                clearedCols.forEach(c => {
+                    for (let r = 0; r < size; r++) {
+                        dirs.forEach(d => {
+                            const nr = r + d[0], nc = c + d[1];
+                            if (nr >= 0 && nr < size && nc >= 0 && nc < size && s.bGrid[nr][nc] !== 0 && s.bGrid[nr][nc] !== '#4e566d') {
+                                if (Math.random() < 0.15) adjCells.add(nr + ',' + nc);
+                            }
+                        });
+                    }
+                });
+                adjCells.forEach(key => {
+                    const [r, c] = key.split(',').map(Number);
+                    s.bGrid[r][c] = 0;
+                    const bCell = GameApp.Config.bCellSize;
+                    GameApp.Core.generateParticles(c * bCell + bCell/2, r * bCell + bCell/2, '#ff6d00');
+                });
+            },
+
+            applyBloomEffect: function() {
+                const s = GameApp.State;
+                if (!s._fate_bloom) return;
+                const size = GameApp.Config.bGridSize;
+                for (let r = 0; r < size - 1; r++) {
+                    for (let c = 0; c < size - 1; c++) {
+                        if (s.bGrid[r][c] !== 0 && s.bGrid[r][c] !== '#4e566d' &&
+                            s.bGrid[r+1][c] !== 0 && s.bGrid[r+1][c] !== '#4e566d' &&
+                            s.bGrid[r][c+1] !== 0 && s.bGrid[r][c+1] !== '#4e566d' &&
+                            s.bGrid[r+1][c+1] !== 0 && s.bGrid[r+1][c+1] !== '#4e566d') {
+                            // 清除2x2
+                            const bCell = GameApp.Config.bCellSize;
+                            for (let dr = 0; dr < 2; dr++) {
+                                for (let dc = 0; dc < 2; dc++) {
+                                    if (s.bGrid[r+dr][c+dc] !== '#4e566d') {
+                                        s.bGrid[r+dr][c+dc] = 0;
+                                        GameApp.Core.generateParticles((c+dc)*bCell + bCell/2, (r+dr)*bCell + bCell/2, '#ff80ab');
+                                    }
+                                }
+                            }
+                            s.scoreFlyouts.push({ x: (c+1)*bCell, y: (r+1)*bCell, vy: 1.8, text: '🌸 BLOOM!', color: '#ff80ab', timer: 1.0 });
+                        }
+                    }
+                }
+            },
+
+            // 🎯 命运卡牌：清屏效果整合
+            applyFateClearEffects: function(rows, cols) {
+                this.applySparkEffect();
+                this.applyRippleEffect(rows, cols);
+                this.applyMagnetEffect(rows, cols);
+                this.applyVortexEffect();
+                this.applyBloomEffect();
+            },
+
+            // 🎯 命运卡牌：放置效果整合  
+            applyFatePlaceEffects: function(placeR, placeC, shape) {
+                this.applyEchoEffect(placeR, placeC, shape);
+            },
+
+            // 🎯 获取命运加成的分数倍率
+            getFateScoreMultiplier: function() {
+                const s = GameApp.State;
+                return s._fate_bounty ? 1.5 : 1.0;
+            },
+
+            // 🎯 检查护盾免死
+            checkFateShield: function() {
+                const s = GameApp.State;
+                if (s._fate_shield && s._fate_shield > 0) {
+                    // 清除一半棋盘
+                    const size = GameApp.Config.bGridSize;
+                    const bCell = GameApp.Config.bCellSize;
+                    let cleared = 0;
+                    for (let r = 0; r < size; r++) {
+                        for (let c = 0; c < size; c++) {
+                            if (s.bGrid[r][c] !== 0 && s.bGrid[r][c] !== '#4e566d' && Math.random() > 0.5) {
+                                s.bGrid[r][c] = 0;
+                                cleared++;
+                                GameApp.Core.generateParticles(c * bCell + bCell/2, r * bCell + bCell/2, '#00e5ff');
+                            }
+                        }
+                    }
+                    s._fate_shield--;
+                    // 移除一张护盾卡
+                    const idx = s.activeFateCards.findIndex(c => c.id === 'shield');
+                    if (idx >= 0) s.activeFateCards.splice(idx, 1);
+                    GameApp.Core.showPrize('🛡️', 'SHIELD!', '护盾触发！清除了 ' + cleared + ' 格！', '#00e5ff');
+                    GameApp.Core._renderActiveBadges();
+                    s.isGameOver = false;
+                    return true;
+                }
+                return false;
+            },
+
+            // 🎯 获取增长卡的手牌数
+            getHandSize: function() {
+                const s = GameApp.State;
+                return s._fate_growth ? 4 : 3;
+            },
+
+            // 🎯 保存/读取命运卡牌
+            saveFateCards: function() {
+                const s = GameApp.State;
+                localStorage.setItem('all_you_can_put_fatecards', JSON.stringify({
+                    cards: s.activeFateCards.map(c => c.id),
+                    count: s.fateCardCount
+                }));
+            },
+
+            loadFateCards: function() {
+                try {
+                    const data = JSON.parse(localStorage.getItem('all_you_can_put_fatecards'));
+                    if (data && data.cards) {
+                        const allCards = GameApp.Config.FateCards;
+                        data.cards.forEach(id => {
+                            const card = allCards.find(c => c.id === id);
+                            if (card) {
+                                card.apply(GameApp.State);
+                                GameApp.State.activeFateCards.push(card);
+                            }
+                        });
+                        GameApp.State.fateCardCount = data.count || 0;
+                    }
+                } catch(e) {}
+            },
 
             // 🎯 Combo / 全清 弹出大字
             showComboPopup: function(linesCount) {
