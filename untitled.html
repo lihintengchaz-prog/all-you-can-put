@@ -2703,8 +2703,9 @@
                     });
                     if (bestPiece) {
                         s.selectedPiece = bestPiece;
-                        s.dragOffset.x = (bestPiece.shape[0].length * bCell) / 2;
-                        s.dragOffset.y = (bestPiece.shape.length * bCell) / 2;
+                        // 保持方块在原位，记录手指到方块的实际偏移
+                        s.dragOffset.x = s.mouseX - bestPiece.x;
+                        s.dragOffset.y = s.mouseY - bestPiece.y;
                         s.dragStartX = s.mouseX;
                         s.dragStartY = s.mouseY;
                     }
