@@ -1126,7 +1126,18 @@
                     chestOpen: "開 啟 寶 箱", 
                     goRetryBtn: "再開一局", 
                     goLobbyBtn: "返回大廳", 
-                    continueBtn: "繼續上次遊戲 ➔"
+                    continueBtn: "繼續上次遊戲 ➔",
+                    prizeJackpot: "分數直接翻倍！目前 ", 
+                    prizeDots: "全部變為 1x1 靈活小點",
+                    prizeBomb: "清空棋盤中央 3x3 區域（清除 ",
+                    prizeBombEnd: " 格）",
+                    prizeBonus: "獲得 ",
+                    prizeBonusEnd: " 額外加分",
+                    prizeRowClear: "清除第 ",
+                    prizeRowClearMid: " 行！倍數提升至 ",
+                    prizeEmpty: "棋盤已空，送你 100 分！",
+                    prizeWildswap: "獲得一組高級方塊！",
+                    prizeSelect: "挑選 3 個你最想要的形狀"
                 },
                 en: {
                     sub: "", 
@@ -1163,7 +1174,18 @@
                     chestOpen: "OPEN CHEST", 
                     goRetryBtn: "PLAY AGAIN", 
                     goLobbyBtn: "LOBBY", 
-                    continueBtn: "CONTINUE GAME ➔"
+                    continueBtn: "CONTINUE GAME ➔",
+                    prizeJackpot: "Score doubled! Now: ",
+                    prizeDots: "All become 1x1 rescue dots!",
+                    prizeBomb: "Cleared 3x3 center area (",
+                    prizeBombEnd: " cells)",
+                    prizeBonus: "Bonus +",
+                    prizeBonusEnd: " extra points!",
+                    prizeRowClear: "Cleared row ",
+                    prizeRowClearMid: "! Multiplier up to ",
+                    prizeEmpty: "Board empty! Here's 100 bonus points!",
+                    prizeWildswap: "Got a set of premium shapes!",
+                    prizeSelect: "Pick 3 shapes you want most"
                 }
             },
 
@@ -2443,12 +2465,12 @@
                     { chance: 0.05, name: 'jackpot', exec: function() {
                         s.bScore = Math.floor(s.bScore * 2);
                         GameApp.Core.showComboPopup(5);
-                        GameApp.Core.showPrize('💎', 'JACKPOT!', '分數直接翻倍！目前 ' + s.bScore, '#ffd700');
+                        GameApp.Core.showPrize('💎', 'JACKPOT!', t.getText('prizeJackpot') + s.bScore, '#ffd700');
                     }},
                     { chance: 0.15, name: 'dots', exec: function() {
                         s.hand = [];
                         for(let i=0; i<3; i++) s.hand.push({ shape: [[1]], color: '#00ff66', x: 35 + i * 140, y: 520, origX: 35 + i * 140, origY: 520, isUsed: false });
-                        GameApp.Core.showPrize('🎯', 'LUCKY DOTS!', '全部變為 1x1 靈活小點', '#00ff66');
+                        GameApp.Core.showPrize('🎯', 'LUCKY DOTS!', t.getText('prizeDots'), '#00ff66');
                     }},
                     { chance: 0.15, name: 'bomb', exec: function() {
                         // 炸彈：清空棋盤中央 3x3 區域
@@ -2472,7 +2494,7 @@
                         }
                         GameApp.Vibe.celebration();
                         s.screenShakeTimer = 0.5;
-                        GameApp.Core.showPrize('💥', 'BOMB!', '清空棋盤中央 3x3 區域（清除 ' + cleared + ' 格）', '#ff6d00');
+                        GameApp.Core.showPrize('💥', 'BOMB!', t.getText('prizeBomb') + cleared + t.getText('prizeBombEnd'), '#ff6d00');
                     }},
                     { chance: 0.20, name: 'bonus', exec: function() {
                         const bonus = 100 + Math.floor(Math.random() * 401); // 100~500
@@ -2480,7 +2502,7 @@
                         const cx = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
                         const cy = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
                         s.scoreFlyouts.push({ x: cx, y: cy, vy: 2.5, text: '💰 +' + bonus, color: '#ffd700', timer: 1.5 });
-                        GameApp.Core.showPrize('💰', 'BONUS!', '獲得 ' + bonus + ' 額外加分', '#ffd700');
+                        GameApp.Core.showPrize('💰', 'BONUS!', t.getText('prizeBonus') + bonus + t.getText('prizeBonusEnd'), '#ffd700');
                     }},
                     { chance: 0.20, name: 'rowclear', exec: function() {
                         const size = GameApp.Config.bGridSize;
@@ -2510,9 +2532,9 @@
                             s.screenShakeTimer = 0.5;
                             s.bScore += Math.round(50 * s.currentMultiplier);
                             GameApp.Core.showComboPopup(5);
-                            GameApp.Core.showPrize('🧹', 'ROW CLEAR!', '清除第 ' + (bestRow+1) + ' 行！倍數提升至 ' + s.currentMultiplier.toFixed(1) + 'x', '#ffd700');
+                            GameApp.Core.showPrize('🧹', 'ROW CLEAR!', t.getText('prizeRowClear') + (bestRow+1) + t.getText('prizeRowClearMid') + s.currentMultiplier.toFixed(1) + 'x', '#ffd700');
                         } else {
-                            GameApp.Core.showPrize('🎁', 'EMPTY!', '棋盤已空，送你 100 分！', '#00e5ff');
+                            GameApp.Core.showPrize('🎁', 'EMPTY!', t.getText('prizeEmpty'), '#00e5ff');
                             s.bScore += 100;
                         }
                     }},
@@ -2524,7 +2546,7 @@
                             const pick = pool[Math.floor(Math.random() * pool.length)];
                             s.hand.push({ shape: pick.matrix, color: pick.color, x: 35 + i * 140, y: 520, origX: 35 + i * 140, origY: 520, isUsed: false });
                         }
-                        GameApp.Core.showPrize('🔄', 'WILDSWAP!', '獲得一組高級方塊！', '#d500f9');
+                        GameApp.Core.showPrize('🔄', 'WILDSWAP!', t.getText('prizeWildswap'), '#d500f9');
                     }},
                     { chance: 0.10, name: 'select', exec: function() {
                         s.isCustomSelecting = true;
@@ -2536,7 +2558,7 @@
                             el.style.filter = 'grayscale(0%)';
                         });
                         GameApp.UI.elements.customSelectPanel.style.display = 'flex';
-                        GameApp.Core.showPrize('🔮', 'SELECT!', '挑選 3 個你最想要的形狀', '#d500f9');
+                        GameApp.Core.showPrize('🔮', 'SELECT!', t.getText('prizeSelect'), '#d500f9');
                     }}
                 ];
                 
