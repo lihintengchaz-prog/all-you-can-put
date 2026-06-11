@@ -1816,6 +1816,43 @@
                 }
 
                 // 🎯 精准帮扶：根据棋盘空缺给玩家需要的形状
+                // 随机旋转手牌（增加变化性，帮助匹配更多空缺）
+                for (let i = 0; i < s.hand.length; i++) {
+                    if (s.hand[i].isUsed) continue;
+                    // 50%概率旋转，旋转0-3次（90度每次）
+                    if (Math.random() > 0.5) {
+                        const rotTimes = Math.floor(Math.random() * 4); // 0-3
+                        let m = s.hand[i].shape;
+                        for (let r = 0; r < rotTimes; r++) {
+                            let rotated = [];
+                            for (let c = 0; c < m[0].length; c++) {
+                                let newRow = [];
+                                for (let row = m.length - 1; row >= 0; row--) newRow.push(m[row][c]);
+                                rotated.push(newRow);
+                            }
+                            m = rotated;
+                        }
+                        s.hand[i].shape = m;
+                    }
+                }
+                                // 随机旋转手牌（增加变化性，帮助匹配更多空缺）
+                for (let i = 0; i < s.hand.length; i++) {
+                    if (s.hand[i].isUsed) continue;
+                    if (Math.random() > 0.5) {
+                        const rotTimes = Math.floor(Math.random() * 4);
+                        let m = s.hand[i].shape;
+                        for (let r = 0; r < rotTimes; r++) {
+                            let rotated = [];
+                            for (let c = 0; c < m[0].length; c++) {
+                                let newRow = [];
+                                for (let row = m.length - 1; row >= 0; row--) newRow.push(m[row][c]);
+                                rotated.push(newRow);
+                            }
+                            m = rotated;
+                        }
+                        s.hand[i].shape = m;
+                    }
+                }
                 this._giveHelpfulPieces(chosenPool);
                 // 保底机制：如果所有手牌都无法放置，自动替换为可放置的简单形状
                 this._ensurePlayableHand();
