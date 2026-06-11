@@ -3628,22 +3628,22 @@
         if (!container) return;
         container.style.cssText = 'position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1;';
         var animations = ['emojiFloat1','emojiFloat2','emojiFloat3','emojiDrift','emojiSpin'];
-        for (var i = 0; i < 160; i++) {
+        for (var i = 0; i < 85; i++) {
             var el = document.createElement('div');
             el.className = 'bg-emoji';
             el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
             el.style.cssText =
                 'top:' + (Math.random()*100).toFixed(1) + '%;' +
                 'left:' + (Math.random()*100).toFixed(1) + '%;' +
-                'font-size:' + (1.2+Math.random()*3.2).toFixed(1) + 'rem;' +
+                'font-size:' + (1.5+Math.random()*3.5).toFixed(1) + 'rem;' +
                 'animation-name:' + animations[Math.floor(Math.random()*animations.length)] + ';' +
                 'animation-duration:' + (7+Math.random()*15).toFixed(1) + 's;' +
                 'animation-delay:' + (Math.random()*15).toFixed(1) + 's;' +
-                'opacity:' + (0.15+Math.random()*0.40).toFixed(2) + ';';
+                'opacity:' + (0.25+Math.random()*0.45).toFixed(2) + ';';
             container.appendChild(el);
         }
         var stars = ['✦','✧','⋆','·'];
-        for (var i = 0; i < 50; i++) {
+        for (var i = 0; i < 20; i++) {
             var el = document.createElement('div');
             el.className = 'bg-emoji';
             el.textContent = stars[i % stars.length];
