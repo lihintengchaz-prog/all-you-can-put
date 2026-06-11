@@ -275,6 +275,22 @@
             box-shadow: 0 0 12px var(--pink);
         }
 
+        .lvl-btn.completed {
+            background: linear-gradient(135deg, #00c853, #00e676);
+            border-color: #00e676;
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 230, 118, 0.3);
+            font-weight: 900;
+        }
+        .lvl-btn.completed::after {
+            content: " ✓";
+        }
+        .lvl-btn.completed:hover {
+            background: linear-gradient(135deg, #00e676, #69f0ae);
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(0, 230, 118, 0.5);
+        }
+
         /* ==========================================
            3. GAME INTERFACE & CANVARENA LAYOUT
            ========================================== */
@@ -1840,9 +1856,15 @@
             },
 
             generateLevelButtons: function() {
+                var completed = {};
+                try {
+                    var saved = localStorage.getItem('all_you_can_put_levels_completed');
+                    if (saved) completed = JSON.parse(saved);
+                } catch(e) {}
                 for (let i = 1; i <= GameApp.Config.maxLevel; i++) {
                     let btn = document.createElement('button');
                     btn.className = 'lvl-btn';
+                    if (completed[i]) btn.classList.add('completed');
                     btn.innerText = i < 10 ? '0' + i : i;
                     btn.onclick = (e) => { e.stopPropagation(); GameApp.Core.startLevelMode(i); };
                     this.elements.levelPanel.appendChild(btn);
@@ -1998,6 +2020,17 @@
                 if (s.currentMode === 'level') {
                     this.elements.modalTitle.innerText = isWin ? t.getText('goWin') : t.getText('goLose');
                     this.elements.modalScoreText.innerText = isWin ? `${t.getText('goWinDesc')} ${s.targetScore}` : t.getText('goLoseDesc');
+                    // 标记关卡已完成
+                    if (isWin) {
+                        try {
+                            var completed = {};
+                            var saved = localStorage.getItem('all_you_can_put_levels_completed');
+                            if (saved) completed = JSON.parse(saved);
+                            completed[s.currentLevel] = true;
+                            localStorage.setItem('all_you_can_put_levels_completed', JSON.stringify(completed));
+                            GameApp.UI.generateLevelButtons();
+                        } catch(e) {}
+                    }
                 } else {
                     this.elements.modalTitle.innerText = t.getText('goOver');
                     this.elements.modalScoreText.innerText = `${t.getText('goScore')}: ${s.bScore}`;
@@ -2157,18 +2190,18 @@
                     target = 5000 + (lvl - 40) * 400; // L41-45: 5400-7000
                     obstacles = [{r:1, c:1}, {r:1, c:6}, {r:3, c:2}, {r:3, c:5}, {r:5, c:3}, {r:6, c:1}, {r:6, c:6}];
                 } else if (lvl <= 50) {
-                    target = 7000 + (lvl - 45) * 600; // L46-50: 7600-10000
-                    obstacles = [{r:1, c:2}, {r:1, c:5}, {r:3, c:1}, {r:3, c:6}, {r:5, c:2}, {r:5, c:5}, {r:7, c:3}];
+                    target = 7000 + (lvl - 45) * 500; // L46-50: 7500-9500
+                    obstacles = [{r:1, c:2}, {r:1, c:5}, {r:4, c:1}, {r:4, c:6}, {r:6, c:3}];
                 } else if (lvl <= 55) {
-                    target = 10000 + (lvl - 50) * 1000; // L51-55: 11000-15000
-                    obstacles = [{r:0, c:3}, {r:2, c:0}, {r:2, c:7}, {r:4, c:2}, {r:4, c:5}, {r:5, c:3}, {r:5, c:4}, {r:7, c:4}];
+                    target = 9500 + (lvl - 50) * 700; // L51-55: 10000-13000
+                    obstacles = [{r:0, c:3}, {r:2, c:0}, {r:2, c:7}, {r:5, c:3}, {r:5, c:4}, {r:7, c:3}];
                 } else if (lvl <= 60) {
-                    target = 15000 + (lvl - 55) * 1500; // L56-60: 16500-22500
-                    obstacles = [{r:1, c:1}, {r:1, c:3}, {r:1, c:5}, {r:3, c:1}, {r:3, c:6}, {r:5, c:1}, {r:5, c:6}, {r:7, c:1}, {r:7, c:6}];
+                    target = 13000 + (lvl - 55) * 800; // L56-60: 13800-17000
+                    obstacles = [{r:1, c:1}, {r:1, c:6}, {r:3, c:3}, {r:3, c:4}, {r:5, c:1}, {r:5, c:6}];
                 } else {
-                    // L61-66: 最难关卡 24000-50000+
-                    target = 24000 + (lvl - 60) * 5000; // L61: 24000, L66: 54000
-                    obstacles = [{r:1, c:0}, {r:1, c:2}, {r:1, c:5}, {r:1, c:7}, {r:3, c:3}, {r:3, c:4}, {r:5, c:0}, {r:5, c:2}, {r:5, c:5}, {r:5, c:7}, {r:7, c:3}, {r:7, c:4}];
+                    // L61-66: 最难关卡 18000-28000（可通关）
+                    target = 18000 + (lvl - 60) * 2000; // L61: 18000, L66: 28000
+                    obstacles = [{r:1, c:0}, {r:1, c:3}, {r:1, c:4}, {r:1, c:7}, {r:4, c:1}, {r:4, c:6}, {r:6, c:3}, {r:6, c:4}];
                 }
                 return { target, obstacles };
             },
@@ -2674,10 +2707,10 @@
                 const s = GameApp.State; const size = GameApp.Config.bGridSize;
                 let rows = []; let cols = [];
                 
-                for(let r=0; r<size; r++) if(s.bGrid[r].every(cell => cell !== 0 && cell !== '#4e566d')) rows.push(r);
+                for(let r=0; r<size; r++) if(s.bGrid[r].every(cell => cell !== 0)) rows.push(r);
                 for(let c=0; c<size; c++) {
                     let m = true;
-                    for(let r=0; r<size; r++) if(s.bGrid[r][c] === 0 || s.bGrid[r][c] === '#4e566d') m = false;
+                    for(let r=0; r<size; r++) if(s.bGrid[r][c] === 0) m = false;
                     if(m) cols.push(c);
                 }
                 
