@@ -84,7 +84,7 @@
 
         .lobby-settings-btn {
             position: absolute;
-            right: 15px;
+            right: 8px;
             top: 12px;
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.25);
@@ -1791,110 +1791,88 @@
                 const size = GameApp.Config.bGridSize;
                 const E = GameApp.Config.Shapes.easy;
 
-                // 扫描棋盘，找出所有能消除行/列的形状
-                // 策略：对每种形状，检查是否能放在某个位置完成消除
+                // 智能辅助：混搭有益形状，不暴露 AI 痕迹
+                // 先找完全能消行的形状（最高优先级，但只替换1张）
                 const allShapes = [...E, ...GameApp.Config.Shapes.medium];
-                let bestMatch = null;
-                let bestCells = 0;
+                let lineClearPick = null;
                 
                 for (let p of allShapes) {
                     for (let r = 0; r < size; r++) {
                         for (let c = 0; c < size; c++) {
                             if (this.canPlaceShape(p.matrix, r, c) && this.simulateLineClear(p.matrix, r, c)) {
-                                // 找到能消行的形状！优先选格数最多的（大块优先）
                                 let cells = 0;
                                 p.matrix.forEach(row => row.forEach(v => { if(v) cells++; }));
-                                if (cells > bestCells) {
-                                    bestCells = cells;
-                                    bestMatch = { shape: p.matrix, color: p.color };
+                                if (!lineClearPick || cells > 0) {
+                                    lineClearPick = { shape: p.matrix, color: p.color };
                                 }
                             }
                         }
                     }
                 }
 
-                // 如果找到能消行的形状，把手牌全换成它
-                if (bestMatch) {
-                    for (let i = 0; i < s.hand.length; i++) {
-                        if (!s.hand[i].isUsed) {
-                            s.hand[i].shape = bestMatch.shape;
-                            s.hand[i].color = bestMatch.color;
-                        }
-                    }
-                    return;
-                }
+                // 自然混搭：收集各种有益形状
+                let helpers = [];
 
-                // 没找到完全消行的，查找单个行列缺口
-                let helpShapes = [];
-                
-                // 检查每行每列的空缺位置，构造精确补位形状
-                // 行空缺
+                // 行列缺口检测（仅连续空缺）
                 for (let r = 0; r < size; r++) {
                     let empties = [];
                     for (let c = 0; c < size; c++) {
                         if (s.bGrid[r][c] === 0) empties.push(c);
                     }
-                    // 连续空缺构成横条
                     if (empties.length === 1) {
-                        helpShapes.push({ shape: [[1]], color: '#00ff66', priority: 10, name: 'dot' });
+                        helpers.push({ shape: [[1]], color: '#00ff66', priority: 5 });
                     } else if (empties.length === 2 && empties[1] - empties[0] === 1) {
-                        helpShapes.push({ shape: [[1,1]], color: '#ffea00', priority: 9, name: 'bar2' });
+                        helpers.push({ shape: [[1,1]], color: '#ffea00', priority: 4 });
                     } else if (empties.length === 3 && empties[2] - empties[0] === 2) {
-                        helpShapes.push({ shape: [[1,1,1]], color: '#00e5ff', priority: 8, name: 'bar3' });
+                        helpers.push({ shape: [[1,1,1]], color: '#00e5ff', priority: 3 });
                     } else if (empties.length === 4 && empties[3] - empties[0] === 3) {
-                        helpShapes.push({ shape: [[1,1,1,1]], color: '#ff6d00', priority: 7, name: 'bar4' });
+                        helpers.push({ shape: [[1,1,1,1]], color: '#ff6d00', priority: 2 });
                     }
                 }
-
-                // 列空缺
                 for (let c = 0; c < size; c++) {
                     let empties = [];
                     for (let r = 0; r < size; r++) {
                         if (s.bGrid[r][c] === 0) empties.push(r);
                     }
                     if (empties.length === 2 && empties[1] - empties[0] === 1) {
-                        helpShapes.push({ shape: [[1],[1]], color: '#ffea00', priority: 6, name: 'vbar2' });
+                        helpers.push({ shape: [[1],[1]], color: '#ffea00', priority: 4 });
                     } else if (empties.length === 3 && empties[2] - empties[0] === 2) {
-                        helpShapes.push({ shape: [[1],[1],[1]], color: '#00e5ff', priority: 5, name: 'vbar3' });
-                    } else if (empties.length === 4 && empties[3] - empties[0] === 3) {
-                        helpShapes.push({ shape: [[1],[1],[1],[1]], color: '#ff6d00', priority: 4, name: 'vbar4' });
+                        helpers.push({ shape: [[1],[1],[1]], color: '#00e5ff', priority: 3 });
                     }
                 }
 
-                // 检测2x2正方形缺口（两行相邻且相同列位置有空缺）
-                for (let r = 0; r < size - 1; r++) {
-                    for (let c = 0; c < size - 1; c++) {
-                        if (s.bGrid[r][c] === 0 && s.bGrid[r][c+1] === 0 && 
-                            s.bGrid[r+1][c] === 0 && s.bGrid[r+1][c+1] === 0) {
-                            helpShapes.push({ shape: [[1,1],[1,1]], color: '#ff3377', priority: 11, name: 'square' });
+                // 有时给2x2方块（不总是检测）
+                if (Math.random() > 0.5) {
+                    for (let r = 0; r < size - 1; r++) {
+                        for (let c = 0; c < size - 1; c++) {
+                            if (s.bGrid[r][c] === 0 && s.bGrid[r][c+1] === 0 && 
+                                s.bGrid[r+1][c] === 0 && s.bGrid[r+1][c+1] === 0) {
+                                helpers.push({ shape: [[1,1],[1,1]], color: '#ff3377', priority: 6 });
+                            }
                         }
                     }
                 }
 
-                // 检测3x2长方形缺口
-                for (let r = 0; r < size - 1; r++) {
-                    for (let c = 0; c < size - 2; c++) {
-                        let allEmpty = true;
-                        for (let dr = 0; dr < 2 && allEmpty; dr++)
-                            for (let dc = 0; dc < 3 && allEmpty; dc++)
-                                if (s.bGrid[r+dr][c+dc] !== 0) allEmpty = false;
-                        if (allEmpty) {
-                            helpShapes.push({ shape: [[1,1,1],[1,1,1]], color: '#00e5ff', priority: 12, name: 'rect32' });
-                        }
+                // 从随机池中挑选1-2个助手形状（混搭，不全是同一种）
+                const finalPicks = [];
+                if (lineClearPick && Math.random() > 0.3) {
+                    finalPicks.push(lineClearPick);
+                }
+                if (helpers.length > 0) {
+                    helpers.sort(() => Math.random() - 0.5);
+                    const pickCount = Math.min(helpers.length, Math.random() > 0.5 ? 2 : 1);
+                    for (let i = 0; i < pickCount; i++) {
+                        finalPicks.push(helpers[i]);
                     }
                 }
 
-                if (helpShapes.length > 0) {
-                    helpShapes.sort((a, b) => b.priority - a.priority);
-                    // 取前3个最高优先级形状
-                    const picks = helpShapes.slice(0, Math.min(helpShapes.length, 3));
-                    let idx = 0;
-                    for (let i = 0; i < s.hand.length && idx < picks.length; i++) {
-                        if (!s.hand[i].isUsed) {
-                            s.hand[i].shape = picks[idx].shape;
-                            s.hand[i].color = picks[idx].color;
-                            idx++;
-                        }
+                // 应用替换（只换1-2张，保留随机性）
+                let idx = 0;
+                for (let i = 0; i < s.hand.length && idx < finalPicks.length; i++) {
+                    if (!s.hand[i].isUsed) {
+                        s.hand[i].shape = finalPicks[idx].shape;
+                        s.hand[i].color = finalPicks[idx].color;
+                        idx++;
                     }
                 }
             },
