@@ -2495,7 +2495,15 @@
                     GameApp.Audio.multiClear(linesCount);
                     this.triggerHapticShock(35 * linesCount);
                     GameApp.Core.showComboPopup(linesCount);
-                    s.screenShakeTimer = 0.4 + linesCount * 0.08;
+                    s.screenShakeTimer = 0.5 + linesCount * 0.1;
+                    s.shakeIntensity = Math.min(3, 1 + Math.floor(linesCount / 2));
+                    // 屏幕脉冲闪光
+                    const arenaFlash = document.getElementById('gameArenaPanel');
+                    if (arenaFlash) { 
+                        arenaFlash.style.transition = 'background-color 0.15s'; 
+                        arenaFlash.style.backgroundColor = 'rgba(255,255,255,0.15)'; 
+                        setTimeout(() => { arenaFlash.style.backgroundColor = ''; }, 200); 
+                    }
                     s.shakeIntensity = linesCount >= 5 ? 3 : linesCount >= 3 ? 2 : 1;
                     const cx = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
                     const cy = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
@@ -2504,12 +2512,12 @@
                     const bonus = Math.round(comboMult * 100 * (s.currentMode === 'lucky' ? s.currentMultiplier : 1));
                     // 消除分数飞字更大更持久（增强版）
                     const flyFontSize = bonus > 1000 ? 48 : bonus > 500 ? 40 : bonus > 200 ? 34 : 28;
-                    s.scoreFlyouts.push({ x: cx, y: cy + 10, vy: 1.2, text: "+" + bonus, color: linesCount >= 4 ? "#d500f9" : linesCount >= 3 ? "#ffd700" : "#00e5ff", timer: 1.6 });
+                    s.scoreFlyouts.push({ x: cx, y: cy + 10, vy: 1.0, text: "✨ +" + bonus, color: linesCount >= 4 ? "#d500f9" : linesCount >= 3 ? "#ffd700" : "#00e5ff", timer: 1.8 });
                 }
 
                 const bCell = GameApp.Config.bCellSize;
                 // 超级粒子爆炸（增强版：更多更大）
-                const burstCount = Math.min(linesCount * 15, 80);
+                const burstCount = Math.min(linesCount * 25, 120);
                 for (let i = 0; i < burstCount; i++) {
                     setTimeout(() => {
                         const rx = Math.random() * 8 * bCell;
@@ -2603,7 +2611,7 @@
                 overlay.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;animation:prizePopIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;"><div style="font-size:clamp(3rem,10vw,5rem);filter:drop-shadow(0 0 30px ' + (color||'#ffd700') + ');animation:prizeIconBounce 1s ease-in-out infinite;">' + icon + '</div><div style="font-size:clamp(1.8rem,5vw,2.5rem);font-weight:900;color:#fff;text-shadow:0 0 30px ' + (color||'#ffd700') + ',0 0 60px ' + (color||'#ffd700') + ';margin-top:10px;">' + title + '</div><div style="font-size:clamp(0.9rem,2.5vw,1.2rem);color:rgba(255,255,255,0.8);margin-top:8px;text-shadow:0 0 20px rgba(0,0,0,0.5);">' + desc + '</div></div>';
                 // 屏幕闪 + 震动
                 const flash = document.getElementById('gameArenaPanel');
-                if (flash) { flash.style.transition = 'box-shadow 0.3s'; flash.style.boxShadow = 'inset 0 0 80px ' + (color||'#ffd700'); setTimeout(() => { flash.style.boxShadow = ''; }, 400); }
+                if (flash) { flash.style.transition = 'box-shadow 0.2s'; flash.style.boxShadow = 'inset 0 0 120px ' + (color||'#ffd700') + ', 0 0 60px ' + (color||'#ffd700'); setTimeout(() => { flash.style.boxShadow = ''; }, 600); }
                 s.screenShakeTimer = 0.3;
                 GameApp.Vibe.celebration();
                 setTimeout(() => { overlay.innerHTML = ''; }, 1800);
@@ -2706,6 +2714,26 @@
                     const pFontSize = finalGain > 200 ? 32 : finalGain > 80 ? 26 : 22;
                     s.scoreFlyouts.push({ x: fcx, y: fcy, vy: 1.2, text: '+' + finalGain, color: fcolor, timer: 1.3 });
                     GameApp.Render.triggerSoftJelly(gridY, gridX, s.selectedPiece.shape);
+                    // 放置瞬间脉冲
+                    const placeArena = document.getElementById('gameArenaPanel');
+                    if (placeArena) { 
+                        placeArena.style.transition = 'box-shadow 0.15s'; 
+                        placeArena.style.boxShadow = 'inset 0 0 60px ' + s.selectedPiece.color; 
+                        setTimeout(() => { placeArena.style.boxShadow = ''; }, 250); 
+                    }
+                    // 🎆 放置粒子爆发
+                    const bCellNow = GameApp.Config.bCellSize;
+                    for (let pi = 0; pi < 8; pi++) {
+                        s.particles.push({
+                            x: fcx + (Math.random() - 0.5) * 30,
+                            y: fcy + (Math.random() - 0.5) * 30,
+                            vx: (Math.random() - 0.5) * 8,
+                            vy: (Math.random() - 0.8) * 6 - 2,
+                            radius: Math.random() * 3 + 1.5,
+                            alpha: 0.6,
+                            color: s.selectedPiece.color
+                        });
+                    }
                     GameApp.Vibe.medium();
                     GameApp.Audio.place();
                     s.selectedPiece.isUsed = true;
@@ -2896,7 +2924,7 @@
                 if (flash) { flash.style.transition = 'background-color 0.15s'; flash.style.backgroundColor = 'rgba(255,255,255,0.2)'; setTimeout(() => { flash.style.backgroundColor = 'transparent'; }, 200); }
                 
                 if (linesCount >= 5) {
-                    overlay.innerHTML = '<div style="position:relative;display:flex;flex-direction:column;align-items:center;"><div style="position:absolute;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,0.5) 0%,rgba(255,215,0,0) 70%);top:50%;left:50%;transform:translate(-50%,-50%);"></div><div class="combo-popup combo-color-gold" style="font-size:clamp(3.5rem,12vw,7rem);position:relative;font-weight:900;">💎 JACKPOT!<br><span class="combo-label" style="font-size:clamp(1.2rem,4vw,2.2rem);">🔥 SCORE DOUBLED! 🔥</span></div></div>';
+                    overlay.innerHTML = '<div style="position:relative;display:flex;flex-direction:column;align-items:center;"><div style="position:absolute;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,0.6) 0%,rgba(255,215,0,0.2) 40%,rgba(255,215,0,0) 70%);top:50%;left:50%;transform:translate(-50%,-50%);"></div><div class="combo-popup combo-color-gold" style="font-size:clamp(3.5rem,12vw,7rem);position:relative;font-weight:900;animation:comboAppear 1.8s ease-out forwards;">💎 JACKPOT!<br><span class="combo-label" style="font-size:clamp(1.2rem,4vw,2.2rem);">🔥 SCORE DOUBLED! 🔥</span></div></div>';
                     // 全屏爆炸粒子（增强版）
                     s.screenShakeTimer = 1.0;
                     s.shakeIntensity = 3;
@@ -3091,15 +3119,15 @@
                 piece.shape.forEach((row, rIdx) => {
                     row.forEach((val, cIdx) => {
                         if(val) {
-                            // 底部发光
+                            // 底部发光（增强版）
                             const glow = ctx.createRadialGradient(
                                 startX + cIdx * cellSize + cellSize/2, startY + rIdx * cellSize + cellSize/2, 0,
-                                startX + cIdx * cellSize + cellSize/2, startY + rIdx * cellSize + cellSize/2, cellSize
+                                startX + cIdx * cellSize + cellSize/2, startY + rIdx * cellSize + cellSize/2, cellSize * 1.2
                             );
-                            glow.addColorStop(0, piece.color + '40');
+                            glow.addColorStop(0, piece.color + '60');
                             glow.addColorStop(1, 'transparent');
                             ctx.fillStyle = glow;
-                            ctx.fillRect(startX + cIdx * cellSize - 5, startY + rIdx * cellSize - 5, cellSize + 10, cellSize + 10);
+                            ctx.fillRect(startX + cIdx * cellSize - 8, startY + rIdx * cellSize - 8, cellSize + 16, cellSize + 16);
                             this.drawTexturedCandyCell(ctx, startX + cIdx * cellSize, startY + rIdx * cellSize, cellSize, piece.color, 1, 1);
                         }
                     });
@@ -3154,10 +3182,41 @@
                 if (s.selectedPiece && !s.isGameOver) {
                     const { gridX, gridY } = GameApp.Core.getSnapCoordinates();
                     if (GameApp.Core.canPlaceShape(s.selectedPiece.shape, gridY, gridX)) {
-                        ctx.fillStyle = "rgba(255, 255, 255, 0.2)"; 
+                        // 预览发光（增强版）
+                        const hoverColor = s.selectedPiece.color;
+                        ctx.save();
                         s.selectedPiece.shape.forEach((row, rIdx) => {
-                            row.forEach((val, cIdx) => { if(val) ctx.fillRect((gridX+cIdx)*bCell+2, (gridY+rIdx)*bCell+2, bCell-4, bCell-4); });
+                            row.forEach((val, cIdx) => {
+                                if(val) {
+                                    const hx = (gridX+cIdx)*bCell;
+                                    const hy = (gridY+rIdx)*bCell;
+                                    // 外发光
+                                    const hoverGlow = ctx.createRadialGradient(hx+bCell/2, hy+bCell/2, 0, hx+bCell/2, hy+bCell/2, bCell);
+                                    hoverGlow.addColorStop(0, hoverColor + '60');
+                                    hoverGlow.addColorStop(1, 'transparent');
+                                    ctx.fillStyle = hoverGlow;
+                                    ctx.fillRect(hx-4, hy-4, bCell+8, bCell+8);
+                                    // 预览方块
+                                    ctx.globalAlpha = 0.35;
+                                    ctx.fillStyle = hoverColor;
+                                    const r2 = 4;
+                                    ctx.beginPath();
+                                    ctx.moveTo(hx+2+r2, hy+2);
+                                    ctx.lineTo(hx+bCell-2-r2, hy+2);
+                                    ctx.quadraticCurveTo(hx+bCell-2, hy+2, hx+bCell-2, hy+2+r2);
+                                    ctx.lineTo(hx+bCell-2, hy+bCell-2-r2);
+                                    ctx.quadraticCurveTo(hx+bCell-2, hy+bCell-2, hx+bCell-2-r2, hy+bCell-2);
+                                    ctx.lineTo(hx+2+r2, hy+bCell-2);
+                                    ctx.quadraticCurveTo(hx+2, hy+bCell-2, hx+2, hy+bCell-2-r2);
+                                    ctx.lineTo(hx+2, hy+2+r2);
+                                    ctx.quadraticCurveTo(hx+2, hy+2, hx+2+r2, hy+2);
+                                    ctx.closePath();
+                                    ctx.fill();
+                                    ctx.globalAlpha = 1;
+                                }
+                            });
                         });
+                        ctx.restore();
                     }
                 }
 
