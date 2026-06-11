@@ -84,7 +84,7 @@
 
         .lobby-settings-btn {
             position: absolute;
-            right: 20px;
+            right: 6px;
             top: 50%;
             transform: translateY(-50%);
             background: rgba(255, 255, 255, 0.15);
@@ -1167,7 +1167,15 @@
             },
 
             init: function() {
-                this.currentLang = localStorage.getItem('block_put_lang') || 'zh';
+                // 自动检测系统语言，优先使用用户手动设置的（localStorage）
+                const saved = localStorage.getItem('block_put_lang');
+                if (saved) {
+                    this.currentLang = saved;
+                } else {
+                    // 检测浏览器/系统语言
+                    const lang = (navigator.language || navigator.userLanguage || 'zh').toLowerCase();
+                    this.currentLang = lang.startsWith('zh') ? 'zh' : 'en';
+                }
                 this.applyLanguage();
             },
 
