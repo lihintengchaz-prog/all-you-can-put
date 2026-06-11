@@ -1329,7 +1329,8 @@
             // 音频触感：对于不支持硬件震动的设备，用低音脉冲模拟
             _audioThump: function(intensity) {
                 try {
-                    const ctx = GameApp.Audio.ctx || GameApp.Audio.init();
+                    GameApp.Audio._ensure();
+                    const ctx = GameApp.Audio.ctx;
                     if (!ctx) return;
                     const osc = ctx.createOscillator();
                     const gain = ctx.createGain();
@@ -1394,7 +1395,7 @@
         GameApp.Audio = {
             ctx: null,
             enabled: true,
-            masterVolume: 0.3,
+            masterVolume: 0.35,
 
             _ensure: function() {
                 if (this.ctx) return true;
@@ -1411,69 +1412,164 @@
                 if (this.enabled) { this._ensure(); this.ctx && this.ctx.resume(); }
             },
 
-            _play: function(freq, duration, type, vol) {
+            // 五声音阶频率（宫商角徵羽 + 变奏）
+            _pentatonic: [262, 294, 330, 392, 440, 523, 587, 659, 784, 880, 1047, 1175, 1319, 1568],
+
+            // 高级播放：带柔和起音和自然衰减
+            _play: function(freq, duration, type, vol, detune) {
                 if (!this.enabled || !this._ensure()) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = type || 'sine';
-                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-                gain.gain.setValueAtTime((vol || 0.3) * this.masterVolume, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-                osc.connect(gain); gain.connect(this.ctx.destination);
-                osc.start(); osc.stop(this.ctx.currentTime + duration);
+                var ctx = this.ctx;
+                var now = ctx.currentTime;
+                // 主振荡器
+                var osc = ctx.createOscillator();
+                var gain = ctx.createGain();
+                osc.type = type || 'triangle';
+                osc.frequency.setValueAtTime(freq, now);
+                if (detune) osc.detune.setValueAtTime(detune, now);
+                // 柔和的起音（attack） + 自然衰减（release）
+                var v = (vol || 0.3) * this.masterVolume;
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(v, now + 0.015);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.start(now); osc.stop(now + duration);
+                // 第二层泛音（更温暖）
+                var osc2 = ctx.createOscillator();
+                var gain2 = ctx.createGain();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(freq * 2, now);
+                gain2.gain.setValueAtTime(0, now);
+                gain2.gain.linearRampToValueAtTime(v * 0.2, now + 0.02);
+                gain2.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.7);
+                osc2.connect(gain2); gain2.connect(ctx.destination);
+                osc2.start(now); osc2.stop(now + duration);
             },
 
+            // 带混响模拟：多层衰减回声
+            _playWithReverb: function(freq, duration, type, vol, echoes) {
+                this._play(freq, duration, type, vol);
+                var count = echoes || 3;
+                var delay = 0.12;
+                for (var i = 1; i <= count; i++) {
+                    var self = this;
+                    setTimeout(function() {
+                        self._play(freq * 0.98, duration * 0.6, 'sine', (vol || 0.3) * 0.15 / i, 0);
+                    }, i * delay * 1000);
+                }
+            },
+
+            // 播放升调琶音（用于line clear）
+            _arpeggio: function(notes, baseTime, durationPerNote, type, vol) {
+                var self = this;
+                notes.forEach(function(f, i) {
+                    setTimeout(function() {
+                        self._play(f, durationPerNote, type, vol);
+                    }, baseTime + i * 80);
+                });
+            },
+
+            // 🎵 放置方块：柔和的水晶落点音
             place: function() {
-                this._play(520, 0.08, 'sine', 0.25);
-                setTimeout(() => this._play(680, 0.06, 'sine', 0.18), 40);
+                this._play(392, 0.12, 'triangle', 0.2);
+                setTimeout(() => this._play(523, 0.1, 'sine', 0.12), 35);
+                // 微弱的低频共鸣
+                setTimeout(() => this._play(130, 0.15, 'sine', 0.06), 10);
             },
 
+            // 🎵 单行消除：清脆的叮咚声 + 泛音回响
             lineClear: function() {
-                this._play(600, 0.15, 'sine', 0.3);
-                setTimeout(() => this._play(800, 0.12, 'sine', 0.25), 60);
-                setTimeout(() => this._play(1000, 0.1, 'sine', 0.2), 120);
+                this._play(784, 0.2, 'triangle', 0.25);
+                setTimeout(() => this._play(1047, 0.18, 'sine', 0.18), 60);
+                setTimeout(() => this._play(784, 0.3, 'sine', 0.08), 150);
             },
 
+            // 🎵 多行消除：悦耳的五声音阶上行
             multiClear: function(lines) {
-                const base = 500; const notes = [0, 4, 7, 12];
-                for (let i = 0; i < Math.min(lines, 4); i++) {
-                    setTimeout(() => {
-                        this._play(base + notes[i] * 50, 0.2, 'triangle', 0.25);
-                    }, i * 80);
+                var penta = this._pentatonic;
+                var notes = [penta[3], penta[5], penta[7], penta[9], penta[11]];
+                var count = Math.min(lines, 5);
+                for (var i = 0; i < count; i++) {
+                    setTimeout(function(idx) {
+                        return function() {
+                            this._play(notes[idx], 0.25, 'triangle', 0.22);
+                            if (idx === count - 1) {
+                                setTimeout(() => this._play(notes[idx] * 1.5, 0.5, 'sine', 0.15), 60);
+                            }
+                        };
+                    }(i), i * 90);
                 }
-                setTimeout(() => this._play(1200, 0.3, 'sine', 0.15), Math.min(lines, 4) * 80 + 50);
             },
 
+            // 🎵 全版全清：辉煌的完整和弦 + 梦幻回声
             allClear: function() {
-                const melody = [523, 659, 784, 1047];
-                melody.forEach((f, i) => {
-                    setTimeout(() => this._play(f, 0.3, 'triangle', 0.35), i * 100);
+                var penta = this._pentatonic;
+                // 上行琶音
+                var melody = [penta[0], penta[2], penta[4], penta[7], penta[9], penta[11]];
+                var self = this;
+                melody.forEach(function(f, i) {
+                    setTimeout(function() {
+                        self._playWithReverb(f, 0.35, 'triangle', 0.3, 3);
+                    }, i * 100);
                 });
-                setTimeout(() => {
-                    [1047, 1319].forEach(f => this._play(f, 0.5, 'sine', 0.25));
-                }, 450);
+                // 结尾双音和弦
+                setTimeout(function() {
+                    self._playWithReverb(penta[11], 0.8, 'triangle', 0.3, 4);
+                    setTimeout(function() {
+                        self._playWithReverb(penta[9], 0.6, 'sine', 0.2, 3);
+                    }, 120);
+                }, melody.length * 100 + 100);
             },
 
+            // 🎵 宝箱开启：魔法般的闪烁音效
             chestOpen: function() {
-                [400, 500, 600, 800, 1200].forEach((f, i) => {
-                    setTimeout(() => this._play(f, 0.15, 'sine', 0.2), i * 60);
+                var penta = this._pentatonic;
+                var sparkle = [penta[1], penta[3], penta[6], penta[8], penta[11], penta[13]];
+                var self = this;
+                sparkle.forEach(function(f, i) {
+                    setTimeout(function() {
+                        self._play(f, 0.12, 'sine', 0.18);
+                        if (i % 2 === 0) {
+                            self._play(f * 1.5, 0.08, 'sine', 0.08);
+                        }
+                    }, i * 55);
                 });
+                // 结尾高音闪烁
+                setTimeout(function() {
+                    self._playWithReverb(penta[13], 0.5, 'sine', 0.2, 4);
+                }, sparkle.length * 55 + 80);
             },
 
+            // 🎵 Combo：喜悦的上行音符
             combo: function(count) {
-                const base = 440;
-                for (let i = 0; i < Math.min(count, 5); i++) {
-                    setTimeout(() => {
-                        this._play(base + i * 80, 0.12, 'triangle', 0.2);
-                    }, i * 50);
+                var penta = this._pentatonic;
+                var notes = [penta[2], penta[4], penta[6], penta[8], penta[10]];
+                for (var i = 0; i < Math.min(count, 5); i++) {
+                    setTimeout(function(idx) {
+                        return function() {
+                            this._play(notes[idx], 0.15, 'triangle', 0.2);
+                            if (idx === Math.min(count, 5) - 1 && count >= 3) {
+                                setTimeout(() => this._playWithReverb(notes[idx] * 1.5, 0.4, 'sine', 0.18, 3), 60);
+                            }
+                        };
+                    }(i), i * 55);
                 }
-                setTimeout(() => this._play(880 + count * 30, 0.3, 'sine', 0.25), Math.min(count, 5) * 50);
             },
 
+            // 🎵 游戏结束：温暖平静的收尾（不是刺耳的sawtooth）
             gameOver: function() {
-                [400, 350, 300, 250].forEach((f, i) => {
-                    setTimeout(() => this._play(f, 0.3, 'sawtooth', 0.15), i * 150);
+                var penta = this._pentatonic;
+                var self = this;
+                // 温柔下行
+                var notes = [penta[7], penta[5], penta[4], penta[2], penta[0]];
+                notes.forEach(function(f, i) {
+                    setTimeout(function() {
+                        self._play(f, 0.35, 'triangle', 0.18);
+                    }, i * 200);
                 });
+                // 最后一声安慰的低音
+                setTimeout(function() {
+                    self._play(penta[0] * 0.5, 0.6, 'sine', 0.08);
+                }, notes.length * 200 + 100);
             }
         };
 
