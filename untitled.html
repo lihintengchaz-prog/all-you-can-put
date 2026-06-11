@@ -2617,12 +2617,12 @@
                         GameApp.Core.showComboPopup(5);
                         GameApp.Core.showPrize('💎', 'JACKPOT!', t.getText('prizeJackpot') + s.bScore, '#ffd700');
                     }},
-                    { chance: 0.15, name: 'dots', exec: function() {
+                    { chance: 0.12, name: 'dots', exec: function() {
                         s.hand = [];
                         for(let i=0; i<3; i++) s.hand.push({ shape: [[1]], color: '#00ff66', x: 35 + i * 140, y: 520, origX: 35 + i * 140, origY: 520, isUsed: false });
                         GameApp.Core.showPrize('🎯', 'LUCKY DOTS!', t.getText('prizeDots'), '#00ff66');
                     }},
-                    { chance: 0.15, name: 'bomb', exec: function() {
+                    { chance: 0.12, name: 'bomb', exec: function() {
                         // 炸彈：清空棋盤中央 3x3 區域
                         const size = GameApp.Config.bGridSize;
                         const center = Math.floor(size / 2);
@@ -2646,7 +2646,7 @@
                         s.screenShakeTimer = 0.5;
                         GameApp.Core.showPrize('💥', 'BOMB!', t.getText('prizeBomb') + cleared + t.getText('prizeBombEnd'), '#ff6d00');
                     }},
-                    { chance: 0.20, name: 'bonus', exec: function() {
+                    { chance: 0.15, name: 'bonus', exec: function() {
                         const bonus = 100 + Math.floor(Math.random() * 401); // 100~500
                         s.bScore += bonus;
                         const cx = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
@@ -2654,7 +2654,7 @@
                         s.scoreFlyouts.push({ x: cx, y: cy, vy: 2.5, text: '💰 +' + bonus, color: '#ffd700', timer: 1.5 });
                         GameApp.Core.showPrize('💰', 'BONUS!', t.getText('prizeBonus') + bonus + t.getText('prizeBonusEnd'), '#ffd700');
                     }},
-                    { chance: 0.20, name: 'rowclear', exec: function() {
+                    { chance: 0.15, name: 'rowclear', exec: function() {
                         const size = GameApp.Config.bGridSize;
                         const bCell = GameApp.Config.bCellSize;
                         // 找填最满的行来清除
@@ -2674,10 +2674,9 @@
                                     GameApp.Core.generateParticles(c * bCell + bCell/2, bestRow * bCell + bCell/2, '#ff6d00');
                                 }
                             }
-                            // 宝箱清屏也增加倍数
+                            // 宝箱清屏也增加倍数（+0.2，最高2.0）
                             s.allClearCount++;
-                            if (s.allClearCount === 1) s.currentMultiplier = 2.0;
-                            else s.currentMultiplier = 3.0;
+                            s.currentMultiplier = Math.min(2.0, s.currentMultiplier + 0.2);
                             GameApp.Vibe.celebration();
                             s.screenShakeTimer = 0.5;
                             s.bScore += Math.round(50 * s.currentMultiplier);
@@ -2688,7 +2687,33 @@
                             s.bScore += 100;
                         }
                     }},
-                    { chance: 0.15, name: 'wildswap', exec: function() {
+                    { chance: 0.21, name: 'fullclear', exec: function() {
+                        // 全清！清空整個棋盤
+                        const size = GameApp.Config.bGridSize;
+                        const bCell = GameApp.Config.bCellSize;
+                        for (let r = 0; r < size; r++) {
+                            for (let c = 0; c < size; c++) {
+                                if (s.bGrid[r][c] !== '#4e566d') {
+                                    s.bGrid[r][c] = 0;
+                                    GameApp.Core.generateParticles(c * bCell + bCell/2, r * bCell + bCell/2, '#ffd700');
+                                }
+                            }
+                        }
+                        s.currentMultiplier = Math.min(2.0, s.currentMultiplier + 0.2);
+                        GameApp.Vibe.celebration();
+                        s.screenShakeTimer = 1.0;
+                        s.shakeIntensity = 3;
+                        s.bScore += Math.round(200 * s.currentMultiplier);
+                        GameApp.Core.showComboPopup(5);
+                        // 全屏粒子爆发
+                        for (let i = 0; i < 80; i++) {
+                            setTimeout(() => {
+                                s.particles.push({ x: Math.random() * 440, y: Math.random() * 440, vx: (Math.random() - 0.5) * 25, vy: (Math.random() - 0.8) * 20, radius: Math.random() * 6 + 2, alpha: 1, color: ['#ffd700','#ff3377','#00e5ff','#d500f9','#00ff66'][Math.floor(Math.random()*5)] });
+                            }, i * 10);
+                        }
+                        GameApp.Core.showPrize('🌈', 'FULL CLEAR!', '清空整個棋盤！倍率 ' + s.currentMultiplier.toFixed(1) + 'x', '#ffd700');
+                    }},
+                    { chance: 0.12, name: 'wildswap', exec: function() {
                         // 換牌：獲得一組高級形狀
                         const pool = [...GameApp.Config.Shapes.medium, ...GameApp.Config.Shapes.hard, ...GameApp.Config.Shapes.hard];
                         s.hand = [];
@@ -2699,7 +2724,7 @@
                         }
                         GameApp.Core.showPrize('🔄', 'WILDSWAP!', t.getText('prizeWildswap'), '#d500f9');
                     }},
-                    { chance: 0.10, name: 'select', exec: function() {
+                    { chance: 0.08, name: 'select', exec: function() {
                         s.isCustomSelecting = true;
                         s.hand = [];
                         s.customPicksLeft = 3;
