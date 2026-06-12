@@ -2042,7 +2042,7 @@
                 const size = GameApp.Config.bGridSize;
                 
                 // 震撼级粒子爆发
-                for (let i = 0; i < 100; i++) {
+                for (let i = 0; i < 45; i++) {
                     setTimeout(() => {
                         s.particles.push({
                             x: Math.random() * size * bCell,
@@ -2886,7 +2886,7 @@
 
                 const bCell = GameApp.Config.bCellSize;
                 // 超级粒子爆炸（增强版：更多更大）
-                const burstCount = Math.min(linesCount * 25, 120);
+                const burstCount = Math.min(linesCount * 15, 60);
                 for (let i = 0; i < burstCount; i++) {
                     setTimeout(() => {
                         const rx = Math.random() * 8 * bCell;
@@ -2932,7 +2932,7 @@
 
             generateParticles: function(x, y, color) {
                 const s = GameApp.State;
-                for(let i=0; i<8; i++) {
+                for(let i=0; i<6; i++) {
                     s.particles.push({ x: x + (Math.random()-0.5)*10, y: y + (Math.random()-0.5)*10, vx: (Math.random() - 0.5) * 8, vy: (Math.random() - 0.8) * 8, radius: Math.random() * 3 + 1.5, alpha: 0.8, color: color });
                 }
             },
@@ -2972,7 +2972,7 @@
                 if (!overlay) return;
                 const s = GameApp.State;
                 // 🚀 粒子爆发（同步创建，无setTimeout延迟）
-                for (let i = 0; i < 20; i++) {
+                for (let i = 0; i < 14; i++) {
                     s.particles.push({ x: 40 + Math.random() * 360, y: 40 + Math.random() * 360, vx: (Math.random() - 0.5) * 16, vy: (Math.random() - 0.8) * 14, radius: Math.random() * 4 + 2, alpha: 0.8, color: color || '#ffd700' });
                 }
                 // 使用 DocumentFragment 减少 DOM 回流
@@ -3128,7 +3128,7 @@
                     }
                     // 🎆 放置粒子爆发
                     const bCellNow = GameApp.Config.bCellSize;
-                    for (let pi = 0; pi < 8; pi++) {
+                    for (let pi = 0; pi < 5; pi++) {
                         s.particles.push({
                             x: fcx + (Math.random() - 0.5) * 30,
                             y: fcy + (Math.random() - 0.5) * 30,
@@ -3283,7 +3283,7 @@
                         s.bScore += Math.round(200 * s.currentMultiplier);
                         GameApp.Core.showComboPopup(0);
                         // 全屏粒子爆发
-                        for (let i = 0; i < 30; i++) {
+                        for (let i = 0; i < 18; i++) {
                             setTimeout(() => {
                                 s.particles.push({ x: Math.random() * 440, y: Math.random() * 440, vx: (Math.random() - 0.5) * 15, vy: (Math.random() - 0.8) * 12, radius: Math.random() * 4 + 1.5, alpha: 0.8, color: ['#ffd700','#ff3377','#00e5ff','#d500f9','#00ff66'][Math.floor(Math.random()*5)] });
                             }, i * 15);
@@ -3346,7 +3346,7 @@
                     overlay.innerHTML = '<div style="position:relative;display:flex;flex-direction:column;align-items:center;"><div style="position:absolute;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,0.6) 0%,rgba(255,215,0,0.2) 40%,rgba(255,215,0,0) 70%);top:50%;left:50%;transform:translate(-50%,-50%);"></div><div class="combo-popup combo-color-gold" style="font-size:clamp(3.5rem,12vw,7rem);position:relative;font-weight:900;animation:comboAppear 1.8s ease-out forwards;">💎 JACKPOT!<br><span class="combo-label" style="font-size:clamp(1.2rem,4vw,2.2rem);">🔥 SCORE DOUBLED! 🔥</span></div></div>';
                     // 全屏爆炸粒子（优化数量）
                     s.screenShakeTimer = 0.8;
-                    for (let i = 0; i < 30; i++) {
+                    for (let i = 0; i < 18; i++) {
                         setTimeout(() => {
                             s.particles.push({ x: Math.random() * 440, y: Math.random() * 440, vx: (Math.random() - 0.5) * 16, vy: (Math.random() - 0.8) * 14, radius: Math.random() * 4 + 1.5, alpha: 0.8, color: ['#ffd700','#ff3377','#00e5ff','#d500f9','#00ff66'][Math.floor(Math.random()*5)] });
                         }, i * 25);
@@ -3360,7 +3360,7 @@
                     overlay.innerHTML = '<div class="combo-popup ' + color + '" style="font-size:clamp(3rem,10vw,6rem);">' + tier + '<br><span class="combo-label">' + multText + '</span></div>';
                     // 全清粒子爆花（优化数量）
                     s.screenShakeTimer = 0.6;
-                    for (let i = 0; i < 25; i++) {
+                    for (let i = 0; i < 16; i++) {
                         setTimeout(() => {
                             s.particles.push({ x: Math.random() * 440, y: Math.random() * 440, vx: (Math.random() - 0.5) * 16, vy: (Math.random() - 0.8) * 12, radius: Math.random() * 4 + 1.5, alpha: 0.8, color: ['#ffd700','#ff3377','#00e5ff'][Math.floor(Math.random()*3)] });
                         }, i * 30);
