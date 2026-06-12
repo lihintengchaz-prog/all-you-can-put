@@ -2332,17 +2332,17 @@
                     const sc = s.bScore;
                     // 经典模式比幸运模式稍微简单一点点：经典模式门槛+20%，幸运模式不加成
                     // 两模式都在10000分以上才开始慢慢变难
-                    const diffMod = s.currentMode === 'endless' ? 1.2 : 1.0;
+                    const diffMod = s.currentMode === 'endless' ? 1.15 : 1.0;
                     const adj = sc * diffMod;
-                    // Phase 1 (0-10000): 纯简单池，先爽10000分再动脑
-                    if (adj <= 10000) { chosenPool = poolEasy; difficultyTier = 0; }
-                    // Phase 2 (10000-20000): 开始混入中等形状（少量）
-                    else if (adj <= 20000) { 
-                        chosenPool = Math.random() < 0.75 ? poolEasy : poolMed;
+                    // Phase 1 (0-12000): 纯简单池，先爽12000分再动脑
+                    if (adj <= 12000) { chosenPool = poolEasy; difficultyTier = 0; }
+                    // Phase 2 (12000-22000): 开始混入中等形状（少量）
+                    else if (adj <= 22000) { 
+                        chosenPool = Math.random() < 0.80 ? poolEasy : poolMed;
                         difficultyTier = 1;
                     } else if (adj <= 30000) {
                         const r = Math.random();
-                        chosenPool = r < 0.45 ? poolEasy : r < 0.85 ? poolMed : poolAll;
+                        chosenPool = r < 0.50 ? poolEasy : r < 0.85 ? poolMed : poolAll;
                         difficultyTier = 2;
                     } else {
                         chosenPool = Math.random() < 0.35 ? poolMed : [...M, ...H];
@@ -2353,7 +2353,7 @@
                 // 🎯 优先找一个能立即消除行列的形狀（经典模式也启用）
                 let lineClearPiece = null;
                 if (s.currentMode === 'endless' || s.currentMode === 'lucky' || s.currentMode === 'level') {
-                    let searchPool = [...E, ...E, ...E, ...M, ...H, ...S]; // 重复简单池增加命中率
+                    let searchPool = [...E, ...E, ...E, ...E, ...E, ...M, ...H, ...S]; // 更多简单池增加命中
                     searchPool.sort(() => Math.random() - 0.5);
                     for (let p of searchPool) {
                         for (let r = 0; r < size; r++) {
