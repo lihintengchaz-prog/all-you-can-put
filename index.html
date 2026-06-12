@@ -219,6 +219,28 @@
             box-shadow: 0 12px 25px rgba(0, 229, 255, 0.4);
         }
 
+        .level-progress-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 3px;
+        }
+        .level-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00e5ff, #ffea00);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        .level-progress-text {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #aaa;
+            text-align: center;
+        }
+
         .continue-btn {
             background: linear-gradient(45deg, var(--yellow), var(--orange));
             color: #000;
@@ -1024,6 +1046,12 @@
             <div class="status-indicators-bar">
                 <div id="lucky-multiplier-tag" class="indicator-tag" style="display:none;">-</div>
                 <div id="lucky-progress-bar" class="indicator-tag" style="display:none;">-</div>
+                <div id="level-progress-area" class="indicator-tag" style="display:none;">
+                    <div class="level-progress-track">
+                        <div class="level-progress-fill" id="level-progress-fill"></div>
+                    </div>
+                    <div class="level-progress-text" id="level-progress-text">-</div>
+                </div>
             </div>
 
             <div class="arena" id="gameArenaPanel">
@@ -1302,6 +1330,7 @@
                     prizeWildswap: "獲得一組高級方塊！",
                     prizeSelect: "挑選 3 個你最想要的形狀",
                     prizeFullClear: "清空整個棋盤！倍率 ",
+                    remainText: "還差",
                     reviveBtn: "📺 看廣告復活",
                 },
                 en: {
@@ -1353,6 +1382,7 @@
                     prizeWildswap: "Got a set of premium shapes!",
                     prizeSelect: "Pick 3 shapes you want most",
                     prizeFullClear: "BOARD FULL CLEAR! Multiplier ",
+                    remainText: "Need",
                     reviveBtn: "📺 WATCH AD TO REVIVE",
                 }
             },
@@ -1958,7 +1988,13 @@
                 }
                 
                 if (s.currentMode === 'level') { 
-                    this.elements.topScoreText.innerText = `${t.getText('stage')} ${s.currentLevel}: ${s.bScore} / ${s.targetScore}`; 
+                    this.elements.topScoreText.innerText = `${t.getText('stage')} ${s.currentLevel}: ${s.bScore} / ${s.targetScore}`;
+                    var remain = Math.max(0, s.targetScore - s.bScore);
+                    var pct = Math.min(100, (s.bScore / s.targetScore) * 100);
+                    var fill = document.getElementById('level-progress-fill');
+                    var txt = document.getElementById('level-progress-text');
+                    if (fill) fill.style.width = pct + '%';
+                    if (txt) txt.innerText = remain > 0 ? t.getText('remainText') + ' ' + remain + ' 💪' : '🎉 ' + t.getText('goWin'); 
                 }
                 if (s.currentMode === 'lucky') { 
                     this.elements.luckyMultiplierTag.innerText = `${t.getText('multiplier')}: ${s.currentMultiplier.toFixed(1)}x`;
@@ -1966,8 +2002,10 @@
                 }
                 
 
-                const bestKey = s.currentMode === 'lucky' ? s.bBestScoreLucky : s.bBestScoreEndless;
-                this.elements.topBestText.innerText = `${t.getText('best')}: ${bestKey}`;
+                if (s.currentMode !== 'level') {
+                    const bestKey = s.currentMode === 'lucky' ? s.bBestScoreLucky : s.bBestScoreEndless;
+                    this.elements.topBestText.innerText = `${t.getText('best')}: ${bestKey}`;
+                }
             },
 
             openSettingsModal: function() { this.elements.settingsOverlay.style.display = 'flex'; },
@@ -2127,6 +2165,7 @@
                 document.getElementById('menu-screen').style.display = 'block';
                 document.getElementById('game-screen').style.display = 'none';
                 GameApp.UI.elements.luckyMultiplierTag.style.display = 'none';
+                document.getElementById('level-progress-area').style.display = 'none';
                 
                 // 返回主頁時還原動態背景
                 document.body.style.background = '';
@@ -2194,6 +2233,7 @@
                 GameApp.UI.elements.luckyMultiplierTag.style.display = 'none';
                 GameApp.UI.elements.luckyProgressBar.style.display = 'none';
                 GameApp.UI.elements.customSelectPanel.style.display = 'none';
+                document.getElementById('level-progress-area').style.display = 'block';
                 this.enterArena();
             },
 
