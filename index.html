@@ -1300,6 +1300,7 @@
                     prizeWildswap: "獲得一組高級方塊！",
                     prizeSelect: "挑選 3 個你最想要的形狀",
                     prizeFullClear: "清空整個棋盤！倍率 ",
+                    reviveBtn: "📺 看廣告復活",
                 },
                 en: {
                     sub: "", 
@@ -1350,6 +1351,7 @@
                     prizeWildswap: "Got a set of premium shapes!",
                     prizeSelect: "Pick 3 shapes you want most",
                     prizeFullClear: "BOARD FULL CLEAR! Multiplier ",
+                    reviveBtn: "📺 WATCH AD TO REVIVE",
                 }
             },
 
@@ -1399,6 +1401,7 @@
                 var _rBtn = document.getElementById('go-revive');
                 if (_rBtn) {
                     _rBtn.style.display = s.reviveCount > 0 ? 'inline-block' : 'none';
+                    _rBtn.innerText = this.getText('reviveBtn');
                 }
                 
                 if (s.currentMode === 'level') {
@@ -1835,6 +1838,7 @@
                 this.elements.luckyMultiplierTag = document.getElementById('lucky-multiplier-tag');
                 this.elements.luckyProgressBar = document.getElementById('lucky-progress-bar');
 
+
                 this.elements.customSelectPanel = document.getElementById('custom-select-panel');
                 this.elements.modalTitle = document.getElementById('modalTitle');
                 this.elements.modalScoreText = document.getElementById('modalScoreText');
@@ -1944,6 +1948,7 @@
                 var _rBtn = document.getElementById('go-revive');
                 if (_rBtn) {
                     _rBtn.style.display = s.reviveCount > 0 ? 'inline-block' : 'none';
+                    _rBtn.innerText = this.getText('reviveBtn');
                 }
                 
                 if (s.currentMode === 'level') { 
@@ -2016,6 +2021,7 @@
                 var _rBtn = document.getElementById('go-revive');
                 if (_rBtn) {
                     _rBtn.style.display = s.reviveCount > 0 ? 'inline-block' : 'none';
+                    _rBtn.innerText = this.getText('reviveBtn');
                 }
                 
                 if (s.currentMode === 'level') {
@@ -2306,6 +2312,7 @@
                 var _rBtn = document.getElementById('go-revive');
                 if (_rBtn) {
                     _rBtn.style.display = s.reviveCount > 0 ? 'inline-block' : 'none';
+                    _rBtn.innerText = this.getText('reviveBtn');
                 }
                 
                 if (s.currentMode === 'level') {
