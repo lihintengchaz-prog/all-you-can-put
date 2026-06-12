@@ -1860,10 +1860,11 @@
                     if (saved) completed = JSON.parse(saved);
                 } catch(e) {}
                 for (let i = 1; i <= GameApp.Config.maxLevel; i++) {
+                    let target = GameApp.Core.generateLevelConfig(i).target;
                     let btn = document.createElement('button');
                     btn.className = 'lvl-btn';
                     if (completed[i]) btn.classList.add('completed');
-                    btn.innerText = i < 10 ? '0' + i : i;
+                    btn.innerHTML = (i < 10 ? '0' + i : i) + '<br><span style="font-size:0.55rem;opacity:0.7;">' + target + '</span>';
                     btn.onclick = (e) => { e.stopPropagation(); GameApp.Core.startLevelMode(i); };
                     this.elements.levelPanel.appendChild(btn);
                 }
@@ -2188,7 +2189,8 @@
             startLevelMode: function(lvlNum) {
                 GameApp.State.currentMode = 'level'; GameApp.State.currentLevel = lvlNum;
                 GameApp.State.targetScore = this.generateLevelConfig(lvlNum).target;
-                GameApp.UI.elements.topBestText.style.display = 'none';
+                GameApp.UI.elements.topBestText.style.display = 'block';
+                GameApp.UI.elements.topBestText.innerText = '🎯 ' + GameApp.State.targetScore;
                 GameApp.UI.elements.luckyMultiplierTag.style.display = 'none';
                 GameApp.UI.elements.luckyProgressBar.style.display = 'none';
                 GameApp.UI.elements.customSelectPanel.style.display = 'none';
