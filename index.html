@@ -1074,7 +1074,7 @@
             <h2 id="modalTitle" style="color: var(--pink);">遊戲結束</h2>
             <p id="modalScoreText">最終得分: 0</p>
             <div class="modal-btns">
-                <button class="modal-btn btn-retry" id="go-retry" onclick="GameApp.Core.resetGame()">再開一局</button>
+                <button class="modal-btn btn-retry" id="go-retry" onclick="GameApp.Core.retryWithAdCheck()">再開一局</button>
                 <button class="modal-btn btn-menu" id="go-lobby" onclick="GameApp.Core.exitToMenu()">返回大廳</button>
             </div>
         </div>
@@ -2094,6 +2094,37 @@
                 document.body.style.background = ''; 
                 
                 
+            },
+
+            // 📺 看广告复活（每局最多5次）
+            reviveWithAd: function() {
+                const s = GameApp.State;
+                if (s.reviveCount <= 0) return;
+                s.reviveCount--;
+                GameApp.AdsManager.showRewarded(function() {
+                    s.isGameOver = false;
+                    s.selectedPiece = null;
+                    GameApp.UI.elements.gameoverOverlay.style.display = 'none';
+                    var rt = document.getElementById('revive-count-text');
+                    if (rt) rt.style.display = 'none';
+                    var rb = document.getElementById('go-revive');
+                    if (rb) rb.style.display = 'none';
+                    GameApp.UI.updateScoreDisplay();
+                });
+            },
+
+            // 📺 重开检查：每5局强制看一次插屏广告
+            retryWithAdCheck: function() {
+                const s = GameApp.State;
+                s.gamesSinceLastAd++;
+                if (s.gamesSinceLastAd >= 5) {
+                    s.gamesSinceLastAd = 0;
+                    GameApp.AdsManager.showInterstitial(function() {
+                        GameApp.Core.resetGame();
+                    });
+                } else {
+                    GameApp.Core.resetGame();
+                }
             },
 
             startLuckyMode: function() {
