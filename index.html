@@ -3045,15 +3045,20 @@
             // 🔮 寶箱與自選 3 連抽系統 (PICK 3 SYSTEM)
             triggerChestPopup: function() {
                 const s = GameApp.State;
-                s.selectedPiece = null; 
+                s.selectedPiece = null;
+                s._chestOpening = false;
                 GameApp.UI.elements.luckyChestOverlay.style.display = 'flex';
             },
 
             drawLuckyChest: function() {
+                const s = GameApp.State;
+                // 防止重复触发（宝箱emoji和按钮都绑定了同一个函数）
+                if (s._chestOpening) return;
+                s._chestOpening = true;
                 GameApp.Audio.chestOpen();
                 GameApp.Vibe.triple();
                 GameApp.UI.elements.luckyChestOverlay.style.display = "none";
-                const s = GameApp.State; const t = GameApp.I18N;
+                const t = GameApp.I18N;
                 let rng = Math.random();
                 
                 // 🎲 7 種寶箱獎勵
