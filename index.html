@@ -981,6 +981,7 @@
         </div>
 
 
+        <button class="continue-btn" id="continue-btn" onclick="GameApp.Core.loadSavedGame()">繼續上次遊戲 ➔</button>
         <div class="mode-container">
             <div class="mode-card" onclick="GameApp.Core.startLuckyMode()">
                 <span class="mode-badge" id="mode-badge-lucky">✨ 自创</span>
@@ -1417,6 +1418,9 @@
                 // 自创玩法角标
                 var badgeEl = document.getElementById('mode-badge-lucky');
                 if (badgeEl) badgeEl.innerText = t.luckyBadge;
+                // 繼續遊戲按鈕
+                var _cBtn = document.getElementById('continue-btn');
+                if (_cBtn) _cBtn.innerText = this.getText('continueBtn');
                 document.getElementById('lang-zh').className = 'lang-sub-btn' + (this.currentLang === 'zh' ? ' active' : '');
                 document.getElementById('lang-en').className = 'lang-sub-btn' + (this.currentLang === 'en' ? ' active' : '');
                 // 即時更新遊戲內分數欄
@@ -2058,6 +2062,12 @@
                 this.loadBestScore();
                 GameApp.AdsManager.init();
                 this.bindEvents();
+                // 檢查是否有存檔，顯示繼續遊戲按鈕
+                var saved = localStorage.getItem('all_you_can_put_save_v5');
+                var cBtn = document.getElementById('continue-btn');
+                if (cBtn && saved) {
+                    cBtn.style.display = 'block';
+                }
             },
 
             loadBestScore: function() {
@@ -2122,7 +2132,11 @@
                 GameApp.UI.elements.luckyMultiplierTag.style.display = 'none';
                 
                 // 返回主頁時還原動態背景
-                document.body.style.background = ''; 
+                document.body.style.background = '';
+                // 刷新繼續遊戲按鈕
+                var _cBtn = document.getElementById('continue-btn');
+                var _saved = localStorage.getItem('all_you_can_put_save_v5');
+                if (_cBtn) _cBtn.style.display = _saved ? 'block' : 'none'; 
                 
                 
             },
