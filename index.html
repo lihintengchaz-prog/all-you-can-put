@@ -2813,8 +2813,8 @@
 
             generateParticles: function(x, y, color) {
                 const s = GameApp.State;
-                for(let i=0; i<20; i++) {
-                    s.particles.push({ x: x, y: y, vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.8) * 12, radius: Math.random() * 4.5 + 1.5, alpha: 1, color: color });
+                for(let i=0; i<8; i++) {
+                    s.particles.push({ x: x + (Math.random()-0.5)*10, y: y + (Math.random()-0.5)*10, vx: (Math.random() - 0.5) * 8, vy: (Math.random() - 0.8) * 8, radius: Math.random() * 3 + 1.5, alpha: 0.8, color: color });
                 }
             },
 
@@ -3148,10 +3148,10 @@
                         s.bScore += Math.round(200 * s.currentMultiplier);
                         GameApp.Core.showComboPopup(5);
                         // 全屏粒子爆发
-                        for (let i = 0; i < 80; i++) {
+                        for (let i = 0; i < 30; i++) {
                             setTimeout(() => {
-                                s.particles.push({ x: Math.random() * 440, y: Math.random() * 440, vx: (Math.random() - 0.5) * 25, vy: (Math.random() - 0.8) * 20, radius: Math.random() * 6 + 2, alpha: 1, color: ['#ffd700','#ff3377','#00e5ff','#d500f9','#00ff66'][Math.floor(Math.random()*5)] });
-                            }, i * 10);
+                                s.particles.push({ x: Math.random() * 440, y: Math.random() * 440, vx: (Math.random() - 0.5) * 15, vy: (Math.random() - 0.8) * 12, radius: Math.random() * 4 + 1.5, alpha: 0.8, color: ['#ffd700','#ff3377','#00e5ff','#d500f9','#00ff66'][Math.floor(Math.random()*5)] });
+                            }, i * 15);
                         }
                         GameApp.Core.showPrize('🌈', 'FULL CLEAR!', t.getText('prizeFullClear') + s.currentMultiplier.toFixed(1) + 'x', '#ffd700');
                     }},
