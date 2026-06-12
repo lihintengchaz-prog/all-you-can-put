@@ -3646,8 +3646,9 @@
                         ctx.fillText(s.lastAchievement.icon + ' ' + s.lastAchievement.title, canvas.width/2, 8);
                         ctx.restore();
                     }
-                    
-                    s.hand.forEach(piece => { if (!piece.isUsed && piece !== s.selectedPiece) this.drawPiece(piece, piece.x, piece.y, 24); });
+                }
+                
+                s.hand.forEach(piece => { if (!piece.isUsed && piece !== s.selectedPiece) this.drawPiece(piece, piece.x, piece.y, 24); });
                 
 
 
