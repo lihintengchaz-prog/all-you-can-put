@@ -3551,29 +3551,30 @@
                     }
                     if (_clearRows.length > 0 || _clearCols.length > 0) {
                         ctx.save();
-                        ctx.shadowBlur = 0;
+                        // 🌈 彩虹渐变发光边
+                        var _grad = ctx.createLinearGradient(0, 0, 8*bCell, 8*bCell);
+                        _grad.addColorStop(0, '#ffd700');
+                        _grad.addColorStop(0.25, '#ff6b6b');
+                        _grad.addColorStop(0.5, '#ffd700');
+                        _grad.addColorStop(0.75, '#00e5ff');
+                        _grad.addColorStop(1, '#ffd700');
+                        ctx.strokeStyle = _grad;
+                        ctx.lineWidth = 4;
+                        ctx.shadowColor = '#ffd700';
+                        ctx.shadowBlur = 25;
+                        ctx.setLineDash([8, 6]);
+                        ctx.lineDashOffset = -performance.now() / 50;
                         // 行高亮
                         for (var _ri = 0; _ri < _clearRows.length; _ri++) {
                             var _ry = _clearRows[_ri] * bCell;
-                            ctx.strokeStyle = '#ffffff';
-                            ctx.lineWidth = 3;
-                            ctx.setLineDash([6, 4]);
-                            ctx.shadowColor = '#ffffff';
-                            ctx.shadowBlur = 15;
-                            ctx.strokeRect(2, _ry + 2, 8*bCell - 4, bCell - 4);
-                            ctx.setLineDash([]);
+                            ctx.strokeRect(3, _ry + 3, 8*bCell - 6, bCell - 6);
                         }
                         // 列高亮
                         for (var _ci = 0; _ci < _clearCols.length; _ci++) {
                             var _cx = _clearCols[_ci] * bCell;
-                            ctx.strokeStyle = '#ffffff';
-                            ctx.lineWidth = 3;
-                            ctx.setLineDash([6, 4]);
-                            ctx.shadowColor = '#ffffff';
-                            ctx.shadowBlur = 15;
-                            ctx.strokeRect(_cx + 2, 2, bCell - 4, 8*bCell - 4);
-                            ctx.setLineDash([]);
+                            ctx.strokeRect(_cx + 3, 3, bCell - 6, 8*bCell - 6);
                         }
+                        ctx.setLineDash([]);
                         ctx.restore();
                     }
                 }
@@ -3646,53 +3647,7 @@
                         ctx.restore();
                     }
                     
-                    // 🔥 预览消除行列：如果放置会消行，加高亮边框
-                    var _tempGrid = s.bGrid.map(function(row) { return row.slice(); });
-                    for (var _r = 0; _r < pShape.length; _r++) {
-                        for (var _c = 0; _c < pShape[_r].length; _c++) {
-                            if (pShape[_r][_c]) _tempGrid[previewY+_r][previewX+_c] = 1;
-                        }
-                    }
-                    var _clearRows = [], _clearCols = [];
-                    for (var _r = 0; _r < 8; _r++) {
-                        if (_tempGrid[_r].every(function(v) { return v !== 0 && v !== '#4e566d'; })) _clearRows.push(_r);
-                    }
-                    for (var _c = 0; _c < 8; _c++) {
-                        var _full = true;
-                        for (var _r = 0; _r < 8; _r++) {
-                            if (_tempGrid[_r][_c] === 0 || _tempGrid[_r][_c] === '#4e566d') { _full = false; break; }
-                        }
-                        if (_full) _clearCols.push(_c);
-                    }
-                    if (_clearRows.length > 0 || _clearCols.length > 0) {
-                        ctx.save();
-                        ctx.shadowBlur = 0;
-                        // 行高亮
-                        for (var _ri = 0; _ri < _clearRows.length; _ri++) {
-                            var _ry = _clearRows[_ri] * bCell;
-                            ctx.strokeStyle = '#ffffff';
-                            ctx.lineWidth = 3;
-                            ctx.setLineDash([6, 4]);
-                            ctx.shadowColor = '#ffffff';
-                            ctx.shadowBlur = 15;
-                            ctx.strokeRect(2, _ry + 2, 8*bCell - 4, bCell - 4);
-                            ctx.setLineDash([]);
-                        }
-                        // 列高亮
-                        for (var _ci = 0; _ci < _clearCols.length; _ci++) {
-                            var _cx = _clearCols[_ci] * bCell;
-                            ctx.strokeStyle = '#ffffff';
-                            ctx.lineWidth = 3;
-                            ctx.setLineDash([6, 4]);
-                            ctx.shadowColor = '#ffffff';
-                            ctx.shadowBlur = 15;
-                            ctx.strokeRect(_cx + 2, 2, bCell - 4, 8*bCell - 4);
-                            ctx.setLineDash([]);
-                        }
-                        ctx.restore();
-                    }
-                }
-                s.hand.forEach(piece => { if (!piece.isUsed && piece !== s.selectedPiece) this.drawPiece(piece, piece.x, piece.y, 24); });
+                    s.hand.forEach(piece => { if (!piece.isUsed && piece !== s.selectedPiece) this.drawPiece(piece, piece.x, piece.y, 24); });
                 
 
 
