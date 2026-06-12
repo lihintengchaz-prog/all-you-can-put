@@ -1219,6 +1219,7 @@
             
             particles: [],
             clearingCells: [],
+            _frameCount: 0,
             allClearFlashTimer: 0,
             currentTheme: GameApp.Config.Themes[0],
             currentThemeIndex: 0,
@@ -2963,7 +2964,10 @@
                     if ((hoverR !== s.lastHoverR || hoverC !== s.lastHoverC) && hoverR >= 0 && hoverR < 8 && hoverC >= 0 && hoverC < 8) {
                         s.lastHoverR = hoverR;
                         s.lastHoverC = hoverC;
+                        s._hoverActive = true;
                         GameApp.Vibe.medium();
+                    } else {
+                        s._hoverActive = false;
                     }
                 } else {
                     s.lastHoverR = -1;
@@ -2973,7 +2977,7 @@
 
             handleInputEnd: function() {
                 const s = GameApp.State;
-                s.lastHoverR = -1; s.lastHoverC = -1;
+                s.lastHoverR = -1; s.lastHoverC = -1; s._hoverActive = false;
                 const piece = s.selectedPiece;
                 if (!piece) return;
                 
