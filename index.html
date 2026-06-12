@@ -2651,7 +2651,7 @@
 
             getSnapCoordinates: function() {
                 const s = GameApp.State; const cellSize = GameApp.Config.bCellSize;
-                const mult = GameApp.Config.isTouchDevice ? 1.5 : 1.1; const targetX = s.dragStartX + (s.mouseX - s.dragStartX) * mult - s.dragOffset.x; const targetY = s.dragStartY + (s.mouseY - s.dragStartY) * mult - s.dragOffset.y; 
+                const mult = GameApp.Config.isTouchDevice ? 1.5 : 1.15; const targetX = s.dragStartX + (s.mouseX - s.dragStartX) * mult - s.dragOffset.x; const targetY = s.dragStartY + (s.mouseY - s.dragStartY) * mult - s.dragOffset.y; 
                 return { gridX: Math.round(targetX / cellSize), gridY: Math.round(targetY / cellSize) };
             },
 
@@ -2916,7 +2916,7 @@
                     if(s.mouseX >= piece.x - 35 && s.mouseX <= piece.x + 155 && s.mouseY >= piece.y - 30 && s.mouseY <= piece.y + 150) {
                         s.selectedPiece = piece;
                         s.dragOffset.x = (piece.shape[0].length * bCell) / 2;
-                        s.dragOffset.y = (piece.shape.length * bCell) / 2 + 25;
+                        s.dragOffset.y = (piece.shape.length * bCell) / 2 + 32;
                         s.dragStartX = s.mouseX;
                         s.dragStartY = s.mouseY;
                         s.hasDragged = false;
@@ -3530,6 +3530,52 @@
                         });
                         ctx.restore();
                     }
+                    
+                    // 🔥 预览消除行列：如果放置会消行，加高亮边框
+                    var _tempGrid = s.bGrid.map(function(row) { return row.slice(); });
+                    for (var _r = 0; _r < pShape.length; _r++) {
+                        for (var _c = 0; _c < pShape[_r].length; _c++) {
+                            if (pShape[_r][_c]) _tempGrid[previewY+_r][previewX+_c] = 1;
+                        }
+                    }
+                    var _clearRows = [], _clearCols = [];
+                    for (var _r = 0; _r < 8; _r++) {
+                        if (_tempGrid[_r].every(function(v) { return v !== 0 && v !== '#4e566d'; })) _clearRows.push(_r);
+                    }
+                    for (var _c = 0; _c < 8; _c++) {
+                        var _full = true;
+                        for (var _r = 0; _r < 8; _r++) {
+                            if (_tempGrid[_r][_c] === 0 || _tempGrid[_r][_c] === '#4e566d') { _full = false; break; }
+                        }
+                        if (_full) _clearCols.push(_c);
+                    }
+                    if (_clearRows.length > 0 || _clearCols.length > 0) {
+                        ctx.save();
+                        ctx.shadowBlur = 0;
+                        // 行高亮
+                        for (var _ri = 0; _ri < _clearRows.length; _ri++) {
+                            var _ry = _clearRows[_ri] * bCell;
+                            ctx.strokeStyle = '#ffffff';
+                            ctx.lineWidth = 3;
+                            ctx.setLineDash([6, 4]);
+                            ctx.shadowColor = '#ffffff';
+                            ctx.shadowBlur = 15;
+                            ctx.strokeRect(2, _ry + 2, 8*bCell - 4, bCell - 4);
+                            ctx.setLineDash([]);
+                        }
+                        // 列高亮
+                        for (var _ci = 0; _ci < _clearCols.length; _ci++) {
+                            var _cx = _clearCols[_ci] * bCell;
+                            ctx.strokeStyle = '#ffffff';
+                            ctx.lineWidth = 3;
+                            ctx.setLineDash([6, 4]);
+                            ctx.shadowColor = '#ffffff';
+                            ctx.shadowBlur = 15;
+                            ctx.strokeRect(_cx + 2, 2, bCell - 4, 8*bCell - 4);
+                            ctx.setLineDash([]);
+                        }
+                        ctx.restore();
+                    }
                 }
 
                 // 绘製分數飛字（放大+发光）
@@ -3599,6 +3645,52 @@
                         ctx.fillText(s.lastAchievement.icon + ' ' + s.lastAchievement.title, canvas.width/2, 8);
                         ctx.restore();
                     }
+                    
+                    // 🔥 预览消除行列：如果放置会消行，加高亮边框
+                    var _tempGrid = s.bGrid.map(function(row) { return row.slice(); });
+                    for (var _r = 0; _r < pShape.length; _r++) {
+                        for (var _c = 0; _c < pShape[_r].length; _c++) {
+                            if (pShape[_r][_c]) _tempGrid[previewY+_r][previewX+_c] = 1;
+                        }
+                    }
+                    var _clearRows = [], _clearCols = [];
+                    for (var _r = 0; _r < 8; _r++) {
+                        if (_tempGrid[_r].every(function(v) { return v !== 0 && v !== '#4e566d'; })) _clearRows.push(_r);
+                    }
+                    for (var _c = 0; _c < 8; _c++) {
+                        var _full = true;
+                        for (var _r = 0; _r < 8; _r++) {
+                            if (_tempGrid[_r][_c] === 0 || _tempGrid[_r][_c] === '#4e566d') { _full = false; break; }
+                        }
+                        if (_full) _clearCols.push(_c);
+                    }
+                    if (_clearRows.length > 0 || _clearCols.length > 0) {
+                        ctx.save();
+                        ctx.shadowBlur = 0;
+                        // 行高亮
+                        for (var _ri = 0; _ri < _clearRows.length; _ri++) {
+                            var _ry = _clearRows[_ri] * bCell;
+                            ctx.strokeStyle = '#ffffff';
+                            ctx.lineWidth = 3;
+                            ctx.setLineDash([6, 4]);
+                            ctx.shadowColor = '#ffffff';
+                            ctx.shadowBlur = 15;
+                            ctx.strokeRect(2, _ry + 2, 8*bCell - 4, bCell - 4);
+                            ctx.setLineDash([]);
+                        }
+                        // 列高亮
+                        for (var _ci = 0; _ci < _clearCols.length; _ci++) {
+                            var _cx = _clearCols[_ci] * bCell;
+                            ctx.strokeStyle = '#ffffff';
+                            ctx.lineWidth = 3;
+                            ctx.setLineDash([6, 4]);
+                            ctx.shadowColor = '#ffffff';
+                            ctx.shadowBlur = 15;
+                            ctx.strokeRect(_cx + 2, 2, bCell - 4, 8*bCell - 4);
+                            ctx.setLineDash([]);
+                        }
+                        ctx.restore();
+                    }
                 }
                 s.hand.forEach(piece => { if (!piece.isUsed && piece !== s.selectedPiece) this.drawPiece(piece, piece.x, piece.y, 24); });
                 
@@ -3615,7 +3707,7 @@
                     // 完全自由跟随手指，不做任何绘制限制（手感与之前完全一致）
                     const pW = s.selectedPiece.shape[0].length * bCell;
                     const pH = s.selectedPiece.shape.length * bCell;
-                    const mult = GameApp.Config.isTouchDevice ? 1.5 : 1.1; const dx = s.dragStartX + (s.mouseX - s.dragStartX) * mult - s.dragOffset.x;
+                    const mult = GameApp.Config.isTouchDevice ? 1.5 : 1.15; const dx = s.dragStartX + (s.mouseX - s.dragStartX) * mult - s.dragOffset.x;
                     const dy = s.dragStartY + (s.mouseY - s.dragStartY) * mult - s.dragOffset.y;
                     ctx.save();
                     ctx.shadowColor = s.selectedPiece.color;
