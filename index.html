@@ -2062,12 +2062,6 @@
                 this.loadBestScore();
                 GameApp.AdsManager.init();
                 this.bindEvents();
-                // 檢查是否有存檔，顯示繼續遊戲按鈕
-                var saved = localStorage.getItem('all_you_can_put_save_v5');
-                var cBtn = document.getElementById('continue-btn');
-                if (cBtn && saved) {
-                    cBtn.style.display = 'block';
-                }
             },
 
             loadBestScore: function() {
@@ -2120,7 +2114,8 @@
 
             clearSavedGame: function() {
                 localStorage.removeItem('all_you_can_put_save_v5');
-                
+                var _cBtn = document.getElementById('continue-btn');
+                if (_cBtn) _cBtn.style.display = 'none';
             },
 
             exitToMenu: function() {
@@ -2133,10 +2128,9 @@
                 
                 // 返回主頁時還原動態背景
                 document.body.style.background = '';
-                // 刷新繼續遊戲按鈕
+                // 返回主頁時顯示繼續遊戲按鈕（只有真正玩過存檔才會出現）
                 var _cBtn = document.getElementById('continue-btn');
-                var _saved = localStorage.getItem('all_you_can_put_save_v5');
-                if (_cBtn) _cBtn.style.display = _saved ? 'block' : 'none'; 
+                if (_cBtn) _cBtn.style.display = 'block'; 
                 
                 
             },
