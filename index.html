@@ -1073,6 +1073,12 @@
         <div class="modal-box" onclick="event.stopPropagation()">
             <h2 id="modalTitle" style="color: var(--pink);">遊戲結束</h2>
             <p id="modalScoreText">最終得分: 0</p>
+            <div id="revive-section" style="margin-bottom:10px;">
+                <button class="modal-btn" id="go-revive" onclick="GameApp.Core.reviveWithAd()" style="background: linear-gradient(45deg, #00e5ff, #d500f9); color:#fff; font-weight:900; display:none;">
+                    📺 看廣告復活
+                </button>
+                <p id="revive-count-text" style="color:rgba(255,255,255,0.5); font-size:0.85rem; margin-top:4px; display:none;"></p>
+            </div>
             <div class="modal-btns">
                 <button class="modal-btn btn-retry" id="go-retry" onclick="GameApp.Core.retryWithAdCheck()">再開一局</button>
                 <button class="modal-btn btn-menu" id="go-lobby" onclick="GameApp.Core.exitToMenu()">返回大廳</button>
@@ -1390,7 +1396,19 @@
                 document.getElementById('chest-open-btn').innerText = t.chestOpen;
                 // 遊戲結束彈窗（及時更新語言）
                 if (s && s.isGameOver) {
-                    if (s.currentMode === 'level') {
+                    // 📺 显示复活按钮
+                var _rBtn = document.getElementById('go-revive');
+                var _rTxt = document.getElementById('revive-count-text');
+                if (_rBtn && s.reviveCount > 0) {
+                    _rBtn.style.display = 'inline-block';
+                    _rTxt.style.display = 'block';
+                    _rTxt.innerText = '剩余复活次数: ' + s.reviveCount;
+                } else if (_rBtn) {
+                    _rBtn.style.display = 'none';
+                    _rTxt.style.display = 'none';
+                }
+                
+                if (s.currentMode === 'level') {
                         // 保持 showGameOverModal 設定的內容
                     } else {
                         document.getElementById('modalTitle').innerText = t.goOver;
@@ -1929,6 +1947,18 @@
                 } else {
                     this.elements.topScoreText.innerText = `${t.getText('score')}: ${s.bScore}`;
                 }
+                // 📺 显示复活按钮
+                var _rBtn = document.getElementById('go-revive');
+                var _rTxt = document.getElementById('revive-count-text');
+                if (_rBtn && s.reviveCount > 0) {
+                    _rBtn.style.display = 'inline-block';
+                    _rTxt.style.display = 'block';
+                    _rTxt.innerText = '剩余复活次数: ' + s.reviveCount;
+                } else if (_rBtn) {
+                    _rBtn.style.display = 'none';
+                    _rTxt.style.display = 'none';
+                }
+                
                 if (s.currentMode === 'level') { 
                     this.elements.topScoreText.innerText = `${t.getText('stage')} ${s.currentLevel}: ${s.bScore} / ${s.targetScore}`; 
                 }
@@ -1994,6 +2024,18 @@
                 s.shakeIntensity = 3;
                 // 全屏白闪
                 s.allClearFlashTimer = 0.6;
+                
+                // 📺 显示复活按钮
+                var _rBtn = document.getElementById('go-revive');
+                var _rTxt = document.getElementById('revive-count-text');
+                if (_rBtn && s.reviveCount > 0) {
+                    _rBtn.style.display = 'inline-block';
+                    _rTxt.style.display = 'block';
+                    _rTxt.innerText = '剩余复活次数: ' + s.reviveCount;
+                } else if (_rBtn) {
+                    _rBtn.style.display = 'none';
+                    _rTxt.style.display = 'none';
+                }
                 
                 if (s.currentMode === 'level') {
                     this.elements.modalTitle.innerText = isWin ? t.getText('goWin') : t.getText('goLose');
@@ -2281,6 +2323,18 @@
                 let chosenPool;
                 let difficultyTier;
 
+                // 📺 显示复活按钮
+                var _rBtn = document.getElementById('go-revive');
+                var _rTxt = document.getElementById('revive-count-text');
+                if (_rBtn && s.reviveCount > 0) {
+                    _rBtn.style.display = 'inline-block';
+                    _rTxt.style.display = 'block';
+                    _rTxt.innerText = '剩余复活次数: ' + s.reviveCount;
+                } else if (_rBtn) {
+                    _rBtn.style.display = 'none';
+                    _rTxt.style.display = 'none';
+                }
+                
                 if (s.currentMode === 'level') {
                     if (s.currentLevel <= 20) { chosenPool = poolEasy; difficultyTier = 0; }
                     else if (s.currentLevel <= 40) { chosenPool = poolMed; difficultyTier = 1; }
