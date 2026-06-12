@@ -1101,7 +1101,7 @@
             bGridSize: 8,
             bCellSize: 440 / 8, // 55px
             maxLevel: 66,
-            luckyLineTarget: 3,
+            luckyLineTarget: 5,
             
             // 🌟 核心修改：單點與十字架移出普通池，改為隱藏款
             Shapes: {
@@ -1219,7 +1219,7 @@
             reviveCount: 5,
             gamesSinceLastAd: 0,
             
-            luckyLinesNeeded: 3,
+            luckyLinesNeeded: 5,
             isCustomSelecting: false,
             customPicksLeft: 0, // 新增：記錄自選剩餘次數
             allClearCount: 0,
@@ -2263,7 +2263,7 @@
                 GameApp.UI.elements.customSelectPanel.style.display = 'none';
                 
                 s.bGrid = Array(size).fill(null).map(() => Array(size).fill(0));
-                s.bScore = 0; s.isGameOver = false; s.luckyLinesNeeded = 3; s.isCustomSelecting = false; s.allClearCount = 0; s.currentMultiplier = 1.0; s.allClearFlashTimer = 0; s.selectedPiece = null;
+                s.bScore = 0; s.isGameOver = false; s.luckyLinesNeeded = 5; s.isCustomSelecting = false; s.allClearCount = 0; s.currentMultiplier = 1.0; s.allClearFlashTimer = 0; s.selectedPiece = null;
                 s.particles = []; s.clearingCells = [];
                 s.gridBounceX = Array(size).fill().map(() => Array(size).fill(1)); s.gridBounceY = Array(size).fill().map(() => Array(size).fill(1));
                 s.gridVelocityX = Array(size).fill().map(() => Array(size).fill(0)); s.gridVelocityY = Array(size).fill().map(() => Array(size).fill(0));
