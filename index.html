@@ -3213,13 +3213,12 @@
                 
                 if (linesCount >= 5) {
                     overlay.innerHTML = '<div style="position:relative;display:flex;flex-direction:column;align-items:center;"><div style="position:absolute;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,0.6) 0%,rgba(255,215,0,0.2) 40%,rgba(255,215,0,0) 70%);top:50%;left:50%;transform:translate(-50%,-50%);"></div><div class="combo-popup combo-color-gold" style="font-size:clamp(3.5rem,12vw,7rem);position:relative;font-weight:900;animation:comboAppear 1.8s ease-out forwards;">💎 JACKPOT!<br><span class="combo-label" style="font-size:clamp(1.2rem,4vw,2.2rem);">🔥 SCORE DOUBLED! 🔥</span></div></div>';
-                    // 全屏爆炸粒子（增强版）
-                    s.screenShakeTimer = 1.0;
-                    s.shakeIntensity = 3;
-                    for (let i = 0; i < 80; i++) {
+                    // 全屏爆炸粒子（优化数量）
+                    s.screenShakeTimer = 0.8;
+                    for (let i = 0; i < 30; i++) {
                         setTimeout(() => {
-                            s.particles.push({ x: Math.random() * 440, y: Math.random() * 440, vx: (Math.random() - 0.5) * 25, vy: (Math.random() - 0.8) * 20, radius: Math.random() * 6 + 2, alpha: 1, color: ['#ffd700','#ff3377','#00e5ff','#d500f9','#00ff66'][Math.floor(Math.random()*5)] });
-                        }, i * 15);
+                            s.particles.push({ x: Math.random() * 440, y: Math.random() * 440, vx: (Math.random() - 0.5) * 16, vy: (Math.random() - 0.8) * 14, radius: Math.random() * 4 + 1.5, alpha: 0.8, color: ['#ffd700','#ff3377','#00e5ff','#d500f9','#00ff66'][Math.floor(Math.random()*5)] });
+                        }, i * 25);
                     }
                     GameApp.Audio.allClear();
                     GameApp.Vibe.celebration();
@@ -3228,12 +3227,12 @@
                     const color = s.allClearCount >= 4 ? 'combo-color-gold' : s.allClearCount >= 3 ? 'combo-color-pink' : s.allClearCount >= 2 ? 'combo-color-cyan' : 'combo-color-gold';
                     const multText = s.currentMode === 'lucky' ? ('⚡ ' + s.currentMultiplier.toFixed(1) + 'x MULTIPLIER ⚡') : ('✨ BOARD CLEAR ✨');
                     overlay.innerHTML = '<div class="combo-popup ' + color + '" style="font-size:clamp(3rem,10vw,6rem);">' + tier + '<br><span class="combo-label">' + multText + '</span></div>';
-                    // 全清粒子爆花（增强版）
-                    s.screenShakeTimer = 0.8;
-                    for (let i = 0; i < 60; i++) {
+                    // 全清粒子爆花（优化数量）
+                    s.screenShakeTimer = 0.6;
+                    for (let i = 0; i < 25; i++) {
                         setTimeout(() => {
-                            s.particles.push({ x: Math.random() * 440, y: Math.random() * 440, vx: (Math.random() - 0.5) * 20, vy: (Math.random() - 0.8) * 16, radius: Math.random() * 5 + 2, alpha: 1, color: ['#ffd700','#ff3377','#00e5ff'][Math.floor(Math.random()*3)] });
-                        }, i * 20);
+                            s.particles.push({ x: Math.random() * 440, y: Math.random() * 440, vx: (Math.random() - 0.5) * 16, vy: (Math.random() - 0.8) * 12, radius: Math.random() * 4 + 1.5, alpha: 0.8, color: ['#ffd700','#ff3377','#00e5ff'][Math.floor(Math.random()*3)] });
+                        }, i * 30);
                     }
                     GameApp.Vibe.combo(s.allClearCount);
                 } else if (linesCount >= 4) {
@@ -3616,15 +3615,8 @@
                 
                 if (s.allClearFlashTimer > 0) {
                     ctx.save();
-                    ctx.globalAlpha = s.allClearFlashTimer * 0.6;
+                    ctx.globalAlpha = Math.min(s.allClearFlashTimer * 0.5, 0.6);
                     ctx.fillStyle = "#ffffff";
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    // 全屏光晕
-                    const grd = ctx.createRadialGradient(220, 220, 0, 220, 220, 300);
-                    grd.addColorStop(0, 'rgba(255,255,255,0.4)');
-                    grd.addColorStop(0.5, 'rgba(255,255,255,0.1)');
-                    grd.addColorStop(1, 'rgba(255,255,255,0)');
-                    ctx.fillStyle = grd;
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     ctx.restore();
                 }
