@@ -3198,7 +3198,7 @@
                             GameApp.Vibe.celebration();
                             s.screenShakeTimer = 0.5;
                             s.bScore += Math.round(50 * s.currentMultiplier);
-                            GameApp.Core.showComboPopup(5);
+                            GameApp.Core.showComboPopup(0);
                             GameApp.Core.showPrize('🧹', 'ROW CLEAR!', t.getText('prizeRowClear') + (bestRow+1) + t.getText('prizeRowClearMid') + s.currentMultiplier.toFixed(1) + 'x', '#ffd700');
                         } else {
                             GameApp.Core.showPrize('🎁', 'EMPTY!', t.getText('prizeEmpty'), '#00e5ff');
