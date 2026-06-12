@@ -978,6 +978,7 @@
         #menu-screen, #game-screen { position: relative; z-index: 10; }
 
     </style>
+    <script src="https://cdn.crazygames.com/crazygames-sdk/crazygames.js"></script>
 </head>
 <body>
     <!-- 背景装饰层：波浪 + 浮动粒子 + 发光方块 + 动态光晕 -->
@@ -1467,12 +1468,48 @@
         // MODULE: ADS & MONETIZATION ENGINE (商業變現模擬)
         // ----------------------------------------------------------------------
         GameApp.AdsManager = {
+            _ready: false,
+            _queue: [],
+            _sdk: null,
+
             init: function() {
-                console.log("[AdsManager] Monetization SDK Ready.");
+                var self = this;
+                if (typeof CrazyGames !== 'undefined' && CrazyGames.SDK) {
+                    this._sdk = CrazyGames.SDK;
+                    this._sdk.game
+                        .gameplayStart()
+                        .then(function() {
+                            self._ready = true;
+                            console.log('[AdsManager] CrazyGames SDK Ready.');
+                            self._queue.forEach(function(fn) { fn(); });
+                            self._queue = [];
+                        })
+                        .catch(function() {
+                            console.log('[AdsManager] SDK init fallback (no adblock).');
+                            self._ready = true;
+                        });
+                } else {
+                    console.log('[AdsManager] CrazyGames SDK not loaded (offline/dev).');
+                    self._ready = true;
+                }
             },
+
             showInterstitial: function(callback) {
-                // Future Implementation: crazygames.showInterstitial().then(callback);
-                if(callback) callback();
+                var self = this;
+                var done = function() { if (callback) setTimeout(callback, 100); };
+                if (!this._sdk) { done(); return; }
+                this._sdk.ad.requestAd('midgame')
+                    .then(function() { done(); })
+                    .catch(function() { done(); });
+            },
+
+            showRewarded: function(callback) {
+                var self = this;
+                var done = function() { if (callback) setTimeout(callback, 100); };
+                if (!this._sdk) { done(); return; }
+                this._sdk.ad.requestAd('rewarded')
+                    .then(function() { done(); })
+                    .catch(function() { done(); });
             }
         };
 
@@ -2036,6 +2073,7 @@
             showGameOverModal: function(isWin) {
                 const s = GameApp.State;
                 s.isGameOver = true;
+                GameApp.AdsManager._sdk && GameApp.AdsManager._sdk.game.gameplayStop();
                 this.elements.gameoverOverlay.style.display = 'flex';
                 const t = GameApp.I18N;
                 const bCell = GameApp.Config.bCellSize;
@@ -2073,6 +2111,7 @@
                     this.elements.modalScoreText.innerText = isWin ? `${t.getText('goWinDesc')} ${s.targetScore}` : t.getText('goLoseDesc');
                     // 标记关卡已完成
                     if (isWin) {
+                        GameApp.AdsManager._sdk && GameApp.AdsManager._sdk.game.happytime();
                         try {
                             var completed = {};
                             var saved = localStorage.getItem('all_you_can_put_levels_completed');
@@ -2159,6 +2198,7 @@
             },
 
             exitToMenu: function() {
+                GameApp.AdsManager._sdk && GameApp.AdsManager._sdk.game.gameplayStop();
                 this.saveCurrentGame();
                 GameApp.UI.elements.gameoverOverlay.style.display = 'none';
                 GameApp.UI.elements.settingsOverlay.style.display = 'none';
@@ -2241,6 +2281,7 @@
                 document.getElementById('menu-screen').style.display = 'none';
                 document.getElementById('game-screen').style.display = 'flex';
                 this.resetGame(); GameApp.I18N.applyLanguage();
+                GameApp.AdsManager._sdk && GameApp.AdsManager._sdk.game.gameplayStart();
                 if (!GameApp.State.loopActive) { GameApp.State.loopActive = true; GameApp.Render.gameTick(); }
             },
 
@@ -2832,6 +2873,7 @@
                     const cx = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
                     const cy = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
                     s.scoreFlyouts.push({ x: cx, y: cy, vy: 2.2, text: "\u2728 ALL CLEAR x" + s.allClearCount + "!", color: "#ffd700", timer: 1.5, color: "#ffd700", timer: 1.2 });
+                    GameApp.AdsManager._sdk && GameApp.AdsManager._sdk.game.happytime();
                     GameApp.UI.updateScoreDisplay();
                 }
             },
@@ -3188,7 +3230,8 @@
                     }},
                     { chance: 0.12, name: 'dots', exec: function() {
                         s.hand = [];
-                        for(let i=0; i<3; i++) s.hand.push({ shape: [[1]], color: '#00ff66', x: 35 + i * 140, y: 520, origX: 35 + i * 140, origY: 520, isUsed: false });
+                        for(let i=0; i<3; i++) s.hand.push({ shape: [[1]], color: '#00ff66', x: 35 + i * 140, y: 520, origX: 35 + i * 140, origY: 520, isUsed: false })
+                        GameApp.AdsManager._sdk && GameApp.AdsManager._sdk.game.happytime();;
                         GameApp.Core.showPrize('🎯', 'LUCKY DOTS!', t.getText('prizeDots'), '#00ff66');
                     }},
                     { chance: 0.16, name: 'bomb', exec: function() {
