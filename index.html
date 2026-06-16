@@ -3175,14 +3175,17 @@ var(--yellow), var(--orange));
                 const piece = s.selectedPiece;
                 if (!piece) return;
                 
-                // ↩️ 拖回手牌区：松手位置 >= 拿起位置 = 放回（手牌在下方，拿起只能往上拖）
-                if (s.mouseY >= s.dragStartY - 10) {
+                const bCell = GameApp.Config.bCellSize;
+                const { gridX, gridY } = this.getSnapCoordinates();
+                
+                // ↩️ 三重判断拖回手牌区（满足任一即放回）
+                // 1) 松手位置在拿起位置附近或更下方
+                // 2) 吸附坐标超出棋盘（gridY >= 8）
+                // 3) 吸附到第0行但手指在下半区（矛盾 = 拖回）
+                if (s.mouseY >= s.dragStartY - 80 || gridY >= GameApp.Config.bGridSize || (gridY < 0 && s.mouseY > 300)) {
                     s.selectedPiece = null;
                     return;
                 }
-                
-                const bCell = GameApp.Config.bCellSize;
-                const { gridX, gridY } = this.getSnapCoordinates();
                 
                 // 将吸附坐标限制在棋盘范围内（确保能放到顶部）
                 const clampedGridX = Math.max(0, Math.min(gridX, GameApp.Config.bGridSize - piece.shape[0].length));
