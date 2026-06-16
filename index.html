@@ -3178,10 +3178,7 @@ var(--yellow), var(--orange));
                 const bCell = GameApp.Config.bCellSize;
                 const { gridX, gridY } = this.getSnapCoordinates();
                 
-                // ↩️ 三重判断拖回手牌区（满足任一即放回）
-                // 1) 松手位置在拿起位置附近或更下方
-                // 2) 吸附坐标超出棋盘（gridY >= 8）
-                // 3) 吸附到第0行但手指在下半区（矛盾 = 拖回）
+                // Triple return check: mouseY near start, gridY out of bounds, or contradiction
                 if (s.mouseY >= s.dragStartY - 80 || gridY >= GameApp.Config.bGridSize || (gridY < 0 && s.mouseY > 300)) {
                     s.selectedPiece = null;
                     return;
