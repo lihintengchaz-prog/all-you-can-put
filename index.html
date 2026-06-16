@@ -241,7 +241,8 @@
             text-align: center;
         }
 
-var(--yellow), var(--orange));
+        .continue-btn {
+            background: linear-gradient(45deg, var(--yellow), var(--orange));
             color: #000;
             margin: 0 auto 30px auto;
             display: none;
@@ -1003,6 +1004,7 @@ var(--yellow), var(--orange));
         </div>
 
 
+        <button class="continue-btn" id="continue-btn" onclick="GameApp.Core.loadSavedGame()">繼續上次遊戲 ➔</button>
         <div class="mode-container">
             <div class="mode-card" onclick="GameApp.Core.startLuckyMode()">
                 <span class="mode-badge" id="mode-badge-lucky">✨ 自创</span>
@@ -1315,7 +1317,7 @@ var(--yellow), var(--orange));
                     chestOpen: "開 啟 寶 箱", 
                     goRetryBtn: "再開一局", 
                     goLobbyBtn: "返回大廳", 
-
+                    continueBtn: "繼續上次遊戲 ➔",
                     prizeJackpot: "分數直接翻倍！目前 ", 
                     prizeDots: "全部變為 1x1 靈活小點",
                     prizeBomb: "清空棋盤中央 3x3 區域（清除 ",
@@ -1367,7 +1369,7 @@ var(--yellow), var(--orange));
                     chestOpen: "OPEN CHEST", 
                     goRetryBtn: "PLAY AGAIN", 
                     goLobbyBtn: "LOBBY", 
-
+                    continueBtn: "CONTINUE GAME ➔",
                     prizeJackpot: "Score doubled! Now: ",
                     prizeDots: "All become 1x1 rescue dots!",
                     prizeBomb: "Cleared 3x3 center area (",
@@ -1447,6 +1449,9 @@ var(--yellow), var(--orange));
                 // 自创玩法角标
                 var badgeEl = document.getElementById('mode-badge-lucky');
                 if (badgeEl) badgeEl.innerText = t.luckyBadge;
+                // 繼續遊戲按鈕
+                var _cBtn = document.getElementById('continue-btn');
+                if (_cBtn) _cBtn.innerText = this.getText('continueBtn');
                 document.getElementById('lang-zh').className = 'lang-sub-btn' + (this.currentLang === 'zh' ? ' active' : '');
                 document.getElementById('lang-en').className = 'lang-sub-btn' + (this.currentLang === 'en' ? ' active' : '');
                 // 即時更新遊戲內分數欄
@@ -1462,48 +1467,12 @@ var(--yellow), var(--orange));
         // MODULE: ADS & MONETIZATION ENGINE (商業變現模擬)
         // ----------------------------------------------------------------------
         GameApp.AdsManager = {
-            _ready: false,
-            _queue: [],
-            _sdk: null,
-
             init: function() {
-                var self = this;
-                if (typeof CrazyGames !== 'undefined' && CrazyGames.SDK) {
-                    this._sdk = CrazyGames.SDK;
-                    this._sdk.game
-                        .gameplayStart()
-                        .then(function() {
-                            self._ready = true;
-                            console.log('[AdsManager] CrazyGames SDK Ready.');
-                            self._queue.forEach(function(fn) { fn(); });
-                            self._queue = [];
-                        })
-                        .catch(function() {
-                            console.log('[AdsManager] SDK init fallback (no adblock).');
-                            self._ready = true;
-                        });
-                } else {
-                    console.log('[AdsManager] CrazyGames SDK not loaded (offline/dev).');
-                    self._ready = true;
-                }
+                console.log("[AdsManager] Monetization SDK Ready.");
             },
-
             showInterstitial: function(callback) {
-                var self = this;
-                var done = function() { if (callback) setTimeout(callback, 100); };
-                if (!this._sdk) { done(); return; }
-                this._sdk.ad.requestAd('midgame')
-                    .then(function() { done(); })
-                    .catch(function() { done(); });
-            },
-
-            showRewarded: function(callback) {
-                var self = this;
-                var done = function() { if (callback) setTimeout(callback, 100); };
-                if (!this._sdk) { done(); return; }
-                this._sdk.ad.requestAd('rewarded')
-                    .then(function() { done(); })
-                    .catch(function() { done(); });
+                // Future Implementation: crazygames.showInterstitial().then(callback);
+                if(callback) callback();
             }
         };
 
@@ -2067,14 +2036,13 @@ var(--yellow), var(--orange));
             showGameOverModal: function(isWin) {
                 const s = GameApp.State;
                 s.isGameOver = true;
-                GameApp.AdsManager._sdk && GameApp.AdsManager._sdk.game.gameplayStop();
                 this.elements.gameoverOverlay.style.display = 'flex';
                 const t = GameApp.I18N;
                 const bCell = GameApp.Config.bCellSize;
                 const size = GameApp.Config.bGridSize;
                 
                 // 震撼级粒子爆发
-                for (let i = 0; i < 20; i++) {
+                for (let i = 0; i < 45; i++) {
                     setTimeout(() => {
                         s.particles.push({
                             x: Math.random() * size * bCell,
@@ -2105,7 +2073,6 @@ var(--yellow), var(--orange));
                     this.elements.modalScoreText.innerText = isWin ? `${t.getText('goWinDesc')} ${s.targetScore}` : t.getText('goLoseDesc');
                     // 标记关卡已完成
                     if (isWin) {
-                        GameApp.AdsManager._sdk && GameApp.AdsManager._sdk.game.happytime();
                         try {
                             var completed = {};
                             var saved = localStorage.getItem('all_you_can_put_levels_completed');
@@ -2187,10 +2154,11 @@ var(--yellow), var(--orange));
 
             clearSavedGame: function() {
                 localStorage.removeItem('all_you_can_put_save_v5');
+                var _cBtn = document.getElementById('continue-btn');
+                if (_cBtn) _cBtn.style.display = 'none';
             },
 
             exitToMenu: function() {
-                GameApp.AdsManager._sdk && GameApp.AdsManager._sdk.game.gameplayStop();
                 this.saveCurrentGame();
                 GameApp.UI.elements.gameoverOverlay.style.display = 'none';
                 GameApp.UI.elements.settingsOverlay.style.display = 'none';
@@ -2201,7 +2169,9 @@ var(--yellow), var(--orange));
                 
                 // 返回主頁時還原動態背景
                 document.body.style.background = '';
-
+                // 返回主頁時顯示繼續遊戲按鈕（只有真正玩過存檔才會出現）
+                var _cBtn = document.getElementById('continue-btn');
+                if (_cBtn) _cBtn.style.display = 'block'; 
                 
                 
             },
@@ -2236,20 +2206,8 @@ var(--yellow), var(--orange));
             },
 
             startLuckyMode: function() {
-                GameApp.State.currentMode = 'lucky';
+                this.clearSavedGame(); GameApp.State.currentMode = 'lucky';
                 GameApp.State.currentMultiplier = 1.0;
-                // 检查是否有存档，有则继续上次游戏
-                const saved = localStorage.getItem('all_you_can_put_save_v5');
-                if (saved) {
-                    try {
-                        const data = JSON.parse(saved);
-                        if (data && data.currentMode === 'lucky') {
-                            this.loadSavedGame();
-                            return;
-                        }
-                    } catch(e) {}
-                }
-                this.clearSavedGame();
                 GameApp.UI.elements.topBestText.style.display = 'block';
                 GameApp.UI.elements.luckyMultiplierTag.style.display = 'block';
                 GameApp.UI.elements.luckyProgressBar.style.display = 'block';
@@ -2258,20 +2216,8 @@ var(--yellow), var(--orange));
             },
 
             startEndlessMode: function() {
-                GameApp.State.currentMode = 'endless';
+                this.clearSavedGame(); GameApp.State.currentMode = 'endless';
                 GameApp.State.currentMultiplier = 1.0;
-                // 检查是否有存档，有则继续上次游戏
-                const saved = localStorage.getItem('all_you_can_put_save_v5');
-                if (saved) {
-                    try {
-                        const data = JSON.parse(saved);
-                        if (data && data.currentMode === 'endless') {
-                            this.loadSavedGame();
-                            return;
-                        }
-                    } catch(e) {}
-                }
-                this.clearSavedGame();
                 GameApp.UI.elements.topBestText.style.display = 'block';
                 GameApp.UI.elements.luckyMultiplierTag.style.display = 'none';
                 GameApp.UI.elements.luckyProgressBar.style.display = 'none';
@@ -2295,7 +2241,6 @@ var(--yellow), var(--orange));
                 document.getElementById('menu-screen').style.display = 'none';
                 document.getElementById('game-screen').style.display = 'flex';
                 this.resetGame(); GameApp.I18N.applyLanguage();
-                GameApp.AdsManager._sdk && GameApp.AdsManager._sdk.game.gameplayStart();
                 if (!GameApp.State.loopActive) { GameApp.State.loopActive = true; GameApp.Render.gameTick(); }
             },
 
@@ -2887,7 +2832,6 @@ var(--yellow), var(--orange));
                     const cx = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
                     const cy = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
                     s.scoreFlyouts.push({ x: cx, y: cy, vy: 2.2, text: "\u2728 ALL CLEAR x" + s.allClearCount + "!", color: "#ffd700", timer: 1.5, color: "#ffd700", timer: 1.2 });
-                    GameApp.AdsManager._sdk && GameApp.AdsManager._sdk.game.happytime();
                     GameApp.UI.updateScoreDisplay();
                 }
             },
@@ -3054,12 +2998,8 @@ var(--yellow), var(--orange));
                     this.handleInputMove(this.getEventPos(e));
                 });
                 
-                window.addEventListener('mouseup', (e) => {
+                window.addEventListener('mouseup', () => {
                     if (GameApp.State.selectedPiece) {
-                        const canvas = GameApp.UI.elements.canvas;
-                        const rect = canvas.getBoundingClientRect();
-                        const scaleY = canvas.height / rect.height;
-                        GameApp.State.mouseY = (e.clientY - rect.top) * scaleY;
                         this.handleInputEnd();
                     }
                 });
@@ -3076,15 +3016,8 @@ var(--yellow), var(--orange));
                     this.handleInputMove(this.getEventPos(e));
                 }, { passive: false });
                 
-                window.addEventListener('touchend', (e) => {
+                window.addEventListener('touchend', () => {
                     if (GameApp.State.selectedPiece) {
-                        // 更新 final mouseY 為真正鬆手的位置（touchend 沒有 moved 記錄）
-                        if (e.changedTouches && e.changedTouches[0]) {
-                            const canvas = GameApp.UI.elements.canvas;
-                            const rect = canvas.getBoundingClientRect();
-                            const scaleY = canvas.height / rect.height;
-                            GameApp.State.mouseY = (e.changedTouches[0].clientY - rect.top) * scaleY;
-                        }
                         this.handleInputEnd();
                     }
                 });
@@ -3144,22 +3077,15 @@ var(--yellow), var(--orange));
                     GameApp.Vibe.light();
                     // 格子吸附震动（进新格子加额外反馈）
                     const bCell = GameApp.Config.bCellSize;
-                    // 如果拖到手牌区（y>400=第7行以下）→清除吸附，不识别棋盘格子
-                    if (pos.y > 380) {
-                        s.lastHoverR = -1;
-                        s.lastHoverC = -1;
-                        s._hoverActive = false;
+                    const hoverR = Math.floor(pos.y / bCell);
+                    const hoverC = Math.floor(pos.x / bCell);
+                    if ((hoverR !== s.lastHoverR || hoverC !== s.lastHoverC) && hoverR >= 0 && hoverR < 8 && hoverC >= 0 && hoverC < 8) {
+                        s.lastHoverR = hoverR;
+                        s.lastHoverC = hoverC;
+                        s._hoverActive = true;
+                        GameApp.Vibe.medium();
                     } else {
-                        const hoverR = Math.floor(pos.y / bCell);
-                        const hoverC = Math.floor(pos.x / bCell);
-                        if ((hoverR !== s.lastHoverR || hoverC !== s.lastHoverC) && hoverR >= 0 && hoverR < 8 && hoverC >= 0 && hoverC < 8) {
-                            s.lastHoverR = hoverR;
-                            s.lastHoverC = hoverC;
-                            s._hoverActive = true;
-                            GameApp.Vibe.medium();
-                        } else {
-                            s._hoverActive = false;
-                        }
+                        s._hoverActive = false;
                     }
                 } else {
                     s.lastHoverR = -1;
@@ -3175,12 +3101,6 @@ var(--yellow), var(--orange));
                 
                 const bCell = GameApp.Config.bCellSize;
                 const { gridX, gridY } = this.getSnapCoordinates();
-                
-                // Triple return check: mouseY near start, gridY out of bounds, or contradiction
-                if (s.mouseY >= s.dragStartY - 80 || gridY >= GameApp.Config.bGridSize || (gridY < 0 && s.mouseY > 300)) {
-                    s.selectedPiece = null;
-                    return;
-                }
                 
                 // 将吸附坐标限制在棋盘范围内（确保能放到顶部）
                 const clampedGridX = Math.max(0, Math.min(gridX, GameApp.Config.bGridSize - piece.shape[0].length));
@@ -3208,7 +3128,7 @@ var(--yellow), var(--orange));
                     }
                     // 🎆 放置粒子爆发
                     const bCellNow = GameApp.Config.bCellSize;
-                    for (let pi = 0; pi < 3; pi++) {
+                    for (let pi = 0; pi < 5; pi++) {
                         s.particles.push({
                             x: fcx + (Math.random() - 0.5) * 30,
                             y: fcy + (Math.random() - 0.5) * 30,
@@ -3268,8 +3188,7 @@ var(--yellow), var(--orange));
                     }},
                     { chance: 0.12, name: 'dots', exec: function() {
                         s.hand = [];
-                        for(let i=0; i<3; i++) s.hand.push({ shape: [[1]], color: '#00ff66', x: 35 + i * 140, y: 520, origX: 35 + i * 140, origY: 520, isUsed: false })
-                        GameApp.AdsManager._sdk && GameApp.AdsManager._sdk.game.happytime();;
+                        for(let i=0; i<3; i++) s.hand.push({ shape: [[1]], color: '#00ff66', x: 35 + i * 140, y: 520, origX: 35 + i * 140, origY: 520, isUsed: false });
                         GameApp.Core.showPrize('🎯', 'LUCKY DOTS!', t.getText('prizeDots'), '#00ff66');
                     }},
                     { chance: 0.16, name: 'bomb', exec: function() {
@@ -3502,10 +3421,6 @@ var(--yellow), var(--orange));
                 const s = GameApp.State; const size = GameApp.Config.bGridSize;
                 
                 if (document.getElementById('game-screen').style.display === 'flex') {
-                    // 粒子上限：超过100个时移除最早的（防手机卡顿）
-                    if (s.particles.length > 100) {
-                        s.particles.splice(0, s.particles.length - 100);
-                    }
                     // 粒子更新：隔帧处理（帧率翻倍感）
                     if (s._frameCount % 2 === 0) {
                     for (let i = s.particles.length - 1; i >= 0; i--) {
@@ -3862,7 +3777,7 @@ var(--yellow), var(--orange));
 
                 if (s.selectedPiece && !s.isGameOver) {
                     // 拖拽粒子轨迹（降频，每帧概率降低到10%）
-                    if (Math.random() > 0.95) {
+                    if (Math.random() > 0.9) {
                         const tx = s.mouseX + (Math.random() - 0.5) * 25;
                         const ty = s.mouseY + (Math.random() - 0.5) * 25;
                         s.particles.push({ x: tx, y: ty, vx: (Math.random() - 0.5) * 2, vy: -Math.random() * 3 - 1, radius: Math.random() * 3 + 1.5, alpha: 0.5, color: s.selectedPiece.color });
@@ -3894,19 +3809,6 @@ var(--yellow), var(--orange));
             GameApp.UI.init();
             GameApp.I18N.init();
             GameApp.Core.init();
-
-            // 自动恢复：打开页面时如果有存档，直接继续上次游戏
-            var saved = localStorage.getItem('all_you_can_put_save_v5');
-            if (saved) {
-                try {
-                    var data = JSON.parse(saved);
-                    if (data && data.currentMode === 'lucky') {
-                        GameApp.Core.startLuckyMode();
-                    } else if (data && data.currentMode === 'endless') {
-                        GameApp.Core.startEndlessMode();
-                    }
-                } catch(e) {}
-            }
             // iOS: 必须在用户触摸事件中创建 AudioContext
             function ensureIOSAudio() {
                 try {
