@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ALL YOU CAN PUT!</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧩</text></svg>">
     
     
     <style>
@@ -22,13 +21,13 @@
             --danger: #ff1744;
             
             /* 介面與陰影 */
-            --panel-bg: rgba(8, 14, 30, 0.88);
-            --modal-bg: #0c1428;
-            --grid-dark: #060a18;
-            --grid-empty: #0e1630;
+            --panel-bg: rgba(22, 27, 49, 0.88);
+            --modal-bg: #1c2136;
+            --grid-dark: #121626;
+            --grid-empty: #1d223a;
             
             /* 預設海洋主題漸變 */
-            --bg-gradient: radial-gradient(ellipse at 50% 40%, #0f2040 0%, #0a1628 25%, #080e20 50%, #040a14 75%, #020408 100%);
+            --bg-gradient: linear-gradient(135deg, #ff99ca 0%, #4facfe 50%, #171b36 100%);
             --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
@@ -42,8 +41,6 @@
         body {
             font-family: var(--font-main);
             background: var(--bg-gradient);
-            background-size: 400% 400%;
-            animation: bgGradientShift 12s ease-in-out infinite;
             color: #fff;
             min-height: 100vh;
             display: flex;
@@ -70,8 +67,8 @@
             justify-content: center;
             align-items: center;
             position: relative;
-            margin-bottom: 6px;
-            padding: 6px;
+            margin-bottom: 10px;
+            padding: 10px;
         }
 
         .logo-title {
@@ -85,9 +82,10 @@
         }
 
         .lobby-settings-btn {
-            position: fixed;
-            right: 16px;
-            top: 16px;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.25);
             color: #fff;
@@ -101,114 +99,75 @@
             align-items: center;
             backdrop-filter: blur(10px);
             transition: all 0.25s ease;
-            z-index: 100;
         }
 
         .lobby-settings-btn:hover {
             background: var(--blue);
-            transform: scale(1.08) rotate(45deg);
+            transform: translateY(-50%) scale(1.08) rotate(45deg);
             border-color: #fff;
             box-shadow: 0 0 15px var(--blue);
         }
 
-
+        .subtitle {
+            color: #1a223d;
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            margin-bottom: 40px;
+            letter-spacing: 5px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
 
         .mode-container {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            max-width: 420px;
-            margin: 0 auto;
-        }
-        /* 模式容器入场淡入 */
-        .mode-container {
-            animation: fadeInUp 0.8s ease-out both;
-        }
-        @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
         }
 
         .mode-card {
             background: var(--panel-bg);
-            border-radius: 22px;
-            padding: 14px 22px;
+            border-radius: 32px;
+            padding: 35px 25px;
             cursor: pointer;
             backdrop-filter: blur(15px);
             box-shadow: 0 20px 45px rgba(0,0,0,0.3);
             border: 2px solid rgba(255,255,255,0.08);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s, box-shadow 0.3s;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s;
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            position: relative;
-            overflow: hidden;
-        }
-        /* 模式卡片光泽扫过 */
-        .mode-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
-            animation: cardShine 4s ease-in-out infinite;
-        }
-        @keyframes cardShine {
-            0%, 100% { left: -100%; }
-            50% { left: 200%; }
         }
 
         .mode-card:hover {
-            transform: translateY(-12px) scale(1.03);
+            transform: translateY(-10px);
             border-color: var(--blue);
-            box-shadow: 0 30px 60px rgba(0,242,254,0.2), 0 0 40px rgba(0,229,255,0.15);
+            box-shadow: 0 30px 60px rgba(0,242,254,0.2);
         }
 
-        /* 自创玩法角标 */
-        .mode-badge {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background: linear-gradient(135deg, var(--yellow), #ff8800);
-            color: #000;
-            font-size: 0.7rem;
-            font-weight: 900;
-            padding: 4px 14px;
-            border-radius: 20px;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 20px rgba(255, 200, 0, 0.5);
-            animation: badgePulse 1.5s ease-in-out infinite;
-            z-index: 5;
-            text-transform: uppercase;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(4px);
-        }
-        @keyframes badgePulse {
-            0%, 100% { transform: scale(1) rotate(-2deg); box-shadow: 0 4px 20px rgba(255, 200, 0, 0.5); }
-            50% { transform: scale(1.08) rotate(2deg); box-shadow: 0 4px 35px rgba(255, 200, 0, 0.8); }
-        }
-        @keyframes badgeGlow {
-            0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(1.3); }
-        }
         .mode-card h3 {
-            font-size: 1.3rem;
-            margin-bottom: 0;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
             font-weight: 800;
             letter-spacing: 1px;
         }
 
-        
+        .mode-card p {
+            color: #bbc6e0;
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            text-align: center;
+            height: 75px;
+        }
 
         .play-btn {
             background: linear-gradient(45deg, var(--pink), var(--blue));
             color: #fff;
             border: none;
-            padding: 10px 28px;
+            padding: 14px 45px;
             font-weight: 800;
-            border-radius: 14px;
-            font-size: 0.95rem;
+            border-radius: 16px;
+            font-size: 1.05rem;
             cursor: pointer;
             box-shadow: 0 8px 20px rgba(255, 51, 119, 0.3);
             transition: all 0.2s ease;
@@ -217,28 +176,6 @@
         .play-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 12px 25px rgba(0, 229, 255, 0.4);
-        }
-
-        .level-progress-track {
-            width: 100%;
-            height: 8px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 3px;
-        }
-        .level-progress-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #00e5ff, #ffea00);
-            border-radius: 4px;
-            transition: width 0.3s ease;
-        }
-        .level-progress-text {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #aaa;
-            text-align: center;
         }
 
         .continue-btn {
@@ -297,22 +234,6 @@
             box-shadow: 0 0 12px var(--pink);
         }
 
-        .lvl-btn.completed {
-            background: linear-gradient(135deg, #00c853, #00e676);
-            border-color: #00e676;
-            color: #000;
-            box-shadow: 0 0 15px rgba(0, 230, 118, 0.3);
-            font-weight: 900;
-        }
-        .lvl-btn.completed::after {
-            content: " ✓";
-        }
-        .lvl-btn.completed:hover {
-            background: linear-gradient(135deg, #00e676, #69f0ae);
-            transform: scale(1.1);
-            box-shadow: 0 0 25px rgba(0, 230, 118, 0.5);
-        }
-
         /* ==========================================
            3. GAME INTERFACE & CANVARENA LAYOUT
            ========================================== */
@@ -340,25 +261,25 @@
             width: 100%;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
-            padding: 0 4px;
+            margin-bottom: 15px;
+            padding: 0 8px;
             box-sizing: border-box;
         }
 
         .left-nav-group {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
         }
 
         .home-icon-btn, .settings-gear-btn {
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.25);
             color: #fff;
-            font-size: 1.2rem;
-            width: 38px;
-            height: 38px;
-            border-radius: 12px;
+            font-size: 1.4rem;
+            width: 46px;
+            height: 46px;
+            border-radius: 16px;
             cursor: pointer;
             display: flex;
             justify-content: center;
@@ -368,7 +289,6 @@
         }
 
         .home-icon-btn:hover { background: var(--pink); transform: scale(1.06); border-color: #fff; }
-        .settings-gear-btn { margin-right: 6px; margin-top: 4px; }
         .settings-gear-btn:hover { background: var(--blue); transform: scale(1.06) rotate(45deg); border-color: #fff; }
 
         .score-left-box {
@@ -385,11 +305,10 @@
         }
 
         .top-best-text {
-            font-size: 1.2rem;
-            font-weight: 900;
-            color: #ffd700;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a223d;
             margin-top: 2px;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.3);
         }
 
         .status-indicators-bar {
@@ -435,11 +354,6 @@
         canvas {
             display: block;
             border-radius: 24px;
-            touch-action: none;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-            will-change: transform;
             max-width: 100%;
             border: 1px solid rgba(255,255,255,0.05);
             background: var(--grid-dark);
@@ -675,8 +589,8 @@
             80% { transform: translate(0, -1px); }
             100% { transform: translate(0, 0); }
         }
-        .screen-shake { animation: shakeGame 0.25s ease-out; }
-        .screen-shake-heavy { animation: shakeGame 0.35s ease-out; }
+        .screen-shake { animation: shakeGame 0.35s ease-out; }
+        .screen-shake-heavy { animation: shakeGame 0.6s ease-out; }
         #combo-overlay {
             position: absolute; top: 0; left: 0;
             width: 100%; height: 100%;
@@ -716,18 +630,6 @@
         .combo-color-pink { color: #ff3377; text-shadow: 0 0 40px rgba(255,51,119,0.9), 0 0 80px rgba(255,51,119,0.5); }
         .combo-color-cyan { color: #00e5ff; text-shadow: 0 0 40px rgba(0,229,255,0.9), 0 0 80px rgba(0,229,255,0.5); }
         .combo-color-white { color: #ffffff; text-shadow: 0 0 40px rgba(255,255,255,0.9), 0 0 80px rgba(255,255,255,0.5); }
-        /* 奖励展示动画 */
-        @keyframes prizePopIn {
-            0% { opacity: 0; transform: scale(0.1) rotate(-20deg); filter: blur(10px); }
-            30% { opacity: 1; transform: scale(1.5) rotate(5deg); filter: blur(0); }
-            50% { transform: scale(0.95) rotate(-2deg); }
-            70% { transform: scale(1.08) rotate(1deg); }
-            100% { opacity: 1; transform: scale(1) rotate(0); }
-        }
-        @keyframes prizeIconBounce {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-8px) scale(1.1); }
-        }
         .score-flyout {
             position: absolute; pointer-events: none;
             font-weight: 900; font-size: 1.4rem;
@@ -753,275 +655,33 @@
         }
         .sound-toggle-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); }
 
-        /* ==========================================================================
-           4. WORLD-CLASS ANIMATIONS ENGINE (极致动效引擎)
-           ========================================================================== */
-           
-        /* 标题呼吸流光 */
-        @keyframes logoRainbow {
-            0% { text-shadow: 0 0 20px #ff3377, 0 0 40px #ff3377; }
-            20% { text-shadow: 0 0 20px #ffea00, 0 0 40px #ffea00; }
-            40% { text-shadow: 0 0 20px #00e5ff, 0 0 40px #00e5ff; }
-            60% { text-shadow: 0 0 20px #00ff66, 0 0 40px #00ff66; }
-            80% { text-shadow: 0 0 20px #d500f9, 0 0 40px #d500f9; }
-            100% { text-shadow: 0 0 20px #ff3377, 0 0 40px #ff3377; }
-        }
-        .logo-title {
-            animation: logoRainbow 3s ease-in-out infinite, logoFloat 2s ease-in-out infinite;
-        }
-        @keyframes logoFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
-        }
-
-        /* 模式卡片入场：依次弹出 */
-        .mode-card {
-            animation: cardEntrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-                        box-shadow 0.25s ease, border-color 0.25s ease;
-        }
-        .mode-card:nth-child(1) { animation-delay: 0.1s; }
-        .mode-card:nth-child(2) { animation-delay: 0.25s; }
-        .mode-card:nth-child(3) { animation-delay: 0.4s; }
-        .mode-card:nth-child(4) { animation-delay: 0.55s; }
-        .mode-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            border-color: rgba(255,255,255,0.3);
-        }
-        @keyframes cardEntrance {
-            0% { opacity: 0; transform: translateY(40px) scale(0.9); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* 按钮按下弹跳 */
-        .play-btn, .modal-btn {
-            transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1),
-                        box-shadow 0.12s ease;
-        }
-        .play-btn:active, .modal-btn:active {
-            transform: scale(0.92);
-        }
-
-        /* Combo爆炸级特效 */
-        .combo-popup {
-            text-shadow: 0 0 60px rgba(255,215,0,0.9), 0 0 120px rgba(255,215,0,0.6), 0 0 200px rgba(255,215,0,0.3);
-        }
-        @keyframes comboAppear {
-            0% { opacity: 0; transform: scale(0.05) rotate(-15deg); filter: blur(12px); }
-            10% { opacity: 1; transform: scale(1.8) rotate(8deg); filter: blur(0); }
-            20% { opacity: 1; transform: scale(0.9) rotate(-4deg); }
-            35% { opacity: 1; transform: scale(1.15) rotate(2deg); }
-            50% { opacity: 1; transform: scale(1) rotate(0); }
-            70% { opacity: 1; transform: scale(1) translateY(0); }
-            100% { opacity: 0; transform: scale(1.2) translateY(-150px) rotate(5deg); filter: blur(3px); }
-        }
-        .combo-label {
-            font-size: clamp(1rem, 3vw, 1.8rem); font-weight: 700; letter-spacing: 4px;
-            opacity: 0.9; margin-top: -10px;
-        }
-        
-        /* 分数飞字终极炫酷 */
-        @keyframes flyUp {
-            0% { opacity: 1; transform: translateY(0) scale(0.2) rotate(-8deg); filter: blur(5px); }
-            12% { opacity: 1; transform: translateY(-15px) scale(1.8) rotate(5deg); filter: blur(0); }
-            25% { opacity: 1; transform: translateY(-30px) scale(1.15) rotate(-2deg); }
-            50% { opacity: 1; transform: translateY(-60px) scale(1); }
-            75% { opacity: 1; transform: translateY(-80px) scale(0.9); }
-            100% { opacity: 0; transform: translateY(-150px) scale(1.1) rotate(3deg); filter: blur(2px); }
-        }
-
-        /* 震屏加强 */
-        @keyframes shakeGame {
-            0% { transform: translate(0, 0); }
-            5% { transform: translate(-12px, 8px) rotate(-1deg); }
-            10% { transform: translate(10px, -10px) rotate(1deg); }
-            15% { transform: translate(-9px, 9px) rotate(-0.5deg); }
-            20% { transform: translate(8px, -6px) rotate(0.5deg); }
-            30% { transform: translate(-6px, 6px); }
-            40% { transform: translate(5px, -3px); }
-            55% { transform: translate(-3px, 4px); }
-            75% { transform: translate(2px, -2px); }
-            100% { transform: translate(0, 0); }
-        }
-        .screen-shake { animation: shakeGame 0.25s ease-out; will-change: transform; }
-        .screen-shake-heavy { animation: shakeGame 0.35s ease-out; will-change: transform; }
-
-        /* Game Over/胜利 弹窗 + 背景闪烁 */
-        @keyframes gameOverBgPulse {
-            0%, 100% { background: rgba(0,0,0,0.6); }
-            50% { background: rgba(0,0,0,0.8); }
-        }
-        .game-over-modal {
-            animation: gameOverBgPulse 1.5s ease-in-out infinite;
-        }
-
-        /* 宝箱狂野抖动 */
-        @keyframes chestWobbleLoop {
-            0% { transform: rotate(-12deg) scale(1); }
-            25% { transform: rotate(8deg) scale(1.05); }
-            50% { transform: rotate(-6deg) scale(1.1); }
-            75% { transform: rotate(10deg) scale(1.05); }
-            100% { transform: rotate(-12deg) scale(1); }
-        }
-        .chest-anim {
-            animation: chestWobbleLoop 0.35s ease infinite alternate;
-        }
-        .chest-anim:hover {
-            animation: chestWobbleLoop 0.15s ease infinite alternate;
-        }
-
-        /* ==========================================================================
-           5. AMBIENT BACKGROUND EFFECTS (环境动效装饰)
-           ========================================================================== */
-        .bg-decoration {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-
-        /* 波浪 */
-        .wave {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 200%;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 50% 50% 0 0;
-            animation: waveMove 6s ease-in-out infinite;
-        }
-        .wave-1 { bottom: -10px; animation-duration: 5s; opacity: 0.4; }
-        .wave-2 { bottom: 10px; animation-duration: 7s; opacity: 0.25; background: rgba(0, 229, 255, 0.04); }
-        .wave-3 { bottom: -5px; animation-duration: 9s; opacity: 0.15; background: rgba(255, 51, 119, 0.04); }
-
-        @keyframes waveMove {
-            0% { transform: translateX(0) scaleY(1); }
-            25% { transform: translateX(-5%) scaleY(1.2); }
-            50% { transform: translateX(-10%) scaleY(0.8); }
-            75% { transform: translateX(-5%) scaleY(1.1); }
-            100% { transform: translateX(0) scaleY(1); }
-        }
-
-        /* 动态背景渐变 */
-        @keyframes bgGradientShift {
-            0% { background-position: 0% 50%; }
-            25% { background-position: 50% 0%; }
-            50% { background-position: 100% 50%; }
-            75% { background-position: 50% 100%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* 浮动几何装饰（方块三角形等） */
-        /* 🎪 Emoji 大军样式 */
-        .bg-emoji {
-            position: absolute;
-            pointer-events: none;
-            user-select: none;
-            will-change: transform, opacity;
-            line-height: 1;
-            animation-timing-function: ease-in-out;
-            animation-iteration-count: infinite;
-            animation-fill-mode: both;
-            text-shadow: 0 0 4px rgba(255,255,255,0.05);
-        }
-        @keyframes emojiFloat1 {
-            0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); opacity: 0.35; }
-            25% { transform: translateY(-25px) rotate(6deg) scale(1.08); opacity: 0.55; }
-            50% { transform: translateY(-12px) rotate(-4deg) scale(0.95); opacity: 0.4; }
-            75% { transform: translateY(-35px) rotate(10deg) scale(1.04); opacity: 0.5; }
-        }
-        @keyframes emojiFloat2 {
-            0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); opacity: 0.3; }
-            33% { transform: translateY(-20px) translateX(15px) rotate(8deg); opacity: 0.5; }
-            66% { transform: translateY(-40px) translateX(-10px) rotate(-6deg); opacity: 0.4; }
-        }
-        @keyframes emojiFloat3 {
-            0%, 100% { transform: translateY(0px) scale(1); opacity: 0.25; }
-            50% { transform: translateY(-30px) scale(1.12); opacity: 0.5; }
-        }
-        @keyframes emojiDrift {
-            0% { transform: translateX(-20px) rotate(-10deg); opacity: 0.2; }
-            50% { transform: translateX(20px) rotate(10deg); opacity: 0.45; }
-            100% { transform: translateX(-20px) rotate(-10deg); opacity: 0.2; }
-        }
-        @keyframes emojiSpin {
-            0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.25; }
-            50% { transform: rotate(180deg) scale(1.15); opacity: 0.5; }
-        }
-
-        /* 动态光晕 */
-        .bg-glow {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            animation: glowPulse 8s ease-in-out infinite alternate;
-            pointer-events: none;
-        }
-        .glow-1 { width: 600px; height: 600px; top: -15%; left: -10%; background: rgba(150, 200, 255, 0.20); animation-delay: 0s; animation-duration: 10s; }
-        .glow-2 { width: 500px; height: 500px; bottom: -10%; right: -10%; background: rgba(100, 180, 255, 0.15); animation-delay: 2s; animation-duration: 12s; }
-        .glow-3 { width: 450px; height: 450px; top: 25%; left: 25%; background: rgba(180, 220, 255, 0.12); animation-delay: 4s; animation-duration: 9s; }
-        .glow-4 { width: 400px; height: 400px; top: 55%; left: 60%; background: rgba(200, 230, 255, 0.10); animation-delay: 1s; animation-duration: 11s; }
-        .glow-5 { width: 500px; height: 500px; top: 40%; left: -8%; background: rgba(120, 190, 255, 0.12); animation-delay: 5s; animation-duration: 13s; }
-        .glow-6 { width: 450px; height: 450px; top: 5%; left: 50%; background: rgba(80, 160, 255, 0.15); animation-delay: 3s; animation-duration: 8s; }
-
-@keyframes glowPulse {
-            0% { transform: scale(1) translate(0, 0); opacity: 0.3; }
-            50% { transform: scale(1.4) translate(25px, -20px); opacity: 0.7; }
-            100% { transform: scale(0.85) translate(-15px, 10px); opacity: 0.4; }
-        }
-
-        /* 主内容在装饰之上 */
-        #menu-screen, #game-screen { position: relative; z-index: 10; }
-
     </style>
 </head>
 <body>
-    <!-- 背景装饰层：波浪 + 浮动粒子 + 发光方块 + 动态光晕 -->
-    <div class="bg-decoration">
-        <!-- 波浪 -->
-        <div class="wave wave-1"></div>
-        <div class="wave wave-2"></div>
-        <div class="wave wave-3"></div>
-        <!-- 🎪 糖果森林 Emoji 大軍（JS動態生成） -->
-        <div id="emoji-rain"></div>
-<!-- 动态光晕 -->
-        <div class="bg-glow glow-1"></div>
-        <div class="bg-glow glow-2"></div>
-        <div class="bg-glow glow-3"></div>
-        <div class="bg-glow glow-4"></div>
-        <div class="bg-glow glow-5"></div>
-        <div class="bg-glow glow-6"></div>
-    </div>
 
     <div id="menu-screen">
         <div class="lobby-header">
             <div class="logo-title">ALL YOU CAN PUT!</div>
             <button class="lobby-settings-btn" onclick="GameApp.UI.openSettingsModal()">⚙️</button>
         </div>
+        <button class="play-btn continue-btn" id="lobby-continue-btn" onclick="GameApp.Core.loadSavedGame()">CONTINUE</button>
 
-
-        <button class="continue-btn" id="continue-btn" onclick="GameApp.Core.loadSavedGame()">繼續上次遊戲 ➔</button>
         <div class="mode-container">
             <div class="mode-card" onclick="GameApp.Core.startLuckyMode()">
-                <span class="mode-badge" id="mode-badge-lucky">✨ 自创</span>
                 <h3 id="mode-lucky-title">幸運模式 (Lucky)</h3>
-
+                <p id="mode-lucky-desc">每消除滿 3 行即可抽取幸運寶箱！觸發高額分數翻倍與方塊自選改命！</p>
                 <button class="play-btn" style="background: linear-gradient(45deg, var(--yellow), var(--orange)); color: #000;">LUCKY PLAY</button>
             </div>
             
             <div class="mode-card" onclick="GameApp.Core.startEndlessMode()">
                 <h3 id="mode-endless-title">無盡模式 (Endless)</h3>
-
+                <p id="mode-endless-desc">經典刷分模式！享受滿屏極速全清的無限爽感，不斷挑戰最高分！</p>
                 <button class="play-btn">START</button>
             </div>
             
             <div class="mode-card" id="level-card">
                 <h3 id="mode-level-title">闖關模式 (Levels)</h3>
-
+                <p id="mode-level-desc">挑戰由淺入深的 66 道經典關卡！繞開固定死局障礙鐵塊，衝擊通關目標。</p>
                 <button class="play-btn" onclick="GameApp.UI.toggleLevelSelect(event)">STAGES</button>
                 <div id="level-select-panel">
                     </div>
@@ -1036,29 +696,21 @@
                 <div class="left-nav-group">
                     <button class="home-icon-btn" onclick="GameApp.Core.exitToMenu()">🏠</button>
                     <div class="score-left-box">
-                        <div class="top-score-text" id="topScoreText">-</div>
-                        <div class="top-best-text" id="topBestText">-</div>
+                        <div class="top-score-text" id="topScoreText">SCORE: 0</div>
+                        <div class="top-best-text" id="topBestText">BEST: 0</div>
                     </div>
                 </div>
                 <button class="settings-gear-btn" onclick="GameApp.UI.openSettingsModal()">⚙️</button>
             </div>
 
             <div class="status-indicators-bar">
-                <div id="lucky-multiplier-tag" class="indicator-tag" style="display:none;">-</div>
-                <div id="lucky-progress-bar" class="indicator-tag" style="display:none;">-</div>
-                <div id="level-progress-area" class="indicator-tag" style="display:none;">
-                    <div class="level-progress-track">
-                        <div class="level-progress-fill" id="level-progress-fill"></div>
-                    </div>
-                    <div class="level-progress-text" id="level-progress-text">-</div>
-                </div>
+                <div id="clear-multiplier-tag" class="indicator-tag">清屏倍率: 1.0x</div>
+                <div id="lucky-progress-bar" class="indicator-tag">距離寶箱還剩: 3 行</div>
             </div>
 
             <div class="arena" id="gameArenaPanel">
                 <canvas id="blockCanvas" width="440" height="660"></canvas>
             <div id="combo-overlay"></div>
-            <div id="prize-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:60;display:flex;justify-content:center;align-items:center;"></div>
-            <div id="achievement-banner" style="position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:55;pointer-events:none;display:none;"></div>
             </div>
         </div>
 
@@ -1103,13 +755,8 @@
         <div class="modal-box" onclick="event.stopPropagation()">
             <h2 id="modalTitle" style="color: var(--pink);">遊戲結束</h2>
             <p id="modalScoreText">最終得分: 0</p>
-            <div id="revive-section" style="margin-bottom:10px;">
-                <button class="modal-btn" id="go-revive" onclick="GameApp.Core.reviveWithAd()" style="background: linear-gradient(45deg, #00e5ff, #d500f9); color:#fff; font-weight:900; display:none;">
-                    📺 看廣告復活
-                </button>
-            </div>
             <div class="modal-btns">
-                <button class="modal-btn btn-retry" id="go-retry" onclick="GameApp.Core.retryWithAdCheck()">再開一局</button>
+                <button class="modal-btn btn-retry" id="go-retry" onclick="GameApp.Core.resetGame()">再開一局</button>
                 <button class="modal-btn btn-menu" id="go-lobby" onclick="GameApp.Core.exitToMenu()">返回大廳</button>
             </div>
         </div>
@@ -1126,17 +773,15 @@
         // MODULE: CONFIGURATION & CONSTANTS
         // ----------------------------------------------------------------------
         GameApp.Config = {
-            isTouchDevice: ('ontouchstart' in window) || (navigator.maxTouchPoints > 0),
             bGridSize: 8,
             bCellSize: 440 / 8, // 55px
             maxLevel: 66,
-            luckyLineTarget: 5,
+            luckyLineTarget: 3,
             
             // 🌟 核心修改：單點與十字架移出普通池，改為隱藏款
             Shapes: {
                 easy: [
                     { name: "square", matrix: [[1,1],[1,1]], color: '#ff3377' }, 
-                    { name: "rect-3x2", matrix: [[1,1,1],[1,1,1]], color: '#00e5ff' },
                     { name: "bar-3", matrix: [[1,1,1]], color: '#00e5ff' },      
                     { name: "vbar-3", matrix: [[1],[1],[1]], color: '#00e5ff' }, 
                     { name: "bar-2", matrix: [[1,1]], color: '#ffea00' }
@@ -1144,89 +789,46 @@
                 medium: [
                     { name: "bar-4", matrix: [[1,1,1,1]], color: '#ff6d00' }, 
                     { name: "vbar-4", matrix: [[1],[1],[1],[1]], color: '#ff6d00' },
-                    { name: "t-shape", matrix: [[1,1,1],[0,1,0]], color: '#d500f9' },
+                    { name: "t-shape", matrix: [[1,1,1],[0,1,0]], color: '#d500f9' }, 
                     { name: "l-shape", matrix: [[1,0],[1,0],[1,1]], color: '#ff3377' },
-                    { name: "z-shape", matrix: [[1,1,0],[0,1,1]], color: '#ffea00' },
-                    { name: "big-l-3x3", matrix: [[1,0,0],[1,0,0],[1,1,1]], color: '#ff6d00' },
-                    { name: "big-square-3x3", matrix: [[1,1,1],[1,1,1],[1,1,1]], color: '#d500f9' }
+                    { name: "z-shape", matrix: [[1,1,0],[0,1,1]], color: '#ffea00' }
                 ],
                 hard: [
+                    { name: "big-l-3x3", matrix: [[1,0,0],[1,0,0],[1,1,1]], color: '#ff6d00' }
                 ],
                 // 隱藏VIP款（僅限自選面板出現）
                 special: [
-                    { name: "dot", matrix: [[1]], color: '#00ff66' }
+                    { name: "dot", matrix: [[1]], color: '#00ff66' },
+                    { name: "cross-3x3", matrix: [[0,1,0],[1,1,1],[0,1,0]], color: '#d500f9' }
                 ]
             },
 
-            Themes: [
-                // 每1000分一個主題，循環切換
-                { // 0-999: 海洋粉蓝
-                    name:'Ocean',
-                    bg:'linear-gradient(135deg, #ff99ca 0%, #4facfe 50%, #171b36 100%)',
-                    panel:'rgba(22,27,49,0.85)', emptyCell:'#1d223a', canvasFill:'#121626',
-                    colors:['#ff3377','#00e5ff','#ffea00','#d500f9','#00ff66','#ff6d00']
+            Themes: {
+                sea: { 
+                    bg: 'linear-gradient(135deg, #ff99ca 0%, #4facfe 50%, #171b36 100%)', 
+                    panel: 'rgba(22, 27, 49, 0.85)', 
+                    emptyCell: '#1d223a',
+                    canvasFill: '#121626'
                 },
-                { // 1000-1999: 霓虹绿洲
-                    name:'Neon Oasis',
-                    bg:'linear-gradient(135deg, #0f3443 0%, #34e89e 50%, #0b1e1e 100%)',
-                    panel:'rgba(8,40,30,0.88)', emptyCell:'#14352a', canvasFill:'#0a1f18',
-                    colors:['#00ff88','#00e5ff','#ffee58','#ff6d00','#ff3377','#d500f9']
+                grass: { 
+                    bg: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', 
+                    panel: 'rgba(17, 43, 31, 0.85)', 
+                    emptyCell: '#1e382b',
+                    canvasFill: '#0d2117'
                 },
-                { // 2000-2999: 火焰黄昏
-                    name:'Fire Dusk',
-                    bg:'linear-gradient(135deg, #ff512f 0%, #f09819 50%, #2c041c 100%)',
-                    panel:'rgba(60,20,10,0.88)', emptyCell:'#3d2214', canvasFill:'#2a1008',
-                    colors:['#ff1744','#ff9100','#ffea00','#00e5ff','#d500f9','#ff6d00']
+                sunset: { 
+                    bg: 'linear-gradient(135deg, #ff7b54 0%, #ffb26b 50%, #6b4f4f 100%)', 
+                    panel: 'rgba(66, 43, 43, 0.85)', 
+                    emptyCell: '#3c2828',
+                    canvasFill: '#241818'
                 },
-                { // 3000-3999: 极光幻想
-                    name:'Aurora',
-                    bg:'linear-gradient(135deg, #0a1628 0%, #1a3a5c 30%, #2d1b69 70%, #0a0a1a 100%)',
-                    panel:'rgba(20,15,50,0.88)', emptyCell:'#1e1a40', canvasFill:'#0e0a20',
-                    colors:['#00e5ff','#00ff66','#d500f9','#ff3377','#ffea00','#ff6d00']
-                },
-                { // 4000-4999: 糖果风暴
-                    name:'Candy Storm',
-                    bg:'linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #4a0830 100%)',
-                    panel:'rgba(55,15,45,0.88)', emptyCell:'#3e1a35', canvasFill:'#2a0a20',
-                    colors:['#ffea00','#00e5ff','#00ff66','#ff3377','#d500f9','#ff6d00']
-                },
-                { // 5000-5999: 翡翠深渊
-                    name:'Jade Deep',
-                    bg:'linear-gradient(135deg, #025357 0%, #00b09b 50%, #001a14 100%)',
-                    panel:'rgba(5,40,35,0.88)', emptyCell:'#173530', canvasFill:'#0a1f1a',
-                    colors:['#00ff66','#00e5ff','#ffea00','#ff6d00','#ff3377','#d500f9']
-                },
-                { // 6000-6999: 赛博暴力
-                    name:'Cyber Blast',
-                    bg:'linear-gradient(135deg, #fc00ff 0%, #00dbde 50%, #0a0020 100%)',
-                    panel:'rgba(30,5,50,0.88)', emptyCell:'#241542', canvasFill:'#120830',
-                    colors:['#00e5ff','#ff3377','#ffea00','#00ff66','#d500f9','#ff6d00']
-                },
-                { // 7000-7999: 日落金沙
-                    name:'Gold Sunset',
-                    bg:'linear-gradient(135deg, #f12711 0%, #f5af19 50%, #3d1a00 100%)',
-                    panel:'rgba(50,25,5,0.88)', emptyCell:'#3d2a14', canvasFill:'#2a1808',
-                    colors:['#ffea00','#ff6d00','#ff3377','#00e5ff','#00ff66','#d500f9']
-                },
-                { // 8000-8999: 冰火两重天
-                    name:'Ice & Fire',
-                    bg:'linear-gradient(135deg, #00c6ff 0%, #0072ff 30%, #c471ed 60%, #f7797d 100%)',
-                    panel:'rgba(15,20,60,0.88)', emptyCell:'#1e2448', canvasFill:'#0e1030',
-                    colors:['#00e5ff','#ff3377','#ffea00','#d500f9','#00ff66','#ff6d00']
-                },
-                { // 9000-9999: 暗夜银河
-                    name:'Galaxy Night',
-                    bg:'linear-gradient(135deg, #0f1220 0%, #1a1140 40%, #351a60 70%, #0a0510 100%)',
-                    panel:'rgba(10,5,30,0.9)', emptyCell:'#1a1030', canvasFill:'#080520',
-                    colors:['#d500f9','#00e5ff','#ff3377','#00ff66','#ffea00','#ff6d00']
-                },
-                { // 10000+: 闪电磁暴
-                    name:'Thunder Storm',
-                    bg:'linear-gradient(135deg, #0a0010 0%, #1a0030 30%, #ff00cc 70%, #0a0010 100%)',
-                    panel:'rgba(15,0,30,0.92)', emptyCell:'#1a0a30', canvasFill:'#0a0018',
-                    colors:['#ffea00','#ff3377','#00e5ff','#00ff66','#d500f9','#ff6d00']
+                universe: { 
+                    bg: 'linear-gradient(135deg, #0f051d 0%, #05020a 100%)', 
+                    panel: 'rgba(25, 12, 43, 0.9)', 
+                    emptyCell: '#211534',
+                    canvasFill: '#0c0616'
                 }
-            ]
+            }
         };
 
         // ----------------------------------------------------------------------
@@ -1235,9 +837,7 @@
         GameApp.State = {
             bGrid: [],
             bScore: 0,
-            lastAchievement: null,
-            bBestScoreEndless: 0,
-            bBestScoreLucky: 0,
+            bBestScore: 0,
             hand: [],
             selectedPiece: null,
             
@@ -1245,10 +845,8 @@
             currentLevel: 1,
             targetScore: 0,
             isGameOver: false,
-            reviveCount: 5,
-            gamesSinceLastAd: 0,
             
-            luckyLinesNeeded: 5,
+            luckyLinesNeeded: 3,
             isCustomSelecting: false,
             customPicksLeft: 0, // 新增：記錄自選剩餘次數
             allClearCount: 0,
@@ -1256,10 +854,8 @@
             
             particles: [],
             clearingCells: [],
-            _frameCount: 0,
             allClearFlashTimer: 0,
-            currentTheme: GameApp.Config.Themes[0],
-            currentThemeIndex: 0,
+            currentTheme: GameApp.Config.Themes.sea,
             
             mouseX: 0, mouseY: 0,
             dragOffset: { x: 0, y: 0 },
@@ -1284,10 +880,9 @@
                 zh: {
                     sub: "", 
                     luckyTitle: "幸運模式 (Lucky)", 
-                    luckyDesc: "【自创玩法】清理满5行开启幸运宝箱！清屏翻倍，命运随心！",
-                    luckyBadge: "✨ 自创",
-                    endlessTitle: "經典模式 (Classic)", 
-                    endlessDesc: "經典刷分模式！每1000分更換主題配色，享受滿屏極速全清的無限爽感！",
+                    luckyDesc: "每消除滿 3 行即可抽取幸運寶箱！觸發高額分數翻倍與方塊自選改命！",
+                    endlessTitle: "無盡模式 (Endless)", 
+                    endlessDesc: "經典刷分模式！享受滿屏極速全清的無限爽感，不斷挑戰最高分！",
                     levelTitle: "闖關模式 (Levels)", 
                     levelDesc: "挑戰由淺入深的 66 道經典關卡！繞開固定死局障礙鐵塊，衝擊通關目標。",
                     stagesBtn: "選關大廳", 
@@ -1303,43 +898,28 @@
                     btnRetry: "🔄 重新開始", 
                     btnLobby: "🚪 返回主頁",
                     btnClose: "關閉面板", 
-                    goWin: "🎉 通關成功！", 
+                    goWin: "STAGE CLEAR! 順利通關", 
                     goLose: "挑戰失敗", 
                     goOver: "遊戲結束", 
-                    goScore: "🏆 最終得分", 
+                    goScore: "最終得分", 
                     goWinDesc: "成功攻克本關分數目標！", 
                     goLoseDesc: "死局！格子塞滿且未達目標分。",
                     alertX2: "✨ 神話降臨！當前分數直接翻倍（x2）！", 
                     alertDot: "🎯 幸運！下回合手牌全部轉化為【單點救局方塊】！", 
                     alertSelect: "🔮 靈魂自選！右側已解鎖全圖形庫，請自由挑選 3 個方塊！",
                     chestTitle: "幸運寶箱！", 
-                    chestDesc: "消除滿 5 行解鎖，點擊開啟逆天改命", 
+                    chestDesc: "消除滿3行解鎖，點擊開啟逆天改命", 
                     chestOpen: "開 啟 寶 箱", 
                     goRetryBtn: "再開一局", 
                     goLobbyBtn: "返回大廳", 
-                    continueBtn: "繼續上次遊戲 ➔",
-                    prizeJackpot: "分數直接翻倍！目前 ", 
-                    prizeDots: "全部變為 1x1 靈活小點",
-                    prizeBomb: "清空棋盤中央 3x3 區域（清除 ",
-                    prizeBombEnd: " 格）",
-                    prizeBonus: "獲得 ",
-                    prizeBonusEnd: " 額外加分",
-                    prizeRowClear: "清除第 ",
-                    prizeRowClearMid: " 行！倍數提升至 ",
-                    prizeEmpty: "棋盤已空，送你 100 分！",
-                    prizeWildswap: "獲得一組高級方塊！",
-                    prizeSelect: "挑選 3 個你最想要的形狀",
-                    prizeFullClear: "清空整個棋盤！倍率 ",
-                    remainText: "還差",
-                    reviveBtn: "📺 看廣告復活",
+                    continueBtn: "繼續上次遊戲 ➔"
                 },
                 en: {
                     sub: "", 
                     luckyTitle: "Lucky Mode", 
-                    luckyDesc: "[Original Game Mode] Clear 5 lines for a Lucky Chest! Score multipliers & destiny awaits!",
-                    luckyBadge: "✨ ORIGINAL",
-                    endlessTitle: "Classic Mode", 
-                    endlessDesc: "Classic mode! Theme colors refresh every 1000 points. Endless satisfaction!",
+                    luckyDesc: "Clear 3 lines to pop a Lucky Chest! Explode your score x2 or select your dream shapes!",
+                    endlessTitle: "Endless Mode", 
+                    endlessDesc: "Classic endless mode! Enjoy satisfying screen clears and push your high score to the limit!",
                     levelTitle: "Level Mode", 
                     levelDesc: "Conquer 66 progressive stages. Place wisely around obstacles.",
                     stagesBtn: "STAGES", 
@@ -1347,7 +927,7 @@
                     best: "BEST", 
                     stage: "STAGE", 
                     multiplier: "Multiplier", 
-                    luckyProgress: "Chest in:", 
+                    luckyProgress: "Chest in", 
                     rows: "Lines",
                     selectTitle: "🔮 PICK 3 SHAPES", 
                     selectAlert: "🔮 Pick 3 shapes from the right panel to fill your hand!", 
@@ -1365,38 +945,16 @@
                     alertDot: "🎯 LUCKY! Next hand turned into [1x1 Rescue Dots]!", 
                     alertSelect: "🔮 SELECTOR! Shape index unlocked, pick 3 shapes!",
                     chestTitle: "LUCKY CHEST!", 
-                    chestDesc: "Unlocked by 5 line clears. Open to change your destiny.", 
+                    chestDesc: "Unlocked by 3 line clears. Open to change your destiny.", 
                     chestOpen: "OPEN CHEST", 
                     goRetryBtn: "PLAY AGAIN", 
                     goLobbyBtn: "LOBBY", 
-                    continueBtn: "CONTINUE GAME ➔",
-                    prizeJackpot: "Score doubled! Now: ",
-                    prizeDots: "All become 1x1 rescue dots!",
-                    prizeBomb: "Cleared 3x3 center area (",
-                    prizeBombEnd: " cells)",
-                    prizeBonus: "Bonus +",
-                    prizeBonusEnd: " extra points!",
-                    prizeRowClear: "Cleared row ",
-                    prizeRowClearMid: "! Multiplier up to ",
-                    prizeEmpty: "Board empty! Here's 100 bonus points!",
-                    prizeWildswap: "Got a set of premium shapes!",
-                    prizeSelect: "Pick 3 shapes you want most",
-                    prizeFullClear: "BOARD FULL CLEAR! Multiplier ",
-                    remainText: "Need",
-                    reviveBtn: "📺 WATCH AD TO REVIVE",
+                    continueBtn: "CONTINUE GAME ➔"
                 }
             },
 
             init: function() {
-                // 自动检测系统语言，优先使用用户手动设置的（localStorage）
-                const saved = localStorage.getItem('block_put_lang');
-                if (saved) {
-                    this.currentLang = saved;
-                } else {
-                    // 检测浏览器/系统语言
-                    const lang = (navigator.language || navigator.userLanguage || 'zh').toLowerCase();
-                    this.currentLang = lang.startsWith('zh') ? 'zh' : 'en';
-                }
+                this.currentLang = localStorage.getItem('block_put_lang') || 'zh';
                 this.applyLanguage();
             },
 
@@ -1408,54 +966,33 @@
 
             applyLanguage: function() {
                 const t = this.dictionary[this.currentLang];
-                const s = GameApp.State;
                 
-                // 主界面模式卡片
+                document.getElementById('lobby-sub').innerText = t.sub;
                 document.getElementById('mode-lucky-title').innerText = t.luckyTitle;
+                document.getElementById('mode-lucky-desc').innerText = t.luckyDesc;
                 document.getElementById('mode-endless-title').innerText = t.endlessTitle;
+                document.getElementById('mode-endless-desc').innerText = t.endlessDesc;
                 document.getElementById('mode-level-title').innerText = t.levelTitle;
+                document.getElementById('mode-level-desc').innerText = t.levelDesc;
                 document.getElementById('level-card').querySelector('.play-btn').innerText = t.stagesBtn;
-
-                // 自選面板
+                document.getElementById('lobby-continue-btn').innerText = t.continueBtn;
+                
                 document.getElementById('panel-select-title').innerText = t.selectTitle;
-                // 設置面板
                 document.getElementById('settings-title').innerText = t.settingsTitle;
                 document.getElementById('settings-retry').innerText = t.btnRetry;
                 document.getElementById('settings-lobby').innerText = t.btnLobby;
                 document.getElementById('settings-close').innerText = t.btnClose;
-                // 寶箱
                 document.getElementById('chest-title').innerText = t.chestTitle;
                 document.getElementById('chest-desc').innerText = t.chestDesc;
                 document.getElementById('chest-open-btn').innerText = t.chestOpen;
-                // 遊戲結束彈窗（及時更新語言）
-                if (s && s.isGameOver) {
-                    // 📺 显示复活按钮
-                var _rBtn = document.getElementById('go-revive');
-                if (_rBtn) {
-                    _rBtn.style.display = s.reviveCount > 0 ? 'inline-block' : 'none';
-                    _rBtn.innerText = this.getText('reviveBtn');
-                }
-                
-                if (s.currentMode === 'level') {
-                        // 保持 showGameOverModal 設定的內容
-                    } else {
-                        document.getElementById('modalTitle').innerText = t.goOver;
-                        document.getElementById('modalScoreText').innerText = t.goScore + ': ' + s.bScore;
-                    }
-                }
                 document.getElementById('go-retry').innerText = t.goRetryBtn;
                 document.getElementById('go-lobby').innerText = t.goLobbyBtn;
-                // 語言按鈕高亮
-                // 自创玩法角标
-                var badgeEl = document.getElementById('mode-badge-lucky');
-                if (badgeEl) badgeEl.innerText = t.luckyBadge;
-                // 繼續遊戲按鈕
-                var _cBtn = document.getElementById('continue-btn');
-                if (_cBtn) _cBtn.innerText = this.getText('continueBtn');
+                
                 document.getElementById('lang-zh').className = 'lang-sub-btn' + (this.currentLang === 'zh' ? ' active' : '');
                 document.getElementById('lang-en').className = 'lang-sub-btn' + (this.currentLang === 'en' ? ' active' : '');
-                // 即時更新遊戲內分數欄
+                
                 GameApp.UI.updateScoreDisplay();
+                GameApp.Core.checkSavedGameExists();
             },
 
             getText: function(key) {
@@ -1481,75 +1018,36 @@
         // MODULE: VIBE — 進階震動反饋 (Haptics Engine)
         // ----------------------------------------------------------------------
         GameApp.Vibe = {
-            // 硬件震动 + 音频触感双引擎
-            _hw: !!(navigator.vibrate || navigator.webkitVibrate),
-            _lastTs: 0,
-            _throttle: 25,
-            // 兼容检测
-            _vibrate: function(pattern) {
-                const p = Array.isArray(pattern) ? pattern : [pattern];
-                try {
-                    if (navigator.vibrate) navigator.vibrate(p);
-                    else if (navigator.webkitVibrate) navigator.webkitVibrate(p);
-                } catch(e) {}
-            },
-            // 音频触感：对于不支持硬件震动的设备，用低音脉冲模拟
-            _audioThump: function(intensity) {
-                try {
-                    GameApp.Audio._ensure();
-                    const ctx = GameApp.Audio.ctx;
-                    if (!ctx) return;
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(80 - intensity * 20, ctx.currentTime);
-                    gain.gain.setValueAtTime(0, ctx.currentTime);
-                    gain.gain.linearRampToValueAtTime(0.08 + intensity * 0.06, ctx.currentTime + 0.005);
-                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04 + intensity * 0.03);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(ctx.currentTime);
-                    osc.stop(ctx.currentTime + 0.05 + intensity * 0.03);
-                } catch(e) {}
-            },
-            // 节流调用
-            _fire: function(pattern, intensity) {
-                const now = Date.now();
-                if (now - this._lastTs < this._throttle) return;
-                this._lastTs = now;
-                this._vibrate(pattern);
-                this._audioThump(intensity || 0);
-            },
+            supported: 'vibrate' in navigator,
 
             light: function() {
-                const now = Date.now();
-                if (now - this._lastTs < this._throttle) return;
-                this._lastTs = now;
-                if (navigator.vibrate) { this._vibrate(12); }
-                else { this._audioThump(0.1); }
+                if (!this.supported) return;
+                try { navigator.vibrate(8); } catch(e) {}
             },
             medium: function() {
-                this._fire(25, 0.5);
+                if (!this.supported) return;
+                try { navigator.vibrate(20); } catch(e) {}
             },
             heavy: function() {
-                this._fire(45, 1);
+                if (!this.supported) return;
+                try { navigator.vibrate(40); } catch(e) {}
             },
             celebration: function() {
-                this._fire([55, 45, 55, 45, 90, 70, 120], 1);
-                this._lastTs = 0;
+                if (!this.supported) return;
+                try { navigator.vibrate([50, 40, 50, 40, 80, 60, 100]); } catch(e) {}
             },
             triple: function() {
-                this._fire([25, 18, 25, 18, 35], 0.7);
+                if (!this.supported) return;
+                try { navigator.vibrate([20, 15, 20, 15, 30]); } catch(e) {}
             },
             combo: function(count) {
-                if (count <= 0) return;
+                if (!this.supported || count <= 0) return;
                 const pattern = [];
                 for (let i = 0; i < Math.min(count, 4); i++) {
-                    pattern.push(25, 18);
+                    pattern.push(20, 15);
                 }
-                pattern.push(60);
-                this._fire(pattern, 0.8);
-                this._lastTs = 0;
+                pattern.push(50);
+                try { navigator.vibrate(pattern); } catch(e) {}
             }
         };
 
@@ -1559,26 +1057,17 @@
         // ----------------------------------------------------------------------
         // MODULE: AUDIO — Web Audio API 合成音效 (無需音頻文件)
         // ----------------------------------------------------------------------
-        // iOS 首次触摸初始化 AudioContext（解决手机无音效问题）
         GameApp.Audio = {
             ctx: null,
             enabled: true,
-            masterVolume: 0.38,
+            masterVolume: 0.3,
 
             _ensure: function() {
+                if (this.ctx) return true;
                 try {
-                    if (this.ctx) {
-                        if (this.ctx.state === 'suspended') { this.ctx.resume(); }
-                        return true;
-                    }
                     this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                    if (this.ctx.state === 'suspended') { this.ctx.resume(); }
                     return true;
-                } catch(e) {
-                    // 重试一次
-                    try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); this.ctx.resume(); } catch(e2) {}
-                    return false;
-                }
+                } catch(e) { return false; }
             },
 
             toggle: function() {
@@ -1588,273 +1077,72 @@
                 if (this.enabled) { this._ensure(); this.ctx && this.ctx.resume(); }
             },
 
-            // 页面加载后立即尝试初始化（解决部分手机首次触摸无声音）
-            initOnLoad: function() {
-                try {
-                    if (!this.ctx) {
-                        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                    }
-                    if (this.ctx.state === 'suspended') { this.ctx.resume(); }
-                } catch(e) {}
-            },
-
-            // 常用合成分数比：五度3:2, 大三度5:4, 小三度6:5, 纯四度4:3
-            _playTone: function(freq, duration, type, vol, pitchEnd, wobble) {
+            _play: function(freq, duration, type, vol) {
                 if (!this.enabled || !this._ensure()) return;
-                var ctx = this.ctx, now = ctx.currentTime, v = (vol || 0.3) * this.masterVolume;
-                // 主音
-                var osc = ctx.createOscillator();
-                var gain = ctx.createGain();
-                osc.type = type || 'triangle';
-                osc.frequency.setValueAtTime(freq, now);
-                if (pitchEnd) osc.frequency.linearRampToValueAtTime(pitchEnd, now + duration * 0.6);
-                if (wobble) {
-                    var lfo = ctx.createOscillator();
-                    var lfoGain = ctx.createGain();
-                    lfo.frequency.value = wobble;
-                    lfoGain.gain.value = freq * 0.003;
-                    lfo.connect(lfoGain); lfoGain.connect(osc.frequency);
-                    lfo.start(now); lfo.stop(now + duration);
-                }
-                gain.gain.setValueAtTime(0, now);
-                gain.gain.linearRampToValueAtTime(v, now + 0.01);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-                osc.connect(gain); gain.connect(ctx.destination);
-                osc.start(now); osc.stop(now + duration);
-
-                // 泛音层（+12半音=八度）+7半音=五度
-                var osc2 = ctx.createOscillator();
-                var gain2 = ctx.createGain();
-                osc2.type = 'sine';
-                osc2.frequency.setValueAtTime(freq * 1.5, now);
-                gain2.gain.setValueAtTime(0, now);
-                gain2.gain.linearRampToValueAtTime(v * 0.15, now + 0.015);
-                gain2.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.5);
-                osc2.connect(gain2); gain2.connect(ctx.destination);
-                osc2.start(now); osc2.stop(now + duration * 0.6);
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type || 'sine';
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                gain.gain.setValueAtTime((vol || 0.3) * this.masterVolume, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + duration);
             },
 
-            // 噪声纹理层（模拟物理摩擦、滑动等质感）
-            _noise: function(duration, vol, highpass) {
-                if (!this.enabled || !this._ensure()) return;
-                var ctx = this.ctx, now = ctx.currentTime, bufSize = ctx.sampleRate * duration;
-                if (bufSize <= 0) return;
-                var buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
-                var data = buf.getChannelData(0);
-                for (var i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
-                var src = ctx.createBufferSource();
-                src.buffer = buf;
-                var gain = ctx.createGain();
-                gain.gain.setValueAtTime((vol || 0.1) * this.masterVolume, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-                if (highpass) {
-                    var hp = ctx.createBiquadFilter();
-                    hp.type = 'highpass'; hp.frequency.value = highpass;
-                    src.connect(hp); hp.connect(gain); gain.connect(ctx.destination);
-                } else { src.connect(gain); gain.connect(ctx.destination); }
-                src.start(now); src.stop(now + duration);
-            },
-
-            // 闪音（用于消行瞬间）
-            _sparkle: function(freq, duration, vol) {
-                this._playTone(freq, duration, 'sine', vol, freq * 1.02, 0);
-                setTimeout(() => {
-                    this._playTone(freq * 1.25, duration * 0.6, 'sine', vol * 0.5, 0, 0);
-                }, duration * 300);
-            },
-
-            // ============================================================
-            // 🎯 方块放置音：柔和的布料落地感 + 低频共鸣
-            // ============================================================
             place: function() {
-                // 主音：温暖的落点
-                this._playTone(280, 0.1, 'triangle', 0.2);
-                // 低频共鸣：模拟方块落下的物理感
-                this._playTone(110, 0.18, 'sine', 0.08, 90);
-                // 微噪：模拟摩擦的沙沙感
-                this._noise(0.04, 0.06, 2000);
+                this._play(520, 0.08, 'sine', 0.25);
+                setTimeout(() => this._play(680, 0.06, 'sine', 0.18), 40);
             },
 
-            // ============================================================
-            // 🎯 1行消除：清脆叮咚 ~ 像玻璃杯轻碰
-            // ============================================================
             lineClear: function() {
-                this._sparkle(880, 0.25, 0.25);
-                setTimeout(() => this._sparkle(1100, 0.2, 0.15), 50);
-                // 泛音回荡
-                setTimeout(() => this._playTone(660, 0.4, 'sine', 0.06, 0, 3), 120);
+                this._play(600, 0.15, 'sine', 0.3);
+                setTimeout(() => this._play(800, 0.12, 'sine', 0.25), 60);
+                setTimeout(() => this._play(1000, 0.1, 'sine', 0.2), 120);
             },
 
-            // ============================================================
-            // 🎯 2行消除：双音上行 + 更丰富的回响
-            // ============================================================
-            doubleClear: function() {
-                this._playTone(660, 0.15, 'triangle', 0.25);
-                setTimeout(() => this._playTone(880, 0.15, 'triangle', 0.22), 60);
-                setTimeout(() => this._playTone(1100, 0.2, 'sine', 0.18), 120);
-                setTimeout(() => this._playTone(880, 0.5, 'sine', 0.06, 0, 4), 200);
-                this._noise(0.05, 0.04, 3000);
-            },
-
-            // ============================================================
-            // 🎯 3行消除：喜洋洋的三音上行和弦
-            // ============================================================
-            tripleClear: function() {
-                this._playTone(523, 0.12, 'triangle', 0.25);
-                setTimeout(() => this._playTone(659, 0.12, 'triangle', 0.22), 50);
-                setTimeout(() => this._playTone(784, 0.12, 'triangle', 0.2), 100);
-                setTimeout(() => this._playTone(1047, 0.3, 'sine', 0.2, 0, 5), 160);
-                setTimeout(() => this._playTone(784, 0.6, 'sine', 0.07, 0, 3), 250);
-            },
-
-            // ============================================================
-            // 🎯 4+行消除：华丽的琶音上行 + 混响
-            // ============================================================
-            megaClear: function() {
-                var penta = [523, 587, 659, 784, 880, 1047, 1175, 1319];
-                for (var i = 0; i < 6; i++) {
-                    (function(idx) {
-                        setTimeout(function() {
-                            this._playTone(penta[idx], 0.15, 'triangle', 0.22, 0, 2);
-                        }.bind(this), idx * 55);
-                    }).call(this, i);
-                }
-                setTimeout(function() {
-                    this._playTone(1319, 0.5, 'sine', 0.2, 0, 6);
-                    this._playTone(1047, 0.7, 'sine', 0.08, 0, 4);
-                }.bind(this), 380);
-            },
-
-            // ============================================================
-            // 🎯 通用线消除调度（根据行数选不同音效）
-            // ============================================================
             multiClear: function(lines) {
-                if (lines >= 4) this.megaClear();
-                else if (lines === 3) this.tripleClear();
-                else if (lines === 2) this.doubleClear();
-                else this.lineClear();
-            },
-
-            // ============================================================
-            // 🎯 全版全清：辉煌的胜利和弦 + 梦幻回声
-            // ============================================================
-            allClear: function() {
-                var penta = [523, 587, 659, 784, 880, 1047, 1175, 1319, 1568];
-                var self = this;
-                // 上行琶音（8音）
-                penta.forEach(function(f, i) {
-                    setTimeout(function() {
-                        self._playTone(f, 0.3, 'triangle', 0.3, 0, 3);
+                const base = 500; const notes = [0, 4, 7, 12];
+                for (let i = 0; i < Math.min(lines, 4); i++) {
+                    setTimeout(() => {
+                        this._play(base + notes[i] * 50, 0.2, 'triangle', 0.25);
                     }, i * 80);
-                });
-                // 结尾辉煌和弦
-                setTimeout(function() {
-                    self._playTone(1319, 0.8, 'triangle', 0.3, 0, 5);
-                    self._playTone(1047, 0.8, 'sine', 0.2, 0, 4);
-                    self._playTone(1568, 0.6, 'sine', 0.15, 0, 3);
-                    self._noise(0.3, 0.05, 5000); // 清脆噪声尾
-                }, penta.length * 80 + 50);
-                // 最后余韵
-                setTimeout(function() {
-                    self._playTone(784, 1.2, 'sine', 0.06, 0, 2);
-                }, penta.length * 80 + 400);
+                }
+                setTimeout(() => this._play(1200, 0.3, 'sine', 0.15), Math.min(lines, 4) * 80 + 50);
             },
 
-            // ============================================================
-            // 🎯 宝箱开启：魔法闪烁 + 风铃声
-            // ============================================================
+            allClear: function() {
+                const melody = [523, 659, 784, 1047];
+                melody.forEach((f, i) => {
+                    setTimeout(() => this._play(f, 0.3, 'triangle', 0.35), i * 100);
+                });
+                setTimeout(() => {
+                    [1047, 1319].forEach(f => this._play(f, 0.5, 'sine', 0.25));
+                }, 450);
+            },
+
             chestOpen: function() {
-                var penta = [440, 523, 659, 784, 1047, 1319, 1568];
-                var self = this;
-                penta.forEach(function(f, i) {
-                    setTimeout(function() {
-                        self._playTone(f, 0.1, 'sine', 0.2, f * 1.05, 4);
-                        if (i % 2 === 0) {
-                            self._playTone(f * 1.5, 0.06, 'sine', 0.08);
-                        }
-                    }, i * 50);
+                [400, 500, 600, 800, 1200].forEach((f, i) => {
+                    setTimeout(() => this._play(f, 0.15, 'sine', 0.2), i * 60);
                 });
-                // 高音闪烁 + 尾音
-                setTimeout(function() {
-                    self._playTone(1568, 0.5, 'sine', 0.22, 0, 6);
-                    self._playTone(1175, 0.6, 'sine', 0.1, 0, 4);
-                    self._noise(0.15, 0.04, 6000);
-                }, penta.length * 50 + 60);
             },
 
-            // ============================================================
-            // 🎯 Combo：喜悦急促的上行跳音 + 高潮
-            // ============================================================
             combo: function(count) {
-                var penta = [523, 587, 659, 784, 880, 1047, 1175];
-                for (var i = 0; i < Math.min(count, 6); i++) {
-                    (function(idx) {
-                        setTimeout(function() {
-                            this._playTone(penta[idx], 0.1, 'triangle', 0.2);
-                            if (idx > 0) this._playTone(penta[idx-1] * 0.5, 0.08, 'sine', 0.05);
-                        }.bind(this), idx * 45);
-                    }).call(this, i);
+                const base = 440;
+                for (let i = 0; i < Math.min(count, 5); i++) {
+                    setTimeout(() => {
+                        this._play(base + i * 80, 0.12, 'triangle', 0.2);
+                    }, i * 50);
                 }
-                if (count >= 3) {
-                    var self = this;
-                    setTimeout(function() {
-                        self._playTone(1319, 0.4, 'sine', 0.22, 0, 5);
-                        self._playTone(1047, 0.5, 'sine', 0.1, 0, 3);
-                    }, Math.min(count, 6) * 45 + 30);
-                }
+                setTimeout(() => this._play(880 + count * 30, 0.3, 'sine', 0.25), Math.min(count, 5) * 50);
             },
 
-            // ============================================================
-            // 🎯 游戏结束：温柔、接受的结尾
-            // ============================================================
             gameOver: function() {
-                var penta = [784, 659, 587, 523, 440, 392];
-                var self = this;
-                penta.forEach(function(f, i) {
-                    setTimeout(function() {
-                        self._playTone(f, 0.3, 'triangle', 0.15);
-                        if (i === penta.length - 1) {
-                            setTimeout(function() {
-                                self._playTone(f * 0.5, 0.8, 'sine', 0.06);
-                            }, 200);
-                        }
-                    }, i * 220);
+                [400, 350, 300, 250].forEach((f, i) => {
+                    setTimeout(() => this._play(f, 0.3, 'sawtooth', 0.15), i * 150);
                 });
-            },
-
-            // ============================================================
-            // 🎯 拾取方块：轻快的点击声
-            // ============================================================
-            pick: function() {
-                this._playTone(1200, 0.06, 'sine', 0.12);
-                this._playTone(900, 0.04, 'sine', 0.06);
-            },
-
-            // ============================================================
-            // 🎯 无效操作：柔软的拒绝音
-            // ============================================================
-            invalid: function() {
-                this._playTone(250, 0.1, 'sine', 0.1, 200);
-                this._playTone(200, 0.15, 'sine', 0.06, 180);
-            },
-
-            // ============================================================
-            // 🎯 分数里程碑：短小的胜利 fanfare
-            // ============================================================
-            milestone: function() {
-                var notes = [523, 659, 784, 1047];
-                var self = this;
-                notes.forEach(function(f, i) {
-                    setTimeout(function() {
-                        self._playTone(f, 0.15, 'triangle', 0.25, 0, 3);
-                    }, i * 70);
-                });
-                setTimeout(function() {
-                    self._playTone(1319, 0.5, 'sine', 0.2, 0, 5);
-                    self._noise(0.2, 0.04, 4000);
-                }, 350);
             }
         };
+
 
         GameApp.UI = {
             elements: {},
@@ -1870,10 +1158,8 @@
                 this.elements.gameoverOverlay = document.getElementById('gameover-overlay');
                 this.elements.settingsOverlay = document.getElementById('settings-overlay');
                 this.elements.luckyChestOverlay = document.getElementById('lucky-chest-overlay');
-                this.elements.luckyMultiplierTag = document.getElementById('lucky-multiplier-tag');
                 this.elements.luckyProgressBar = document.getElementById('lucky-progress-bar');
-
-
+                this.elements.clearMultiplierTag = document.getElementById('clear-multiplier-tag');
                 this.elements.customSelectPanel = document.getElementById('custom-select-panel');
                 this.elements.modalTitle = document.getElementById('modalTitle');
                 this.elements.modalScoreText = document.getElementById('modalScoreText');
@@ -1884,17 +1170,10 @@
             },
 
             generateLevelButtons: function() {
-                var completed = {};
-                try {
-                    var saved = localStorage.getItem('all_you_can_put_levels_completed');
-                    if (saved) completed = JSON.parse(saved);
-                } catch(e) {}
                 for (let i = 1; i <= GameApp.Config.maxLevel; i++) {
-                    let target = GameApp.Core.generateLevelConfig(i).target;
                     let btn = document.createElement('button');
                     btn.className = 'lvl-btn';
-                    if (completed[i]) btn.classList.add('completed');
-                    btn.innerHTML = (i < 10 ? '0' + i : i) + '<br><span style="font-size:0.55rem;opacity:0.7;">' + target + '</span>';
+                    btn.innerText = i < 10 ? '0' + i : i;
                     btn.onclick = (e) => { e.stopPropagation(); GameApp.Core.startLevelMode(i); };
                     this.elements.levelPanel.appendChild(btn);
                 }
@@ -1955,17 +1234,13 @@
                 const t = GameApp.I18N;
                 const s = GameApp.State;
                 
-                // 分数滚动效果 + 弹动动画
+                // 分数滚动效果
                 if (this._lastDisplayedScore !== s.bScore) {
                     const el = this.elements.topScoreText;
                     const startVal = this._lastDisplayedScore;
                     const endVal = s.bScore;
-                    const duration = Math.min(600, Math.max(200, Math.abs(endVal - startVal) * 2));
+                    const duration = Math.min(400, Math.max(150, Math.abs(endVal - startVal) * 2));
                     const startTime = Date.now();
-                    // 加分时闪一下
-                    el.style.transition = 'transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)';
-                    el.style.transform = 'scale(1.2)';
-                    setTimeout(() => { el.style.transform = 'scale(1)'; }, 150);
                     const animate = () => {
                         const elapsed = Date.now() - startTime;
                         const progress = Math.min(1, elapsed / duration);
@@ -1980,32 +1255,15 @@
                 } else {
                     this.elements.topScoreText.innerText = `${t.getText('score')}: ${s.bScore}`;
                 }
-                // 📺 显示复活按钮
-                var _rBtn = document.getElementById('go-revive');
-                if (_rBtn) {
-                    _rBtn.style.display = s.reviveCount > 0 ? 'inline-block' : 'none';
-                    _rBtn.innerText = t.getText('reviveBtn');
-                }
-                
                 if (s.currentMode === 'level') { 
-                    this.elements.topScoreText.innerText = `${t.getText('stage')} ${s.currentLevel}: ${s.bScore} / ${s.targetScore}`;
-                    var remain = Math.max(0, s.targetScore - s.bScore);
-                    var pct = Math.min(100, (s.bScore / s.targetScore) * 100);
-                    var fill = document.getElementById('level-progress-fill');
-                    var txt = document.getElementById('level-progress-text');
-                    if (fill) fill.style.width = pct + '%';
-                    if (txt) txt.innerText = remain > 0 ? t.getText('remainText') + ' ' + remain + ' 💪' : '🎉 ' + t.getText('goWin'); 
+                    this.elements.topScoreText.innerText = `${t.getText('stage')} ${s.currentLevel}: ${s.bScore} / ${s.targetScore}`; 
                 }
                 if (s.currentMode === 'lucky') { 
-                    this.elements.luckyMultiplierTag.innerText = `${t.getText('multiplier')}: ${s.currentMultiplier.toFixed(1)}x`;
-                this.elements.luckyProgressBar.innerText = `${t.getText('luckyProgress')}: ${s.luckyLinesNeeded} ${t.getText('rows')}`; 
+                    this.elements.luckyProgressBar.innerText = `${t.getText('luckyProgress')}: ${s.luckyLinesNeeded} ${t.getText('rows')}`; 
                 }
                 
-
-                if (s.currentMode !== 'level') {
-                    const bestKey = s.currentMode === 'lucky' ? s.bBestScoreLucky : s.bBestScoreEndless;
-                    this.elements.topBestText.innerText = `${t.getText('best')}: ${bestKey}`;
-                }
+                this.elements.clearMultiplierTag.innerText = `${t.getText('multiplier')}: ${s.currentMultiplier.toFixed(1)}x`;
+                this.elements.topBestText.innerText = `${t.getText('best')}: ${s.bBestScore}`;
             },
 
             openSettingsModal: function() { this.elements.settingsOverlay.style.display = 'flex'; },
@@ -2034,62 +1292,20 @@
             },
 
             showGameOverModal: function(isWin) {
-                const s = GameApp.State;
-                s.isGameOver = true;
+                GameApp.State.isGameOver = true;
                 this.elements.gameoverOverlay.style.display = 'flex';
                 const t = GameApp.I18N;
-                const bCell = GameApp.Config.bCellSize;
-                const size = GameApp.Config.bGridSize;
                 
-                // 震撼级粒子爆发
-                for (let i = 0; i < 45; i++) {
-                    setTimeout(() => {
-                        s.particles.push({
-                            x: Math.random() * size * bCell,
-                            y: Math.random() * size * bCell,
-                            vx: (Math.random() - 0.5) * 30,
-                            vy: (Math.random() - 0.8) * 25,
-                            radius: Math.random() * 8 + 3,
-                            alpha: 1,
-                            color: ['#ff3377','#00e5ff','#ffea00','#d500f9','#ff6d00','#00ff66'][Math.floor(Math.random()*6)]
-                        });
-                    }, i * 10);
-                }
-                // 震撼级屏幕震动
-                s.screenShakeTimer = 1.2;
-                s.shakeIntensity = 3;
-                // 全屏白闪
-                s.allClearFlashTimer = 0.6;
-                
-                // 📺 显示复活按钮
-                var _rBtn = document.getElementById('go-revive');
-                if (_rBtn) {
-                    _rBtn.style.display = s.reviveCount > 0 ? 'inline-block' : 'none';
-                    _rBtn.innerText = t.getText('reviveBtn');
-                }
-                
-                if (s.currentMode === 'level') {
+                if (GameApp.State.currentMode === 'level') {
                     this.elements.modalTitle.innerText = isWin ? t.getText('goWin') : t.getText('goLose');
-                    this.elements.modalScoreText.innerText = isWin ? `${t.getText('goWinDesc')} ${s.targetScore}` : t.getText('goLoseDesc');
-                    // 标记关卡已完成
-                    if (isWin) {
-                        try {
-                            var completed = {};
-                            var saved = localStorage.getItem('all_you_can_put_levels_completed');
-                            if (saved) completed = JSON.parse(saved);
-                            completed[s.currentLevel] = true;
-                            localStorage.setItem('all_you_can_put_levels_completed', JSON.stringify(completed));
-                            GameApp.UI.generateLevelButtons();
-                        } catch(e) {}
-                    }
+                    this.elements.modalScoreText.innerText = isWin ? `${t.getText('goWinDesc')} ${GameApp.State.targetScore}` : t.getText('goLoseDesc');
                 } else {
                     this.elements.modalTitle.innerText = t.getText('goOver');
-                    this.elements.modalScoreText.innerText = `${t.getText('goScore')}: ${s.bScore}`;
+                    this.elements.modalScoreText.innerText = `${t.getText('goScore')}: ${GameApp.State.bScore}`;
                     GameApp.Core.clearSavedGame();
                 }
-                this.updateScoreDisplay();
                 GameApp.Audio.gameOver();
-                GameApp.Vibe.celebration();
+                GameApp.Vibe.heavy();
                 GameApp.AdsManager.showInterstitial(null);
             }
         };
@@ -2105,15 +1321,11 @@
             },
 
             loadBestScore: function() {
-                GameApp.State.bBestScoreEndless = localStorage.getItem('all_you_can_put_best_endless_v6') ? parseInt(localStorage.getItem('all_you_can_put_best_endless_v6')) : 0;
-                GameApp.State.bBestScoreLucky = localStorage.getItem('all_you_can_put_best_lucky_v6') ? parseInt(localStorage.getItem('all_you_can_put_best_lucky_v6')) : 0;
+                GameApp.State.bBestScore = localStorage.getItem('all_you_can_put_best_v5') ? parseInt(localStorage.getItem('all_you_can_put_best_v5')) : 0;
             },
 
             saveBestScore: function() {
-                const mode = GameApp.State.currentMode;
-                const key = mode === 'lucky' ? 'all_you_can_put_best_lucky_v6' : 'all_you_can_put_best_endless_v6';
-                const score = mode === 'lucky' ? GameApp.State.bBestScoreLucky : GameApp.State.bBestScoreEndless;
-                localStorage.setItem(key, score);
+                localStorage.setItem('all_you_can_put_best_v5', GameApp.State.bBestScore);
             },
 
             saveCurrentGame: function() {
@@ -2122,13 +1334,15 @@
                 const stateObj = {
                     bGrid: s.bGrid, bScore: s.bScore, hand: s.hand,
                     currentMode: s.currentMode, luckyLinesNeeded: s.luckyLinesNeeded,
-                    allClearCount: s.allClearCount, currentMultiplier: s.currentMultiplier,
-                    bBestScoreEndless: s.bBestScoreEndless, bBestScoreLucky: s.bBestScoreLucky
+                    allClearCount: s.allClearCount, currentMultiplier: s.currentMultiplier
                 };
                 localStorage.setItem('all_you_can_put_save_v5', JSON.stringify(stateObj));
             },
 
-
+            checkSavedGameExists: function() {
+                const saved = localStorage.getItem('all_you_can_put_save_v5');
+                document.getElementById('lobby-continue-btn').style.display = saved ? 'inline-block' : 'none';
+            },
 
             loadSavedGame: function() {
                 const saved = localStorage.getItem('all_you_can_put_save_v5');
@@ -2144,7 +1358,6 @@
                 s.allClearCount = stateObj.allClearCount; s.currentMultiplier = stateObj.currentMultiplier;
                 
                 s.isGameOver = false; s.isCustomSelecting = false; s.selectedPiece = null;
-                GameApp.UI.elements.luckyMultiplierTag.style.display = s.currentMode === 'lucky' ? 'block' : 'none';
                 GameApp.UI.elements.luckyProgressBar.style.display = s.currentMode === 'lucky' ? 'block' : 'none';
                 
                 GameApp.I18N.applyLanguage();
@@ -2154,8 +1367,7 @@
 
             clearSavedGame: function() {
                 localStorage.removeItem('all_you_can_put_save_v5');
-                var _cBtn = document.getElementById('continue-btn');
-                if (_cBtn) _cBtn.style.display = 'none';
+                this.checkSavedGameExists();
             },
 
             exitToMenu: function() {
@@ -2164,52 +1376,16 @@
                 GameApp.UI.elements.settingsOverlay.style.display = 'none';
                 document.getElementById('menu-screen').style.display = 'block';
                 document.getElementById('game-screen').style.display = 'none';
-                GameApp.UI.elements.luckyMultiplierTag.style.display = 'none';
-                document.getElementById('level-progress-area').style.display = 'none';
                 
-                // 返回主頁時還原動態背景
-                document.body.style.background = '';
-                // 返回主頁時顯示繼續遊戲按鈕（只有真正玩過存檔才會出現）
-                var _cBtn = document.getElementById('continue-btn');
-                if (_cBtn) _cBtn.style.display = 'block'; 
+                // 🌟 返回主頁時還原粉藍漸變主題背景
+                document.body.style.background = 'var(--bg-gradient)'; 
                 
-                
-            },
-
-            // 📺 看广告复活（每局最多5次）
-            reviveWithAd: function() {
-                const s = GameApp.State;
-                if (s.reviveCount <= 0) return;
-                s.reviveCount--;
-                GameApp.AdsManager.showRewarded(function() {
-                    s.isGameOver = false;
-                    s.selectedPiece = null;
-                    GameApp.UI.elements.gameoverOverlay.style.display = 'none';
-                    var rb = document.getElementById('go-revive');
-                    if (rb) rb.style.display = 'none';
-                    GameApp.UI.updateScoreDisplay();
-                });
-            },
-
-            // 📺 重开检查：每5局强制看一次插屏广告
-            retryWithAdCheck: function() {
-                const s = GameApp.State;
-                s.gamesSinceLastAd++;
-                if (s.gamesSinceLastAd >= 5) {
-                    s.gamesSinceLastAd = 0;
-                    GameApp.AdsManager.showInterstitial(function() {
-                        GameApp.Core.resetGame();
-                    });
-                } else {
-                    GameApp.Core.resetGame();
-                }
+                this.checkSavedGameExists();
             },
 
             startLuckyMode: function() {
                 this.clearSavedGame(); GameApp.State.currentMode = 'lucky';
-                GameApp.State.currentMultiplier = 1.0;
                 GameApp.UI.elements.topBestText.style.display = 'block';
-                GameApp.UI.elements.luckyMultiplierTag.style.display = 'block';
                 GameApp.UI.elements.luckyProgressBar.style.display = 'block';
                 GameApp.UI.elements.customSelectPanel.style.display = 'none';
                 this.enterArena();
@@ -2217,9 +1393,7 @@
 
             startEndlessMode: function() {
                 this.clearSavedGame(); GameApp.State.currentMode = 'endless';
-                GameApp.State.currentMultiplier = 1.0;
                 GameApp.UI.elements.topBestText.style.display = 'block';
-                GameApp.UI.elements.luckyMultiplierTag.style.display = 'none';
                 GameApp.UI.elements.luckyProgressBar.style.display = 'none';
                 GameApp.UI.elements.customSelectPanel.style.display = 'none';
                 this.enterArena();
@@ -2228,12 +1402,9 @@
             startLevelMode: function(lvlNum) {
                 GameApp.State.currentMode = 'level'; GameApp.State.currentLevel = lvlNum;
                 GameApp.State.targetScore = this.generateLevelConfig(lvlNum).target;
-                GameApp.UI.elements.topBestText.style.display = 'block';
-                GameApp.UI.elements.topBestText.innerText = '🎯 ' + GameApp.State.targetScore;
-                GameApp.UI.elements.luckyMultiplierTag.style.display = 'none';
+                GameApp.UI.elements.topBestText.style.display = 'none';
                 GameApp.UI.elements.luckyProgressBar.style.display = 'none';
                 GameApp.UI.elements.customSelectPanel.style.display = 'none';
-                document.getElementById('level-progress-area').style.display = 'block';
                 this.enterArena();
             },
 
@@ -2245,51 +1416,11 @@
             },
 
             generateLevelConfig: function(lvl) {
-                // 难度曲线：前期平缓，中期陡增，后期极难
-                let target, obstacles = [];
-                
-                // 目标分数曲线（指数增长）
-                if (lvl <= 5) {
-                    target = 200 + lvl * 20;        // L1-5: 220-300
-                    obstacles = [];
-                } else if (lvl <= 10) {
-                    target = 300 + (lvl - 5) * 40;  // L6-10: 340-500
-                    obstacles = [{r:3, c:4}];
-                } else if (lvl <= 15) {
-                    target = 500 + (lvl - 10) * 60; // L11-15: 560-800
-                    obstacles = [{r:2, c:2}, {r:5, c:5}];
-                } else if (lvl <= 20) {
-                    target = 800 + (lvl - 15) * 80; // L16-20: 880-1200
-                    obstacles = [{r:1, c:3}, {r:3, c:5}, {r:6, c:2}];
-                } else if (lvl <= 25) {
-                    target = 1200 + (lvl - 20) * 100; // L21-25: 1300-1700
-                    obstacles = [{r:1, c:1}, {r:2, c:5}, {r:5, c:2}, {r:6, c:6}];
-                } else if (lvl <= 30) {
-                    target = 1700 + (lvl - 25) * 150; // L26-30: 1850-2450
-                    obstacles = [{r:1, c:1}, {r:1, c:6}, {r:4, c:3}, {r:6, c:1}, {r:6, c:6}];
-                } else if (lvl <= 35) {
-                    target = 2500 + (lvl - 30) * 200; // L31-35: 2700-3500
-                    obstacles = [{r:0, c:3}, {r:2, c:0}, {r:2, c:7}, {r:5, c:1}, {r:5, c:6}, {r:7, c:4}];
-                } else if (lvl <= 40) {
-                    target = 3500 + (lvl - 35) * 300; // L36-40: 3800-5000
-                    obstacles = [{r:1, c:1}, {r:1, c:6}, {r:3, c:3}, {r:4, c:4}, {r:6, c:1}, {r:6, c:6}];
-                } else if (lvl <= 45) {
-                    target = 5000 + (lvl - 40) * 400; // L41-45: 5400-7000
-                    obstacles = [{r:1, c:1}, {r:1, c:6}, {r:3, c:2}, {r:3, c:5}, {r:5, c:3}, {r:6, c:1}, {r:6, c:6}];
-                } else if (lvl <= 50) {
-                    target = 7000 + (lvl - 45) * 500; // L46-50: 7500-9500
-                    obstacles = [{r:1, c:2}, {r:1, c:5}, {r:4, c:1}, {r:4, c:6}, {r:6, c:3}];
-                } else if (lvl <= 55) {
-                    target = 9500 + (lvl - 50) * 700; // L51-55: 10000-13000
-                    obstacles = [{r:0, c:3}, {r:2, c:0}, {r:2, c:7}, {r:5, c:3}, {r:5, c:4}, {r:7, c:3}];
-                } else if (lvl <= 60) {
-                    target = 13000 + (lvl - 55) * 800; // L56-60: 13800-17000
-                    obstacles = [{r:1, c:1}, {r:1, c:6}, {r:3, c:3}, {r:3, c:4}, {r:5, c:1}, {r:5, c:6}];
-                } else {
-                    // L61-66: 最难关卡 18000-28000（可通关）
-                    target = 18000 + (lvl - 60) * 2000; // L61: 18000, L66: 28000
-                    obstacles = [{r:1, c:0}, {r:1, c:3}, {r:1, c:4}, {r:1, c:7}, {r:4, c:1}, {r:4, c:6}, {r:6, c:3}, {r:6, c:4}];
-                }
+                let target = 150 + (lvl * 15); let obstacles = [];
+                if (lvl > 55) obstacles = [{r:2, c:2}, {r:2, c:5}, {r:5, c:2}, {r:5, c:5}, {r:3, c:3}];
+                else if (lvl > 35) obstacles = [{r:1, c:1}, {r:1, c:6}, {r:6, c:1}, {r:6, c:6}];
+                else if (lvl > 15) obstacles = [{r:3, c:2}, {r:3, c:3}, {r:3, c:4}];
+                else if (lvl > 5) obstacles = [{r:4, c:4}];
                 return { target, obstacles };
             },
 
@@ -2300,7 +1431,7 @@
                 GameApp.UI.elements.customSelectPanel.style.display = 'none';
                 
                 s.bGrid = Array(size).fill(null).map(() => Array(size).fill(0));
-                s.bScore = 0; s.isGameOver = false; s.luckyLinesNeeded = 5; s.isCustomSelecting = false; s.allClearCount = 0; s.currentMultiplier = 1.0; s.allClearFlashTimer = 0; s.selectedPiece = null;
+                s.bScore = 0; s.isGameOver = false; s.luckyLinesNeeded = 3; s.isCustomSelecting = false; s.allClearCount = 0; s.currentMultiplier = 1.0; s.allClearFlashTimer = 0; s.selectedPiece = null;
                 s.particles = []; s.clearingCells = [];
                 s.gridBounceX = Array(size).fill().map(() => Array(size).fill(1)); s.gridBounceY = Array(size).fill().map(() => Array(size).fill(1));
                 s.gridVelocityX = Array(size).fill().map(() => Array(size).fill(0)); s.gridVelocityY = Array(size).fill().map(() => Array(size).fill(0));
@@ -2346,12 +1477,15 @@
                 const S = GameApp.Config.Shapes.special;
                 const M = GameApp.Config.Shapes.medium;
                 const H = GameApp.Config.Shapes.hard;
+
+                // ============================================================
                 // 难度曲线：根据当前分数决定出牌池
                 //   Phase 1 (0-200):  新手保护，基本只出简单形状
                 //   Phase 2 (200-500): 少量中等形状
                 //   Phase 3 (500-1000): 混合出牌
                 //   Phase 4 (1000-2000): 开始出难形状
                 //   Phase 5 (2000+):   真正的挑战
+                // ============================================================
                 let poolEasy = [...E];
                 let poolMed = [...E, ...M];
                 let poolAll = [...E, ...M, ...H];
@@ -2359,43 +1493,35 @@
                 let chosenPool;
                 let difficultyTier;
 
-                // 📺 显示复活按钮
-                var _rBtn = document.getElementById('go-revive');
-                if (_rBtn) {
-                    _rBtn.style.display = s.reviveCount > 0 ? 'inline-block' : 'none';
-                    _rBtn.innerText = GameApp.I18N.getText('reviveBtn');
-                }
-                
                 if (s.currentMode === 'level') {
-                    if (s.currentLevel <= 20) { chosenPool = poolEasy; difficultyTier = 0; }
-                    else if (s.currentLevel <= 40) { chosenPool = poolMed; difficultyTier = 1; }
-                    else { chosenPool = poolAll; difficultyTier = 2; }
+                    if (s.currentLevel <= 10) { chosenPool = poolEasy; difficultyTier = 0; }
+                    else if (s.currentLevel <= 25) { chosenPool = poolMed; difficultyTier = 1; }
+                    else if (s.currentLevel <= 45) { chosenPool = poolAll; difficultyTier = 2; }
+                    else { chosenPool = [...M, ...H]; difficultyTier = 3; }
                 } else {
                     const sc = s.bScore;
-                    // 经典模式比幸运模式稍微简单一点点：经典模式门槛+20%，幸运模式不加成
-                    // 两模式都在10000分以上才开始慢慢变难
-                    const diffMod = s.currentMode === 'endless' ? 1.15 : 1.0;
-                    const adj = sc * diffMod;
-                    // Phase 1 (0-12000): 纯简单池，先爽12000分再动脑
-                    if (adj <= 12000) { chosenPool = poolEasy; difficultyTier = 0; }
-                    // Phase 2 (12000-22000): 开始混入中等形状（少量）
-                    else if (adj <= 22000) { 
-                        chosenPool = Math.random() < 0.80 ? poolEasy : poolMed;
+                    if (sc <= 200) { chosenPool = poolEasy; difficultyTier = 0; }
+                    else if (sc <= 500) { 
+                        chosenPool = Math.random() < 0.7 ? poolEasy : poolMed;
                         difficultyTier = 1;
-                    } else if (adj <= 30000) {
+                    } else if (sc <= 1000) {
                         const r = Math.random();
-                        chosenPool = r < 0.50 ? poolEasy : r < 0.85 ? poolMed : poolAll;
+                        chosenPool = r < 0.4 ? poolEasy : r < 0.8 ? poolMed : poolAll;
                         difficultyTier = 2;
-                    } else {
-                        chosenPool = Math.random() < 0.35 ? poolMed : [...M, ...H];
+                    } else if (sc <= 2000) {
+                        const r = Math.random();
+                        chosenPool = r < 0.2 ? poolEasy : r < 0.6 ? poolMed : poolAll;
                         difficultyTier = 3;
+                    } else {
+                        chosenPool = Math.random() < 0.3 ? poolMed : [...M, ...H];
+                        difficultyTier = 4;
                     }
                 }
 
-                // 🎯 优先找一个能立即消除行列的形狀（经典模式也启用）
+                // 🎯 优先找一个能立即消除行列的形狀（所有难度都尝试）
                 let lineClearPiece = null;
-                if (s.currentMode === 'endless' || s.currentMode === 'lucky' || s.currentMode === 'level') {
-                    let searchPool = [...E, ...E, ...E, ...E, ...E, ...M, ...H, ...S]; // 更多简单池增加命中
+                if (s.currentMode === 'endless' || s.currentMode === 'lucky') {
+                    let searchPool = difficultyTier <= 1 ? [...E, ...M] : [...E, ...M, ...H];
                     searchPool.sort(() => Math.random() - 0.5);
                     for (let p of searchPool) {
                         for (let r = 0; r < size; r++) {
@@ -2452,75 +1578,12 @@
                 }
 
                 // 🎯 精准帮扶：根据棋盘空缺给玩家需要的形状
-                // 随机旋转手牌（增加变化性，帮助匹配更多空缺）
-                for (let i = 0; i < s.hand.length; i++) {
-                    if (s.hand[i].isUsed) continue;
-                    // 50%概率旋转，旋转0-3次（90度每次）
-                    if (Math.random() > 0.5) {
-                        const rotTimes = Math.floor(Math.random() * 4); // 0-3
-                        let m = s.hand[i].shape;
-                        for (let r = 0; r < rotTimes; r++) {
-                            let rotated = [];
-                            for (let c = 0; c < m[0].length; c++) {
-                                let newRow = [];
-                                for (let row = m.length - 1; row >= 0; row--) newRow.push(m[row][c]);
-                                rotated.push(newRow);
-                            }
-                            m = rotated;
-                        }
-                        s.hand[i].shape = m;
-                    }
-                }
-                                // 随机旋转手牌（增加变化性，帮助匹配更多空缺）
-                for (let i = 0; i < s.hand.length; i++) {
-                    if (s.hand[i].isUsed) continue;
-                    if (Math.random() > 0.5) {
-                        const rotTimes = Math.floor(Math.random() * 4);
-                        let m = s.hand[i].shape;
-                        for (let r = 0; r < rotTimes; r++) {
-                            let rotated = [];
-                            for (let c = 0; c < m[0].length; c++) {
-                                let newRow = [];
-                                for (let row = m.length - 1; row >= 0; row--) newRow.push(m[row][c]);
-                                rotated.push(newRow);
-                            }
-                            m = rotated;
-                        }
-                        s.hand[i].shape = m;
-                    }
-                }
-                // 🔄 50% chance to randomly rotate non-critical shapes (helps clear lines)
-                for (let i = 0; i < s.hand.length; i++) {
-                    if (!s.hand[i].isUsed && Math.random() > 0.45) {
-                        // Rotate 0-3 times (90° each)
-                        const rotations = Math.floor(Math.random() * 4);
-                        let mat = s.hand[i].shape;
-                        for (let r = 0; r < rotations; r++) {
-                            const rows = mat.length;
-                            const cols = mat[0].length;
-                            const newMat = [];
-                            for (let c = 0; c < cols; c++) {
-                                newMat[c] = [];
-                                for (let rr = rows - 1; rr >= 0; rr--) {
-                                    newMat[c].push(mat[rr][c]);
-                                }
-                            }
-                            mat = newMat;
-                        }
-                        s.hand[i].shape = mat;
-                    }
-                }
                 this._giveHelpfulPieces(chosenPool);
+
+                // ============================================================
                 // 保底机制：如果所有手牌都无法放置，自动替换为可放置的简单形状
+                // ============================================================
                 this._ensurePlayableHand();
-                
-                // 🎨 为主题循环着色：用当前主题色板覆盖方塊颜色
-                const themeColors = s.currentTheme.colors;
-                s.hand.forEach((piece, idx) => {
-                    if (!piece.isUsed) {
-                        piece.color = themeColors[idx % themeColors.length];
-                    }
-                });
 
                 this.saveCurrentGame();
             },
@@ -2530,210 +1593,139 @@
                 const s = GameApp.State;
                 const size = GameApp.Config.bGridSize;
                 const E = GameApp.Config.Shapes.easy;
+                const S = GameApp.Config.Shapes.special;
 
-                // 智能辅助：混搭有益形状，不暴露 AI 痕迹
-                // 先找完全能消行的形状（最高优先级，但只替换1张）
-                const allShapes = [...E, ...GameApp.Config.Shapes.medium, ...GameApp.Config.Shapes.hard];
-                let lineClearPick = null;
-                
-                for (let p of allShapes) {
-                    for (let r = 0; r < size; r++) {
-                        for (let c = 0; c < size; c++) {
-                            if (this.canPlaceShape(p.matrix, r, c) && this.simulateLineClear(p.matrix, r, c)) {
-                                let cells = 0;
-                                p.matrix.forEach(row => row.forEach(v => { if(v) cells++; }));
-                                if (!lineClearPick || cells > 0) {
-                                    lineClearPick = { shape: p.matrix, color: p.color };
-                                }
-                            }
-                        }
-                    }
-                }
+                // 收集所有差1格的行和列信息
+                let neededShapes = [];
 
-                // 自然混搭：收集各种有益形状（增强版 - 更积极帮助清屏）
-                let helpers = [];
-
-                // 行列缺口检测（积极度提升：优先找缺1-2格的空缺）
+                // 检查行：找出哪些行只差1格
                 for (let r = 0; r < size; r++) {
-                    let empties = [];
+                    let emptyCol = -1;
+                    let filled = 0;
                     for (let c = 0; c < size; c++) {
-                        if (s.bGrid[r][c] === 0) empties.push(c);
+                        if (s.bGrid[r][c] === 0) {
+                            if (emptyCol === -1) emptyCol = c;
+                            else { emptyCol = -2; break; }
+                        } else if (s.bGrid[r][c] !== '#4e566d') {
+                            filled++;
+                        }
                     }
-                    if (empties.length === 1) {
-                        helpers.push({ shape: [[1]], color: '#00ff66', priority: 5 });
-                    } else if (empties.length === 2 && empties[1] - empties[0] === 1) {
-                        helpers.push({ shape: [[1,1]], color: '#ffea00', priority: 4 });
-                    } else if (empties.length === 3 && empties[2] - empties[0] === 2) {
-                        helpers.push({ shape: [[1,1,1]], color: '#00e5ff', priority: 3 });
-                    } else if (empties.length === 4 && empties[3] - empties[0] === 3) {
-                        helpers.push({ shape: [[1,1,1,1]], color: '#ff6d00', priority: 2 });
+                    if (emptyCol >= 0 && filled >= size - 2) {
+                        let dot = S.find(p => p.name === 'dot') || { matrix: [[1]], color: '#00ff66' };
+                        neededShapes.push({ shape: dot.matrix, color: dot.color, priority: 10 });
                     }
                 }
+
+                // 检查列：同样逻辑
                 for (let c = 0; c < size; c++) {
-                    let empties = [];
+                    let emptyRow = -1;
+                    let filled = 0;
                     for (let r = 0; r < size; r++) {
-                        if (s.bGrid[r][c] === 0) empties.push(r);
+                        if (s.bGrid[r][c] === 0) {
+                            if (emptyRow === -1) emptyRow = r;
+                            else { emptyRow = -2; break; }
+                        } else if (s.bGrid[r][c] !== '#4e566d') {
+                            filled++;
+                        }
                     }
-                    if (empties.length === 2 && empties[1] - empties[0] === 1) {
-                        helpers.push({ shape: [[1],[1]], color: '#ffea00', priority: 4 });
-                    } else if (empties.length === 3 && empties[2] - empties[0] === 2) {
-                        helpers.push({ shape: [[1],[1],[1]], color: '#00e5ff', priority: 3 });
+                    if (emptyRow >= 0 && filled >= size - 2) {
+                        let dot = S.find(p => p.name === 'dot') || { matrix: [[1]], color: '#00ff66' };
+                        neededShapes.push({ shape: dot.matrix, color: dot.color, priority: 10 });
                     }
                 }
 
-                // 🔥 智能形状检测：T形/L形能完美填充的空缺（经典模式更积极）
-                var isClassic = s.currentMode === 'level';
-                var tChance = isClassic ? 0.55 : 0.35;
-                if (Math.random() > (1 - tChance)) {
-                    // T形检测：检测 T 形缺口 [[1,1,1],[0,1,0]]
-                    for (let r = 0; r < size - 1; r++) {
-                        for (let c = 0; c < size - 2; c++) {
-                            if (s.bGrid[r][c] === 0 && s.bGrid[r][c+1] === 0 && s.bGrid[r][c+2] === 0 &&
-                                s.bGrid[r+1][c+1] === 0 && 
-                                s.bGrid[r+1][c] !== 0 && s.bGrid[r+1][c+2] !== 0) {
-                                helpers.push({ shape: [[1,1,1],[0,1,0]], color: '#d500f9', priority: 8 });
-                            }
-                        }
+                // 检查差2格的行（需要横条）
+                for (let r = 0; r < size; r++) {
+                    let emptyCols = [];
+                    for (let c = 0; c < size; c++) {
+                        if (s.bGrid[r][c] === 0) emptyCols.push(c);
                     }
-                    // L形检测：[[1,0],[1,0],[1,1]]
-                    for (let r = 0; r < size - 2; r++) {
-                        for (let c = 0; c < size - 1; c++) {
-                            if (s.bGrid[r][c] === 0 && s.bGrid[r+1][c] === 0 && s.bGrid[r+2][c] === 0 &&
-                                s.bGrid[r+2][c+1] === 0 &&
-                                s.bGrid[r][c+1] !== 0 && s.bGrid[r+1][c+1] !== 0) {
-                                helpers.push({ shape: [[1,0],[1,0],[1,1]], color: '#ff3377', priority: 8 });
-                            }
-                        }
-                    }
-                    // Z形检测：[[1,1,0],[0,1,1]]
-                    for (let r = 0; r < size - 1; r++) {
-                        for (let c = 0; c < size - 2; c++) {
-                            if (s.bGrid[r][c] === 0 && s.bGrid[r][c+1] === 0 && s.bGrid[r][c+2] !== 0 &&
-                                s.bGrid[r+1][c] !== 0 && s.bGrid[r+1][c+1] === 0 && s.bGrid[r+1][c+2] === 0) {
-                                helpers.push({ shape: [[1,1,0],[0,1,1]], color: '#ffea00', priority: 8 });
-                            }
-                        }
+                    if (emptyCols.length === 2) {
+                        let bar2 = E.find(p => p.name === 'bar-2') || { matrix: [[1,1]], color: '#ffea00' };
+                        neededShapes.push({ shape: bar2.matrix, color: bar2.color, priority: 8 });
+                    } else if (emptyCols.length === 3) {
+                        let bar3 = E.find(p => p.name === 'bar-3') || { matrix: [[1,1,1]], color: '#00e5ff' };
+                        neededShapes.push({ shape: bar3.matrix, color: bar3.color, priority: 6 });
+                    } else if (emptyCols.length === 4) {
+                        let bar4 = E.find(p => p.name === 'bar-4') || { matrix: [[1,1,1,1]], color: '#ff6d00' };
+                        neededShapes.push({ shape: bar4.matrix, color: bar4.color, priority: 4 });
                     }
                 }
 
-                // 检测2x2方块空缺和3x2空缺，给对应形状
-                if (Math.random() > (isClassic ? 0.25 : 0.4)) {
-                    for (let r = 0; r < size - 1; r++) {
-                        for (let c = 0; c < size - 1; c++) {
-                            if (s.bGrid[r][c] === 0 && s.bGrid[r][c+1] === 0 && 
-                                s.bGrid[r+1][c] === 0 && s.bGrid[r+1][c+1] === 0) {
-                                helpers.push({ shape: [[1,1],[1,1]], color: '#ff3377', priority: 6 });
-                            }
-                        }
+                // 检查差2格的列（需要竖条）
+                for (let c = 0; c < size; c++) {
+                    let emptyRows = [];
+                    for (let r = 0; r < size; r++) {
+                        if (s.bGrid[r][c] === 0) emptyRows.push(r);
                     }
-                    // 3x2矩形空缺
-                    for (let r = 0; r < size - 2; r++) {
-                        for (let c = 0; c < size - 1; c++) {
-                            if (s.bGrid[r][c] === 0 && s.bGrid[r][c+1] === 0 &&
-                                s.bGrid[r+1][c] === 0 && s.bGrid[r+1][c+1] === 0 &&
-                                s.bGrid[r+2][c] === 0 && s.bGrid[r+2][c+1] === 0) {
-                                const bigRect = Math.random() > 0.5 ? 
-                                    { shape: [[1,1,1],[1,1,1]], color: '#00e5ff' } :  // 3x2
-                                    { shape: [[1,1],[1,1],[1,1]], color: '#00e5ff' };  // 2x3
-                                helpers.push(bigRect);
-                            }
-                        }
-                    }
-                    // 3x3大正方形空缺
-                    if (Math.random() > 0.5) {
-                        for (let r = 0; r < size - 2; r++) {
-                            for (let c = 0; c < size - 2; c++) {
-                                let empty = true;
-                                for (let dr = 0; dr < 3 && empty; dr++)
-                                    for (let dc = 0; dc < 3 && empty; dc++)
-                                        if (s.bGrid[r+dr][c+dc] !== 0) empty = false;
-                                if (empty) {
-                                    helpers.push({ shape: [[1,1,1],[1,1,1],[1,1,1]], color: '#d500f9', priority: 7 });
-                                }
-                            }
-                        }
-                    }
-                    // 偶尔给3x3大L
-                    if (Math.random() > 0.6) {
-                        for (let r = 0; r < size - 2; r++) {
-                            for (let c = 0; c < size - 2; c++) {
-                                if (s.bGrid[r][c] === 0 && s.bGrid[r+1][c] === 0 && s.bGrid[r+2][c] === 0 &&
-                                    s.bGrid[r+2][c+1] === 0 && s.bGrid[r+2][c+2] === 0) {
-                                    helpers.push({ shape: [[1,0,0],[1,0,0],[1,1,1]], color: '#ff6d00', priority: 5 });
-                                }
-                            }
-                        }
+                    if (emptyRows.length === 2) {
+                        neededShapes.push({ shape: [[1],[1]], color: '#ffea00', priority: 7 });
+                    } else if (emptyRows.length === 3) {
+                        let v3 = E.find(p => p.name === 'vbar-3') || { matrix: [[1],[1],[1]], color: '#00e5ff' };
+                        neededShapes.push({ shape: v3.matrix, color: v3.color, priority: 5 });
+                    } else if (emptyRows.length === 4) {
+                        let v4 = E.find(p => p.name === 'vbar-4') || { matrix: [[1],[1],[1],[1]], color: '#ff6d00' };
+                        neededShapes.push({ shape: v4.matrix, color: v4.color, priority: 3 });
                     }
                 }
 
-                // 从随机池中挑选1-3个助手形状（增强版：更积极帮助玩家清屏）
-                const finalPicks = [];
-                if (lineClearPick && Math.random() > 0.15) {
-                    finalPicks.push(lineClearPick);
-                }
-                if (helpers.length > 0) {
-                    helpers.sort((a, b) => (b.priority || 0) - (a.priority || 0));
-                    const pickCount = Math.min(helpers.length, Math.random() > 0.4 ? 2 : 1);
-                    for (let i = 0; i < pickCount; i++) {
-                        // 不重复添加同一种形状
-                        if (!finalPicks.some(p => JSON.stringify(p.shape) === JSON.stringify(helpers[i].shape))) {
-                            finalPicks.push(helpers[i]);
+                // 如果有需要的形状，替换手牌中第一个未使用的
+                if (neededShapes.length > 0) {
+                    neededShapes.sort((a, b) => b.priority - a.priority);
+                    const best = neededShapes[Math.floor(Math.random() * Math.min(neededShapes.length, 3))];
+                    for (let i = 0; i < s.hand.length; i++) {
+                        if (!s.hand[i].isUsed) {
+                            s.hand[i].shape = best.shape;
+                            s.hand[i].color = best.color;
+                            break;
                         }
-                    }
-                }
-
-                // 应用替换（经典模式换2-3张，其他1-2张）
-                let idx = 0;
-                const replaceCount = isClassic ? 
-                    Math.min(finalPicks.length, 2 + (Math.random() > 0.5 ? 1 : 0)) :
-                    Math.min(finalPicks.length, Math.random() > 0.4 ? 2 : 1);
-                for (let i = 0; i < s.hand.length && idx < replaceCount; i++) {
-                    if (!s.hand[i].isUsed) {
-                        s.hand[i].shape = finalPicks[idx].shape;
-                        s.hand[i].color = finalPicks[idx].color;
-                        idx++;
                     }
                 }
             },
 
-            // 保底：逐一检查每张手牌，确保都能放置；不能放的就替换成简单形状
+            // 保底：检查手牌是否至少有一块可以放，如果没有就替换
             _ensurePlayableHand: function() {
                 const s = GameApp.State;
                 const size = GameApp.Config.bGridSize;
                 const E = GameApp.Config.Shapes.easy;
-                const M = GameApp.Config.Shapes.medium;
                 const S = GameApp.Config.Shapes.special;
-                // 经典模式用更大的保底池（包含中形）
-                const pool = s.currentMode === 'level' ? [...E, ...M, ...S] : [...E, ...S];
 
-                for (let i = 0; i < s.hand.length; i++) {
-                    if (s.hand[i].isUsed) continue;
-                    let playable = false;
+                // 检查是否随便哪块能放
+                let anyPlayable = false;
+                for (let piece of s.hand) {
+                    if (piece.isUsed) continue;
                     for (let r = 0; r < size; r++) {
                         for (let c = 0; c < size; c++) {
-                            if (this.canPlaceShape(s.hand[i].shape, r, c)) {
-                                playable = true;
+                            if (this.canPlaceShape(piece.shape, r, c)) {
+                                anyPlayable = true;
                                 break;
                             }
                         }
-                        if (playable) break;
+                        if (anyPlayable) break;
                     }
-                    if (!playable) {
-                        // 暴力替换到有能放的为止
-                        for (let attempts = 0; attempts < 50; attempts++) {
-                            let testPiece = pool[Math.floor(Math.random() * pool.length)];
+                    if (anyPlayable) break;
+                }
+
+                // 如果全都不能放，暴力替换到有能放的为止
+                if (!anyPlayable) {
+                    for (let i = 0; i < s.hand.length; i++) {
+                        if (s.hand[i].isUsed) continue;
+                        let found = false;
+                        for (let attempts = 0; attempts < 30; attempts++) {
+                            let testPool = [...E, ...S];
+                            let testPiece = testPool[Math.floor(Math.random() * testPool.length)];
                             for (let r = 0; r < size; r++) {
                                 for (let c = 0; c < size; c++) {
                                     if (this.canPlaceShape(testPiece.matrix, r, c)) {
                                         s.hand[i].shape = testPiece.matrix;
                                         s.hand[i].color = testPiece.color;
-                                        playable = true;
+                                        found = true;
                                         break;
                                     }
                                 }
-                                if (playable) break;
+                                if (found) break;
                             }
-                            if (playable) break;
+                            if (found) break;
                         }
                     }
                 }
@@ -2749,28 +1741,20 @@
                 const body = document.body;
                 const arenaPanel = document.getElementById('gameArenaPanel');
                 const s = GameApp.State;
-                const themes = GameApp.Config.Themes;
+                const t = GameApp.Config.Themes;
                 
-                // 每1000分循環切換主題（最多到10000分以上取模循環）
-                const themeIndex = Math.min(Math.floor(s.bScore / 1000), themes.length - 1);
-                const prevThemeIndex = s.currentThemeIndex || 0;
-                s.currentTheme = themes[themeIndex];
+                if (s.bScore >= 1000) s.currentTheme = t.universe;
+                else if (s.bScore >= 600) s.currentTheme = t.sunset;
+                else if (s.bScore >= 300) s.currentTheme = t.grass;
+                else s.currentTheme = t.sea;
 
                 body.style.background = s.currentTheme.bg;
                 arenaPanel.style.background = s.currentTheme.panel;
-                
-                // 切換主題時播放里程碑音效
-                if (themeIndex > prevThemeIndex && s.bScore > 0) {
-                    GameApp.Audio.milestone();
-                }
-                
-                // 保存當前主題索引供生成方塊時使用
-                s.currentThemeIndex = themeIndex;
             },
 
             getSnapCoordinates: function() {
                 const s = GameApp.State; const cellSize = GameApp.Config.bCellSize;
-                const mult = GameApp.Config.isTouchDevice ? 1.5 : 1.35; const targetX = s.dragStartX + (s.mouseX - s.dragStartX) * mult - s.dragOffset.x; const targetY = s.dragStartY + (s.mouseY - s.dragStartY) * mult - s.dragOffset.y; 
+                const targetX = s.mouseX - s.dragOffset.x; const targetY = s.mouseY - s.dragOffset.y - 85; 
                 return { gridX: Math.round(targetX / cellSize), gridY: Math.round(targetY / cellSize) };
             },
 
@@ -2789,17 +1773,9 @@
 
             placeShape: function(shape, targetR, targetC, color, scoreGain) {
                 const s = GameApp.State;
-                const size = GameApp.Config.bGridSize;
                 for(let r=0; r<shape.length; r++) {
                     for(let c=0; c<shape[r].length; c++) {
-                        if(shape[r][c]) {
-                            const gr = targetR + r;
-                            const gc = targetC + c;
-                            // 确保不会写入棋盘边界外
-                            if (gr >= 0 && gr < size && gc >= 0 && gc < size) {
-                                s.bGrid[gr][gc] = color;
-                            }
-                        }
+                        if(shape[r][c]) s.bGrid[targetR+r][targetC+c] = color;
                     }
                 }
                 s.bScore += Math.round(scoreGain * s.currentMultiplier);
@@ -2817,21 +1793,21 @@
                 }
                 if (isBoardEmpty) {
                     s.allClearCount++;
-                    // 幸运模式：每次清屏+0.2倍，最高2.0
-                    if (s.currentMode === 'lucky') {
-                        s.currentMultiplier = Math.min(2.0, s.currentMultiplier + 0.2);
-                    }
+                    if (s.allClearCount === 1) s.currentMultiplier = 1.2;
+                    else if (s.allClearCount === 2) s.currentMultiplier = 1.4;
+                    else if (s.allClearCount === 3) s.currentMultiplier = 1.6;
+                    else s.currentMultiplier = 2.0; 
                     
                     this.triggerHapticShock(80);
                     GameApp.Vibe.celebration();
                     GameApp.Audio.allClear();
-                    s.allClearFlashTimer = 1.2;
-                    s.screenShakeTimer = 1.0;
-                    s.shakeIntensity = 3;
+                    s.allClearFlashTimer = 1.0;
+                    s.screenShakeTimer = 0.8;
+                    s.shakeIntensity = 2;
                     GameApp.Core.showComboPopup(0);
                     const cx = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
                     const cy = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
-                    s.scoreFlyouts.push({ x: cx, y: cy, vy: 2.2, text: "\u2728 ALL CLEAR x" + s.allClearCount + "!", color: "#ffd700", timer: 1.5, color: "#ffd700", timer: 1.2 });
+                    s.scoreFlyouts.push({ x: cx, y: cy, vy: 2.2, text: "\u2728 ALL CLEAR x" + s.allClearCount + "!", color: "#ffd700", timer: 1.2 });
                     GameApp.UI.updateScoreDisplay();
                 }
             },
@@ -2840,10 +1816,10 @@
                 const s = GameApp.State; const size = GameApp.Config.bGridSize;
                 let rows = []; let cols = [];
                 
-                for(let r=0; r<size; r++) if(s.bGrid[r].every(cell => cell !== 0)) rows.push(r);
+                for(let r=0; r<size; r++) if(s.bGrid[r].every(cell => cell !== 0 && cell !== '#4e566d')) rows.push(r);
                 for(let c=0; c<size; c++) {
                     let m = true;
-                    for(let r=0; r<size; r++) if(s.bGrid[r][c] === 0) m = false;
+                    for(let r=0; r<size; r++) if(s.bGrid[r][c] === 0 || s.bGrid[r][c] === '#4e566d') m = false;
                     if(m) cols.push(c);
                 }
                 
@@ -2852,9 +1828,7 @@
                 if (s.currentMode === 'lucky' && linesCount > 0) {
                     s.luckyLinesNeeded -= linesCount;
                     if (s.luckyLinesNeeded <= 0) {
-                        // 多消除的行数继承到下一次宝箱计数
-                        var carryOver = Math.min(Math.abs(s.luckyLinesNeeded), GameApp.Config.luckyLineTarget - 1);
-                        s.luckyLinesNeeded = GameApp.Config.luckyLineTarget - carryOver;
+                        s.luckyLinesNeeded = GameApp.Config.luckyLineTarget;
                         setTimeout(this.triggerChestPopup.bind(this), 500); 
                     }
                 }
@@ -2864,42 +1838,15 @@
                     GameApp.Audio.multiClear(linesCount);
                     this.triggerHapticShock(35 * linesCount);
                     GameApp.Core.showComboPopup(linesCount);
-                    s.screenShakeTimer = 0.5 + linesCount * 0.1;
-                    s.shakeIntensity = Math.min(3, 1 + Math.floor(linesCount / 2));
-                    // 屏幕脉冲闪光
-                    const arenaFlash = document.getElementById('gameArenaPanel');
-                    if (arenaFlash) { 
-                        arenaFlash.style.transition = 'background-color 0.15s'; 
-                        arenaFlash.style.backgroundColor = 'rgba(255,255,255,0.15)'; 
-                        setTimeout(() => { arenaFlash.style.backgroundColor = ''; }, 200); 
-                    }
-                    s.shakeIntensity = linesCount >= 5 ? 3 : linesCount >= 3 ? 2 : 1;
+                    s.screenShakeTimer = 0.3 + linesCount * 0.05;
+                    s.shakeIntensity = linesCount >= 3 ? 2 : 1;
                     const cx = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
                     const cy = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
-                    // 同时消除行数直接做倍数：清1行=100分，2行=400分，3行=900分，4行=1600分
-                    const comboMult = linesCount * linesCount;
-                    const bonus = Math.round(comboMult * 100 * (s.currentMode === 'lucky' ? s.currentMultiplier : 1));
-                    // 消除分数飞字更大更持久（增强版）
-                    const flyFontSize = bonus > 1000 ? 48 : bonus > 500 ? 40 : bonus > 200 ? 34 : 28;
-                    s.scoreFlyouts.push({ x: cx, y: cy + 10, vy: 1.0, text: "✨ +" + bonus, color: linesCount >= 4 ? "#d500f9" : linesCount >= 3 ? "#ffd700" : "#00e5ff", timer: 1.8 });
+                    const bonus = Math.round(linesCount * 120 * s.currentMultiplier);
+                    s.scoreFlyouts.push({ x: cx, y: cy + 20, vy: 1.8, text: "+" + bonus, color: linesCount >= 4 ? "#d500f9" : linesCount >= 3 ? "#ffd700" : "#00e5ff", timer: 1 });
                 }
 
                 const bCell = GameApp.Config.bCellSize;
-                // 超级粒子爆炸（增强版：更多更大）
-                const burstCount = Math.min(linesCount * 15, 60);
-                for (let i = 0; i < burstCount; i++) {
-                    setTimeout(() => {
-                        const rx = Math.random() * 8 * bCell;
-                        const ry = Math.random() * 8 * bCell;
-                        if (i % 3 === 0) {
-                            s.particles.push({ x: rx, y: ry, vx: (Math.random() - 0.5) * 25, vy: (Math.random() - 0.8) * 18, radius: Math.random() * 7 + 3, alpha: 1, color: '#ffd700' });
-                        } else if (i % 3 === 1) {
-                            s.particles.push({ x: rx, y: ry, vx: (Math.random() - 0.5) * 22, vy: (Math.random() - 0.8) * 15, radius: Math.random() * 6 + 2, alpha: 1, color: '#00e5ff' });
-                        } else {
-                            s.particles.push({ x: rx, y: ry, vx: (Math.random() - 0.5) * 24, vy: (Math.random() - 0.8) * 17, radius: Math.random() * 6 + 2, alpha: 1, color: '#ff3377' });
-                        }
-                    }, i * 20);
-                }
                 rows.forEach((r, rIndex) => {
                     setTimeout(() => {
                         for(let c=0; c<size; c++) {
@@ -2924,16 +1871,15 @@
                 cols.forEach(c => { for(let r=0; r<size; r++) s.bGrid[r][c] = 0; });
                 
                 if(linesCount > 0) {
-                    const comboMult = linesCount * linesCount;
-                    s.bScore += Math.round(comboMult * 100 * (s.currentMode === 'lucky' ? s.currentMultiplier : 1));
+                    s.bScore += Math.round(linesCount * 120 * s.currentMultiplier);
                     GameApp.UI.updateScoreDisplay();
                 }
             },
 
             generateParticles: function(x, y, color) {
                 const s = GameApp.State;
-                for(let i=0; i<6; i++) {
-                    s.particles.push({ x: x + (Math.random()-0.5)*10, y: y + (Math.random()-0.5)*10, vx: (Math.random() - 0.5) * 8, vy: (Math.random() - 0.8) * 8, radius: Math.random() * 3 + 1.5, alpha: 0.8, color: color });
+                for(let i=0; i<20; i++) {
+                    s.particles.push({ x: x, y: y, vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.8) * 12, radius: Math.random() * 4.5 + 1.5, alpha: 1, color: color });
                 }
             },
 
@@ -2956,33 +1902,12 @@
                 const rect = canvas.getBoundingClientRect();
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                // 缩放到 Canvas 内部坐标系（解决手机触摸坐标偏移）
-                const scaleX = canvas.width / rect.width;
-                const scaleY = canvas.height / rect.height;
-                return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+                return { x: clientX - rect.left, y: clientY - rect.top };
             },
 
             isInteractionBlocked: function() {
                 const ui = GameApp.UI.elements; const s = GameApp.State;
                 return (s.isGameOver || ui.settingsOverlay.style.display === 'flex' || ui.luckyChestOverlay.style.display === 'flex' || s.isCustomSelecting);
-            },
-
-            showPrize: function(icon, title, desc, color) {
-                const overlay = document.getElementById('prize-overlay');
-                if (!overlay) return;
-                const s = GameApp.State;
-                // 🚀 粒子爆发（同步创建，无setTimeout延迟）
-                for (let i = 0; i < 14; i++) {
-                    s.particles.push({ x: 40 + Math.random() * 360, y: 40 + Math.random() * 360, vx: (Math.random() - 0.5) * 16, vy: (Math.random() - 0.8) * 14, radius: Math.random() * 4 + 2, alpha: 0.8, color: color || '#ffd700' });
-                }
-                // 使用 DocumentFragment 减少 DOM 回流
-                overlay.innerHTML = '<div id="prize-content" style="display:flex;flex-direction:column;align-items:center;animation:prizePopIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;"><div style="font-size:clamp(3rem,10vw,5rem);filter:drop-shadow(0 0 20px ' + (color||'#ffd700') + ');animation:prizeIconBounce 1s ease-in-out infinite;">' + icon + '</div><div style="font-size:clamp(1.8rem,5vw,2.5rem);font-weight:900;color:#fff;text-shadow:0 0 20px ' + (color||'#ffd700') + ';margin-top:10px;">' + title + '</div><div style="font-size:clamp(0.9rem,2.5vw,1.2rem);color:rgba(255,255,255,0.8);margin-top:8px;">' + desc + '</div></div>';
-                // 屏幕闪（使用 will-change 防卡顿）
-                const cached = GameApp.UI._arenaCached;
-                if (cached) { cached.style.willChange = 'box-shadow'; cached.style.transition = 'box-shadow 0.15s'; cached.style.boxShadow = 'inset 0 0 40px ' + (color||'#ffd700'); setTimeout(() => { cached.style.boxShadow = ''; cached.style.willChange = 'auto'; }, 350); }
-                s.screenShakeTimer = 0.25;
-                GameApp.Vibe.triple();
-                setTimeout(() => { var pc = document.getElementById('prize-content'); if(pc) pc.remove(); }, 1500);
             },
 
             bindEvents: function() {
@@ -2999,27 +1924,23 @@
                 });
                 
                 window.addEventListener('mouseup', () => {
-                    if (GameApp.State.selectedPiece) {
-                        this.handleInputEnd();
-                    }
+                    if (this.isInteractionBlocked() && !GameApp.State.selectedPiece) return;
+                    this.handleInputEnd();
                 });
 
                 canvas.addEventListener('touchstart', (e) => {
-                    e.preventDefault(); // 始终阻止滚动/缩放
-                    if (this.isInteractionBlocked()) return;
+                    if (this.isInteractionBlocked()) return; e.preventDefault();
                     this.handleInputStart(this.getEventPos(e));
                 }, { passive: false });
                 
                 canvas.addEventListener('touchmove', (e) => {
-                    e.preventDefault(); // 始终阻止滚动/缩放
-                    if (this.isInteractionBlocked()) return;
+                    if (this.isInteractionBlocked()) return; e.preventDefault();
                     this.handleInputMove(this.getEventPos(e));
                 }, { passive: false });
                 
                 window.addEventListener('touchend', () => {
-                    if (GameApp.State.selectedPiece) {
-                        this.handleInputEnd();
-                    }
+                    if (this.isInteractionBlocked() && !GameApp.State.selectedPiece) return;
+                    this.handleInputEnd();
                 });
             },
 
@@ -3028,64 +1949,29 @@
                 s.mouseX = pos.x; s.mouseY = pos.y;
                 s.lastHoverR = -1; s.lastHoverC = -1;
                 
-                // 第一步：精確點擊檢測（點在方塊範圍內）
-                let foundByPrecision = false;
                 s.hand.forEach(piece => {
                     if(piece.isUsed) return;
-                    if(s.mouseX >= piece.x - 35 && s.mouseX <= piece.x + 155 && s.mouseY >= piece.y - 30 && s.mouseY <= piece.y + 150) {
+                    if(s.mouseX >= piece.x - 20 && s.mouseX <= piece.x + 120 && s.mouseY >= piece.y - 20 && s.mouseY <= piece.y + 120) {
                         s.selectedPiece = piece;
                         s.dragOffset.x = (piece.shape[0].length * bCell) / 2;
-                        s.dragOffset.y = (piece.shape.length * bCell) / 2 + 40;
-                        s.dragStartX = s.mouseX;
-                        s.dragStartY = s.mouseY;
-                        s.hasDragged = false;
-                        GameApp.Audio.pick();
-                        foundByPrecision = true;
+                        s.dragOffset.y = (piece.shape.length * bCell) / 2;
                     }
                 });
-                // 第二步：如果沒點中方塊但點在手牌區域附近，自動選最近的未用方塊
-                if (!foundByPrecision && s.mouseY > 400) {
-                    let bestPiece = null, bestDist = 999;
-                    s.hand.forEach(piece => {
-                        if(piece.isUsed) return;
-                        const cx = piece.x + (piece.shape[0].length * 24) / 2;
-                        const cy = piece.y + (piece.shape.length * 24) / 2;
-                        const dist = Math.sqrt((s.mouseX - cx) ** 2 + (s.mouseY - cy) ** 2);
-                        if (dist < bestDist) { bestDist = dist; bestPiece = piece; }
-                    });
-                    if (bestPiece) {
-                        s.selectedPiece = bestPiece;
-                        s.dragOffset.x = s.mouseX - bestPiece.x;
-                        s.dragOffset.y = s.mouseY - bestPiece.y + (bestPiece.shape.length * bCell) / 2;
-                        s.dragStartX = s.mouseX;
-                        s.dragStartY = s.mouseY;
-                        s.hasDragged = false;
-                    }
-                }
             },
 
             handleInputMove: function(pos) {
                 const s = GameApp.State;
                 s.mouseX = pos.x; s.mouseY = pos.y;
                 
+                // 格子滑动震动反馈：进入新格子时轻震
                 if (s.selectedPiece && !s.isGameOver) {
-                    // 检测是否有实际拖拽动作
-                    if (!s.hasDragged && (Math.abs(s.mouseX - s.dragStartX) > 5 || Math.abs(s.mouseY - s.dragStartY) > 5)) {
-                        s.hasDragged = true;
-                    }
-                    // 每帧都震，配合节流自动控制频率，手指划过屏幕有连续沙沙感
-                    GameApp.Vibe.light();
-                    // 格子吸附震动（进新格子加额外反馈）
                     const bCell = GameApp.Config.bCellSize;
                     const hoverR = Math.floor(pos.y / bCell);
                     const hoverC = Math.floor(pos.x / bCell);
                     if ((hoverR !== s.lastHoverR || hoverC !== s.lastHoverC) && hoverR >= 0 && hoverR < 8 && hoverC >= 0 && hoverC < 8) {
                         s.lastHoverR = hoverR;
                         s.lastHoverC = hoverC;
-                        s._hoverActive = true;
-                        GameApp.Vibe.medium();
-                    } else {
-                        s._hoverActive = false;
+                        GameApp.Vibe.light();
                     }
                 } else {
                     s.lastHoverR = -1;
@@ -3095,50 +1981,15 @@
 
             handleInputEnd: function() {
                 const s = GameApp.State;
-                s.lastHoverR = -1; s.lastHoverC = -1; s._hoverActive = false;
-                const piece = s.selectedPiece;
-                if (!piece) return;
+                s.lastHoverR = -1; s.lastHoverC = -1;
+                if (!s.selectedPiece) return;
                 
-                const bCell = GameApp.Config.bCellSize;
                 const { gridX, gridY } = this.getSnapCoordinates();
                 
-                // 将吸附坐标限制在棋盘范围内（确保能放到顶部）
-                const clampedGridX = Math.max(0, Math.min(gridX, GameApp.Config.bGridSize - piece.shape[0].length));
-                const clampedGridY = Math.max(0, Math.min(gridY, GameApp.Config.bGridSize - piece.shape.length));
-                if (s.hasDragged && !s.isGameOver && !s.isCustomSelecting && this.canPlaceShape(piece.shape, clampedGridY, clampedGridX)) {
-                    // 基础分 = 方块格数 × (10 + 格数×2)，大块高分小块低分
-                    let cells = 0;
-                    s.selectedPiece.shape.forEach(row => row.forEach(v => { if(v) cells++; }));
-                    let baseGain = cells * (10 + cells * 2); let finalGain = Math.round(baseGain * s.currentMultiplier);
-                    this.placeShape(s.selectedPiece.shape, clampedGridY, clampedGridX, s.selectedPiece.color, finalGain);
-                    // 放置分数飞字
-                    const fcx = gridX * bCell + (s.selectedPiece.shape[0].length * bCell) / 2;
-                    const fcy = gridY * bCell - 10;
-                    const fcolor = cells >= 4 ? '#d500f9' : cells >= 3 ? '#00e5ff' : '#00ff66';
-                    // 放置分数飞字更大
-                    const pFontSize = finalGain > 200 ? 32 : finalGain > 80 ? 26 : 22;
-                    s.scoreFlyouts.push({ x: fcx, y: fcy, vy: 1.2, text: '+' + finalGain, color: fcolor, timer: 1.3 });
+                if(this.canPlaceShape(s.selectedPiece.shape, gridY, gridX)) {
+                    let baseGain = 15; let finalGain = Math.round(baseGain * s.currentMultiplier);
+                    this.placeShape(s.selectedPiece.shape, gridY, gridX, s.selectedPiece.color, finalGain);
                     GameApp.Render.triggerSoftJelly(gridY, gridX, s.selectedPiece.shape);
-                    // 放置瞬间脉冲
-                    const placeArena = document.getElementById('gameArenaPanel');
-                    if (placeArena) { 
-                        placeArena.style.transition = 'box-shadow 0.15s'; 
-                        placeArena.style.boxShadow = 'inset 0 0 30px ' + s.selectedPiece.color; 
-                        setTimeout(() => { placeArena.style.boxShadow = ''; }, 200); 
-                    }
-                    // 🎆 放置粒子爆发
-                    const bCellNow = GameApp.Config.bCellSize;
-                    for (let pi = 0; pi < 5; pi++) {
-                        s.particles.push({
-                            x: fcx + (Math.random() - 0.5) * 30,
-                            y: fcy + (Math.random() - 0.5) * 30,
-                            vx: (Math.random() - 0.5) * 8,
-                            vy: (Math.random() - 0.8) * 6 - 2,
-                            radius: Math.random() * 3 + 1.5,
-                            alpha: 0.6,
-                            color: s.selectedPiece.color
-                        });
-                    }
                     GameApp.Vibe.medium();
                     GameApp.Audio.place();
                     s.selectedPiece.isUsed = true;
@@ -3149,49 +2000,44 @@
                     if(s.hand.every(p => p.isUsed)) this.generateHand();
                     
                     if (s.currentMode === 'endless' || s.currentMode === 'lucky') {
-                        if (s.currentMode === 'lucky' && s.bScore > s.bBestScoreLucky) { s.bBestScoreLucky = s.bScore; this.saveBestScore(); GameApp.UI.elements.topBestText.innerText = `${GameApp.I18N.getText('best')}: ${s.bBestScoreLucky}`; }
-                        else if (s.currentMode === 'endless' && s.bScore > s.bBestScoreEndless) { s.bBestScoreEndless = s.bScore; this.saveBestScore(); GameApp.UI.elements.topBestText.innerText = `${GameApp.I18N.getText('best')}: ${s.bBestScoreEndless}`; }
+                        if (s.bScore > s.bBestScore) { s.bBestScore = s.bScore; this.saveBestScore(); GameApp.UI.elements.topBestText.innerText = `${GameApp.I18N.getText('best')}: ${s.bBestScore}`; }
                         this.saveCurrentGame();
                     }
                     if (s.currentMode === 'level' && s.bScore >= s.targetScore) GameApp.UI.showGameOverModal(true);
                     else if(this.checkGameOver()) GameApp.UI.showGameOverModal(false);
-                } else if (!s.isGameOver && !s.isCustomSelecting) {
-                    GameApp.Audio.invalid();
                 }
                 s.selectedPiece = null; 
             },
+
+            // ======================================================================
             // 🔮 寶箱與自選 3 連抽系統 (PICK 3 SYSTEM)
+            // ======================================================================
             triggerChestPopup: function() {
                 const s = GameApp.State;
-                s.selectedPiece = null;
-                s._chestOpening = false;
+                s.selectedPiece = null; 
                 GameApp.UI.elements.luckyChestOverlay.style.display = 'flex';
             },
 
             drawLuckyChest: function() {
-                const s = GameApp.State;
-                // 防止重复触发（宝箱emoji和按钮都绑定了同一个函数）
-                if (s._chestOpening) return;
-                s._chestOpening = true;
                 GameApp.Audio.chestOpen();
                 GameApp.Vibe.triple();
                 GameApp.UI.elements.luckyChestOverlay.style.display = "none";
-                const t = GameApp.I18N;
+                const s = GameApp.State; const t = GameApp.I18N;
                 let rng = Math.random();
                 
                 // 🎲 7 種寶箱獎勵
                 const prizes = [
-                    { chance: 0.08, name: 'jackpot', exec: function() {
+                    { chance: 0.05, name: 'jackpot', exec: function() {
                         s.bScore = Math.floor(s.bScore * 2);
                         GameApp.Core.showComboPopup(5);
-                        GameApp.Core.showPrize('💎', 'JACKPOT!', t.getText('prizeJackpot') + s.bScore, '#ffd700');
+                        alert('💎 頭獎！分數直接翻倍！目前: ' + s.bScore);
                     }},
-                    { chance: 0.12, name: 'dots', exec: function() {
+                    { chance: 0.15, name: 'dots', exec: function() {
                         s.hand = [];
                         for(let i=0; i<3; i++) s.hand.push({ shape: [[1]], color: '#00ff66', x: 35 + i * 140, y: 520, origX: 35 + i * 140, origY: 520, isUsed: false });
-                        GameApp.Core.showPrize('🎯', 'LUCKY DOTS!', t.getText('prizeDots'), '#00ff66');
+                        alert('🎯 幸運單點！下回合全部變為 1x1 靈活小點！');
                     }},
-                    { chance: 0.16, name: 'bomb', exec: function() {
+                    { chance: 0.15, name: 'bomb', exec: function() {
                         // 炸彈：清空棋盤中央 3x3 區域
                         const size = GameApp.Config.bGridSize;
                         const center = Math.floor(size / 2);
@@ -3213,17 +2059,17 @@
                         }
                         GameApp.Vibe.celebration();
                         s.screenShakeTimer = 0.5;
-                        GameApp.Core.showPrize('💥', 'BOMB!', t.getText('prizeBomb') + cleared + t.getText('prizeBombEnd'), '#ff6d00');
+                        alert('💥 炸彈！清空棋盤中央 3x3 區域！（清除 ' + cleared + ' 格）');
                     }},
-                    { chance: 0.14, name: 'bonus', exec: function() {
+                    { chance: 0.20, name: 'bonus', exec: function() {
                         const bonus = 100 + Math.floor(Math.random() * 401); // 100~500
                         s.bScore += bonus;
                         const cx = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
                         const cy = GameApp.Config.bGridSize * GameApp.Config.bCellSize / 2;
                         s.scoreFlyouts.push({ x: cx, y: cy, vy: 2.5, text: '💰 +' + bonus, color: '#ffd700', timer: 1.5 });
-                        GameApp.Core.showPrize('💰', 'BONUS!', t.getText('prizeBonus') + bonus + t.getText('prizeBonusEnd'), '#ffd700');
+                        alert('💰 金幣寶箱！獲得 ' + bonus + ' 額外加分！');
                     }},
-                    { chance: 0.18, name: 'rowclear', exec: function() {
+                    { chance: 0.20, name: 'rowclear', exec: function() {
                         const size = GameApp.Config.bGridSize;
                         const bCell = GameApp.Config.bCellSize;
                         // 找填最满的行来清除
@@ -3243,65 +2089,27 @@
                                     GameApp.Core.generateParticles(c * bCell + bCell/2, bestRow * bCell + bCell/2, '#ff6d00');
                                 }
                             }
-                            // 宝箱清屏也增加倍数（+0.2，最高2.0）
-                            s.allClearCount++;
-                            s.currentMultiplier = Math.min(2.0, s.currentMultiplier + 0.2);
                             GameApp.Vibe.celebration();
                             s.screenShakeTimer = 0.5;
                             s.bScore += Math.round(50 * s.currentMultiplier);
-                            // Only show ALL CLEAR combo if board is truly empty
-                            let isBoardEmpty = true;
-                            for (let rr = 0; rr < size; rr++) {
-                                for (let cc = 0; cc < size; cc++) {
-                                    if (s.bGrid[rr][cc] !== 0 && s.bGrid[rr][cc] !== '#4e566d') { isBoardEmpty = false; break; }
-                                }
-                                if (!isBoardEmpty) break;
-                            }
-                            if (isBoardEmpty) GameApp.Core.showComboPopup(0);
-                            GameApp.Core.showPrize('🧹', 'ROW CLEAR!', t.getText('prizeRowClear') + (bestRow+1) + t.getText('prizeRowClearMid') + s.currentMultiplier.toFixed(1) + 'x', '#ffd700');
+                            GameApp.Core.showComboPopup(5);
+                            alert('🧹 掃行！清除最滿的一行（第 ' + (bestRow+1) + ' 行）！');
                         } else {
-                            GameApp.Core.showPrize('🎁', 'EMPTY!', t.getText('prizeEmpty'), '#00e5ff');
+                            alert('🤷 棋盤已空，送你 100 分！');
                             s.bScore += 100;
                         }
                     }},
-                    { chance: 0.08, name: 'fullclear', exec: function() {
-                        // 全清！清空整個棋盤
-                        const size = GameApp.Config.bGridSize;
-                        const bCell = GameApp.Config.bCellSize;
-                        for (let r = 0; r < size; r++) {
-                            for (let c = 0; c < size; c++) {
-                                if (s.bGrid[r][c] !== '#4e566d') {
-                                    s.bGrid[r][c] = 0;
-                                    GameApp.Core.generateParticles(c * bCell + bCell/2, r * bCell + bCell/2, '#ffd700');
-                                }
-                            }
-                        }
-                        s.currentMultiplier = Math.min(2.0, s.currentMultiplier + 0.2);
-                        GameApp.Vibe.celebration();
-                        s.screenShakeTimer = 1.0;
-                        s.shakeIntensity = 3;
-                        s.bScore += Math.round(200 * s.currentMultiplier);
-                        GameApp.Core.showComboPopup(0);
-                        // 全屏粒子爆发
-                        for (let i = 0; i < 18; i++) {
-                            setTimeout(() => {
-                                s.particles.push({ x: Math.random() * 440, y: Math.random() * 440, vx: (Math.random() - 0.5) * 15, vy: (Math.random() - 0.8) * 12, radius: Math.random() * 4 + 1.5, alpha: 0.8, color: ['#ffd700','#ff3377','#00e5ff','#d500f9','#00ff66'][Math.floor(Math.random()*5)] });
-                            }, i * 15);
-                        }
-                        GameApp.Core.showPrize('🌈', 'FULL CLEAR!', t.getText('prizeFullClear') + s.currentMultiplier.toFixed(1) + 'x', '#ffd700');
-                    }},
-                    { chance: 0.12, name: 'wildswap', exec: function() {
+                    { chance: 0.15, name: 'wildswap', exec: function() {
                         // 換牌：獲得一組高級形狀
                         const pool = [...GameApp.Config.Shapes.medium, ...GameApp.Config.Shapes.hard, ...GameApp.Config.Shapes.hard];
                         s.hand = [];
-                        const themeColors = s.currentTheme.colors;
                         for (let i = 0; i < 3; i++) {
                             const pick = pool[Math.floor(Math.random() * pool.length)];
-                            s.hand.push({ shape: pick.matrix, color: themeColors[i % themeColors.length], x: 35 + i * 140, y: 520, origX: 35 + i * 140, origY: 520, isUsed: false });
+                            s.hand.push({ shape: pick.matrix, color: pick.color, x: 35 + i * 140, y: 520, origX: 35 + i * 140, origY: 520, isUsed: false });
                         }
-                        GameApp.Core.showPrize('🔄', 'WILDSWAP!', t.getText('prizeWildswap'), '#d500f9');
+                        alert('🔄 乾坤大挪移！獲得一組高級方塊！');
                     }},
-                    { chance: 0.12, name: 'select', exec: function() {
+                    { chance: 0.10, name: 'select', exec: function() {
                         s.isCustomSelecting = true;
                         s.hand = [];
                         s.customPicksLeft = 3;
@@ -3311,7 +2119,7 @@
                             el.style.filter = 'grayscale(0%)';
                         });
                         GameApp.UI.elements.customSelectPanel.style.display = 'flex';
-                        GameApp.Core.showPrize('🔮', 'SELECT!', t.getText('prizeSelect'), '#d500f9');
+                        alert('🔮 靈魂自選！請挑選 3 個你最想要的形狀！');
                     }}
                 ];
                 
@@ -3337,37 +2145,21 @@
                 const overlay = document.getElementById('combo-overlay');
                 if (!overlay) return;
                 s.comboDisplay = { timer: 1.3 };
-                
-                // 背景闪白
-                const flash = document.getElementById('gameArenaPanel');
-                if (flash) { flash.style.transition = 'background-color 0.15s'; flash.style.backgroundColor = 'rgba(255,255,255,0.2)'; setTimeout(() => { flash.style.backgroundColor = 'transparent'; }, 200); }
-                
                 if (linesCount >= 5) {
-                    overlay.innerHTML = '<div style="position:relative;display:flex;flex-direction:column;align-items:center;"><div style="position:absolute;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,0.6) 0%,rgba(255,215,0,0.2) 40%,rgba(255,215,0,0) 70%);top:50%;left:50%;transform:translate(-50%,-50%);"></div><div class="combo-popup combo-color-gold" style="font-size:clamp(3.5rem,12vw,7rem);position:relative;font-weight:900;animation:comboAppear 1.8s ease-out forwards;">💎 JACKPOT!<br><span class="combo-label" style="font-size:clamp(1.2rem,4vw,2.2rem);">🔥 SCORE DOUBLED! 🔥</span></div></div>';
-                    // 全屏爆炸粒子（优化数量）
-                    s.screenShakeTimer = 0.8;
-                    for (let i = 0; i < 18; i++) {
-                        setTimeout(() => {
-                            s.particles.push({ x: Math.random() * 440, y: Math.random() * 440, vx: (Math.random() - 0.5) * 16, vy: (Math.random() - 0.8) * 14, radius: Math.random() * 4 + 1.5, alpha: 0.8, color: ['#ffd700','#ff3377','#00e5ff','#d500f9','#00ff66'][Math.floor(Math.random()*5)] });
-                        }, i * 25);
-                    }
+                    overlay.innerHTML = '<div style="position:relative;display:flex;flex-direction:column;align-items:center;"><div style="position:absolute;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,0.3) 0%,rgba(255,215,0,0) 70%);top:50%;left:50%;transform:translate(-50%,-50%);"></div><div class="combo-popup combo-color-gold" style="font-size:clamp(3rem,10vw,6rem);position:relative;">💎 JACKPOT!<br><span class="combo-label">SCORE DOUBLED!</span></div></div>';
                     GameApp.Audio.allClear();
                     GameApp.Vibe.celebration();
                 } else if (linesCount === 0) {
-                    const tier = s.allClearCount >= 4 ? '💎 PERFECT!' : s.allClearCount >= 3 ? '🌈 LEGENDARY!' : s.allClearCount >= 2 ? '✨ AMAZING!' : '🌟 ALL CLEAR!';
-                    const color = s.allClearCount >= 4 ? 'combo-color-gold' : s.allClearCount >= 3 ? 'combo-color-pink' : s.allClearCount >= 2 ? 'combo-color-cyan' : 'combo-color-gold';
-                    const multText = s.currentMode === 'lucky' ? ('⚡ ' + s.currentMultiplier.toFixed(1) + 'x MULTIPLIER ⚡') : ('✨ BOARD CLEAR ✨');
-                    overlay.innerHTML = '<div class="combo-popup ' + color + '" style="font-size:clamp(3rem,10vw,6rem);">' + tier + '<br><span class="combo-label">' + multText + '</span></div>';
-                    // 全清粒子爆花（优化数量）
-                    s.screenShakeTimer = 0.6;
-                    for (let i = 0; i < 16; i++) {
-                        setTimeout(() => {
-                            s.particles.push({ x: Math.random() * 440, y: Math.random() * 440, vx: (Math.random() - 0.5) * 16, vy: (Math.random() - 0.8) * 12, radius: Math.random() * 4 + 1.5, alpha: 0.8, color: ['#ffd700','#ff3377','#00e5ff'][Math.floor(Math.random()*3)] });
-                        }, i * 30);
-                    }
+                    const tier = s.allClearCount >= 4 ? '📎 PERFECT!' : s.allClearCount >= 3 ? '🌈 LEGENDARY!' : s.allClearCount >= 2 ? '✨ AMAZING!' : '🌟 ALL CLEAR!';
+                    const color = s.allClearCount >= 4 ? 'combo-color-gold' : s.allClearCount >= 3 ? 'combo-color-pink' : 'combo-color-cyan';
+                    overlay.innerHTML = '<div class="combo-popup ' + color + '">' + tier + '<br><span class="combo-label">' + s.currentMultiplier.toFixed(1) + 'x MULTIPLIER</span></div>';
                     GameApp.Vibe.combo(s.allClearCount);
                 } else if (linesCount >= 4) {
-                    overlay.innerHTML = '<div class="combo-popup combo-color-gold" style="font-size:clamp(3rem,10vw,6rem);">🔥 ' + linesCount + 'x SUPER CLEAR! 🔥<br><span class="combo-label">MASSIVE COMBO</span></div>';
+                    overlay.innerHTML = '<div class="combo-popup combo-color-gold">🔥 ' + linesCount + 'x<br><span class="combo-label">SUPER CLEAR!</span></div>';
+                    GameApp.Audio.combo(linesCount);
+                    GameApp.Vibe.combo(linesCount);
+                } else if (linesCount >= 2) {
+                    overlay.innerHTML = '<div class="combo-popup combo-color-pink">✨ ' + linesCount + 'x<br><span class="combo-label">DOUBLE CLEAR!</span></div>';
                     GameApp.Audio.combo(linesCount);
                     GameApp.Vibe.combo(linesCount);
                 } else {
@@ -3421,41 +2213,32 @@
                 const s = GameApp.State; const size = GameApp.Config.bGridSize;
                 
                 if (document.getElementById('game-screen').style.display === 'flex') {
-                    // 粒子更新：隔帧处理（帧率翻倍感）
-                    if (s._frameCount % 2 === 0) {
                     for (let i = s.particles.length - 1; i >= 0; i--) {
                         let p = s.particles[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.35; p.alpha -= 0.02; p.radius *= 0.96; 
                         if (p.alpha <= 0) s.particles.splice(i, 1);
-                    }
                     }
                     // 消除动画：从0.3爆涨到1.25，再缩小消失
                 for (let i = s.clearingCells.length - 1; i >= 0; i--) {
                     const cell = s.clearingCells[i];
                     if (cell.expanding) {
-                        cell.scale += 0.35;
+                        cell.scale += 0.08;
                         if (cell.scale >= 1.25) { cell.expanding = false; }
                     } else {
-                        cell.scale -= 0.28;
+                        cell.scale -= 0.06;
                     }
                     if (!cell.expanding && cell.scale < 0.05) s.clearingCells.splice(i, 1);
                 }
-                    s._frameCount = (s._frameCount || 0) + 1;
-                    // 弹跳物理：隔帧计算（性能优化，视觉无感知差异）
-                    if (s._frameCount % 2 === 0) {
                     for(let r=0; r<size; r++) {
                         for(let c=0; c<size; c++) {
                             let ax = (1 - s.gridBounceX[r][c]) * 0.28; s.gridVelocityX[r][c] += ax; s.gridVelocityX[r][c] *= 0.65; s.gridBounceX[r][c] += s.gridVelocityX[r][c];
                             let ay = (1 - s.gridBounceY[r][c]) * 0.28; s.gridVelocityY[r][c] += ay; s.gridVelocityY[r][c] *= 0.65; s.gridBounceY[r][c] += s.gridVelocityY[r][c];
                         }
                     }
-                    }
                     if (s.allClearFlashTimer > 0) s.allClearFlashTimer -= 0.04;
                 // 屏幕震动
                 if (s.screenShakeTimer > 0) {
                     s.screenShakeTimer -= 0.02;
-                    if (GameApp.UI._arenaCached) {}
-                    const arena = GameApp.UI._arenaCached || document.getElementById('gameArenaPanel');
-                    if (!GameApp.UI._arenaCached) GameApp.UI._arenaCached = arena;
+                    const arena = document.getElementById('gameArenaPanel');
                     if (arena) {
                         arena.classList.remove('screen-shake', 'screen-shake-heavy');
                         if (s.screenShakeTimer > 0) {
@@ -3464,12 +2247,7 @@
                     }
                 }
 
-                    // 无动画时跳过渲染（省GPU）
-                    if (s.particles.length > 0 || s.screenShakeTimer > 0 || s.scoreFlyouts.length > 0 || s.allClearFlashTimer > 0 || s.clearingCells.length > 0 || s.selectedPiece || s._hoverActive) {
-                        this.drawGame();
-                    } else if (s._frameCount % 6 === 0) {
-                        this.drawGame();
-                    }
+                    this.drawGame();
                 }
                 requestAnimationFrame(this.gameTick.bind(this));
             },
@@ -3480,7 +2258,7 @@
                     for(let c=0; c<matrix[r].length; c++) {
                         if(matrix[r][c]) {
                             let tr = row + r; let tc = col + c; 
-                            if(tr >= 0 && tr < size && tc >= 0 && tc < size) { s.gridBounceX[tr][tc] = 1.08; s.gridBounceY[tr][tc] = 0.92; }
+                            if(tr >= 0 && tr < size && tc >= 0 && tc < size) { s.gridBounceX[tr][tc] = 1.25; s.gridBounceY[tr][tc] = 0.75; }
                         }
                     }
                 }
@@ -3516,12 +2294,10 @@
                 grad.addColorStop(1, "rgba(0,0,0,0.35)");
                 renderCtx.fillStyle = grad; renderCtx.fill();
                 
-                // 顶部高光使用预置渐变常量
-                var topHighlight = renderCtx.createLinearGradient(ox, oy, ox, oy + h * 0.35);
-                topHighlight.addColorStop(0, "rgba(255,255,255,0.3)");
-                topHighlight.addColorStop(1, "rgba(255,255,255,0)");
-                renderCtx.fillStyle = topHighlight;
-                renderCtx.fillRect(ox, oy, w, h * 0.35);
+                // 顶部强高光（小条）
+                const hGrad = renderCtx.createLinearGradient(oy, ox, oy, ox + h * 0.35);
+                hGrad.addColorStop(0, "rgba(255,255,255,0.0)");
+                hGrad.addColorStop(1, "rgba(255,255,255,0.0)");
                 
                 // 内发光边框
                 renderCtx.strokeStyle = "rgba(255,255,255,0.25)"; renderCtx.lineWidth = 1.5;
@@ -3539,31 +2315,20 @@
             drawPiece: function(piece, startX, startY, cellSize) {
                 const ctx = GameApp.UI.elements.ctx;
                 ctx.save();
-                // 手牌阴影（增强）
+                // 手牌阴影
                 piece.shape.forEach((row, rIdx) => {
                     row.forEach((val, cIdx) => {
                         if(val) {
-                            ctx.fillStyle = "rgba(0,0,0,0.35)";
+                            ctx.fillStyle = "rgba(0,0,0,0.25)";
                             ctx.beginPath();
-                            ctx.arc(startX + cIdx * cellSize + cellSize/2 + 3, startY + rIdx * cellSize + cellSize/2 + 3, cellSize*0.4, 0, Math.PI*2);
+                            ctx.arc(startX + cIdx * cellSize + cellSize/2 + 2, startY + rIdx * cellSize + cellSize/2 + 2, cellSize*0.35, 0, Math.PI*2);
                             ctx.fill();
                         }
                     });
                 });
                 piece.shape.forEach((row, rIdx) => {
                     row.forEach((val, cIdx) => {
-                        if(val) {
-                            // 底部发光（淡雅版）
-                            const glow = ctx.createRadialGradient(
-                                startX + cIdx * cellSize + cellSize/2, startY + rIdx * cellSize + cellSize/2, 0,
-                                startX + cIdx * cellSize + cellSize/2, startY + rIdx * cellSize + cellSize/2, cellSize * 0.8
-                            );
-                            glow.addColorStop(0, piece.color + '30');
-                            glow.addColorStop(1, 'transparent');
-                            ctx.fillStyle = glow;
-                            ctx.fillRect(startX + cIdx * cellSize - 4, startY + rIdx * cellSize - 4, cellSize + 8, cellSize + 8);
-                            this.drawTexturedCandyCell(ctx, startX + cIdx * cellSize, startY + rIdx * cellSize, cellSize, piece.color, 1, 1);
-                        }
+                        if(val) this.drawTexturedCandyCell(ctx, startX + cIdx * cellSize, startY + rIdx * cellSize, cellSize, piece.color, 1, 1);
                     });
                 });
                 ctx.restore();
@@ -3573,23 +2338,15 @@
                 const s = GameApp.State; const ctx = GameApp.UI.elements.ctx; const canvas = GameApp.UI.elements.canvas;
                 const bCell = GameApp.Config.bCellSize; const size = GameApp.Config.bGridSize;
 
-                // 离屏缓存静态网格背景（性能优化）
-                if (!this._gridCache || this._gridTheme !== s.currentTheme.canvasFill) {
-                    this._gridTheme = s.currentTheme.canvasFill;
-                    if (!this._gridCache) { this._gridCache = document.createElement('canvas'); this._gridCache.width = canvas.width; this._gridCache.height = canvas.height; }
-                    var gcCtx = this._gridCache.getContext('2d');
-                    gcCtx.clearRect(0, 0, canvas.width, canvas.height); 
-                    gcCtx.fillStyle = s.currentTheme.canvasFill; gcCtx.fillRect(0, 0, canvas.width, canvas.height);
-                }
-                ctx.drawImage(this._gridCache, 0, 0);
+                ctx.clearRect(0, 0, canvas.width, canvas.height); 
+                ctx.fillStyle = s.currentTheme.canvasFill; ctx.fillRect(0, 0, canvas.width, canvas.height);
                 
                 for(let r=0; r<size; r++) {
                     for(let c=0; c<size; c++) {
+                        if(s.clearingCells.some(cell => cell.r === r && cell.c === c)) continue;
                         let cellVal = s.bGrid[r][c];
-                        // 跳过正在消除动画的格子（它们在后面单独渲染）
-                        if(s._clearingSet && s._clearingSet.has(r+','+c)) continue;
-                        if (cellVal && cellVal !== '#4e566d') this.drawTexturedCandyCell(ctx, c * bCell, r * bCell, bCell, cellVal, s.gridBounceX[r][c], s.gridBounceY[r][c]);
-                        else if (!cellVal) { 
+                        if (cellVal) this.drawTexturedCandyCell(ctx, c * bCell, r * bCell, bCell, cellVal, s.gridBounceX[r][c], s.gridBounceY[r][c]);
+                        else { 
                         ctx.fillStyle = s.currentTheme.emptyCell;
                         const eR = 4;
                         ctx.beginPath();
@@ -3608,289 +2365,68 @@
                     }
                 }
 
-                // 消除动画：先放大再缩小（终极增强版）
+                // 消除动画：先放大再缩小
                 s.clearingCells.forEach(cell => {
                     ctx.save();
-                    // 外发光（更亮更大）
+                    // 外发光
                     ctx.shadowColor = cell.color || '#ffffff';
-                    ctx.shadowBlur = 40 * Math.min(cell.scale * 1.5, 1.2);
-                    ctx.globalAlpha = Math.min(cell.scale * 1.25, 1);
-                    this.drawTexturedCandyCell(ctx, cell.c * bCell, cell.r * bCell, bCell, cell.color, 
-                        Math.min(cell.scale * 1.4, 1.25), Math.min(cell.scale * 1.4, 1.25));
+                    ctx.shadowBlur = 15 * cell.scale;
+                    this.drawTexturedCandyCell(ctx, cell.c * bCell, cell.r * bCell, bCell, cell.color, Math.min(cell.scale * 1.3, 1.2), Math.min(cell.scale * 1.3, 1.2));
                     ctx.restore();
                 });
 
                 if (s.selectedPiece && !s.isGameOver) {
                     const { gridX, gridY } = GameApp.Core.getSnapCoordinates();
-                    // 限制預覽在棋盤範圍內（防止顯示到邊界外）
-                    const size = GameApp.Config.bGridSize;
-                    const pShape = s.selectedPiece.shape;
-                    const previewX = Math.max(0, Math.min(gridX, size - pShape[0].length));
-                    const previewY = Math.max(0, Math.min(gridY, size - pShape.length));
-                    if (GameApp.Core.canPlaceShape(pShape, previewY, previewX)) {
-                        // 预览发光（增强版）
-                        const hoverColor = s.selectedPiece.color;
-                        ctx.save();
-                        pShape.forEach((row, rIdx) => {
-                            row.forEach((val, cIdx) => {
-                                if(val) {
-                                    const hx = (previewX+cIdx)*bCell;
-                                    const hy = (previewY+rIdx)*bCell;
-                                    // 外发光（淡雅版）
-                                    const hoverGlow = ctx.createRadialGradient(hx+bCell/2, hy+bCell/2, 0, hx+bCell/2, hy+bCell/2, bCell*0.6);
-                                    hoverGlow.addColorStop(0, hoverColor + '30');
-                                    hoverGlow.addColorStop(1, 'transparent');
-                                    ctx.fillStyle = hoverGlow;
-                                    ctx.fillRect(hx-3, hy-3, bCell+6, bCell+6);
-                                    // 预览方块
-                                    ctx.globalAlpha = 0.25;
-                                    ctx.fillStyle = hoverColor;
-                                    const r2 = 4;
-                                    ctx.beginPath();
-                                    ctx.moveTo(hx+2+r2, hy+2);
-                                    ctx.lineTo(hx+bCell-2-r2, hy+2);
-                                    ctx.quadraticCurveTo(hx+bCell-2, hy+2, hx+bCell-2, hy+2+r2);
-                                    ctx.lineTo(hx+bCell-2, hy+bCell-2-r2);
-                                    ctx.quadraticCurveTo(hx+bCell-2, hy+bCell-2, hx+bCell-2-r2, hy+bCell-2);
-                                    ctx.lineTo(hx+2+r2, hy+bCell-2);
-                                    ctx.quadraticCurveTo(hx+2, hy+bCell-2, hx+2, hy+bCell-2-r2);
-                                    ctx.lineTo(hx+2, hy+2+r2);
-                                    ctx.quadraticCurveTo(hx+2, hy+2, hx+2+r2, hy+2);
-                                    ctx.closePath();
-                                    ctx.fill();
-                                    ctx.globalAlpha = 1;
-                                }
-                            });
+                    if (GameApp.Core.canPlaceShape(s.selectedPiece.shape, gridY, gridX)) {
+                        ctx.fillStyle = "rgba(255, 255, 255, 0.2)"; 
+                        s.selectedPiece.shape.forEach((row, rIdx) => {
+                            row.forEach((val, cIdx) => { if(val) ctx.fillRect((gridX+cIdx)*bCell+2, (gridY+rIdx)*bCell+2, bCell-4, bCell-4); });
                         });
-                        ctx.restore();
-                        // 🔥 预览消除行列：只有能放下的才显示高亮
-                        var _tempGrid = s.bGrid.map(function(row) { return row.slice(); });
-                        for (var _r = 0; _r < pShape.length; _r++) {
-                            for (var _c = 0; _c < pShape[_r].length; _c++) {
-                                if (pShape[_r][_c]) _tempGrid[previewY+_r][previewX+_c] = 1;
-                            }
-                        }
-                        var _clearRows = [], _clearCols = [];
-                        for (var _r = 0; _r < 8; _r++) {
-                            if (_tempGrid[_r].every(function(v) { return v !== 0 && v !== '#4e566d'; })) _clearRows.push(_r);
-                        }
-                        for (var _c = 0; _c < 8; _c++) {
-                            var _full = true;
-                            for (var _r = 0; _r < 8; _r++) {
-                                if (_tempGrid[_r][_c] === 0 || _tempGrid[_r][_c] === '#4e566d') { _full = false; break; }
-                            }
-                            if (_full) _clearCols.push(_c);
-                        }
-                        if (_clearRows.length > 0 || _clearCols.length > 0) {
-                            ctx.save();
-                            var _grad = ctx.createLinearGradient(0, 0, 8*bCell, 8*bCell);
-                            _grad.addColorStop(0, '#ffd700');
-                            _grad.addColorStop(0.25, '#ff6b6b');
-                            _grad.addColorStop(0.5, '#ffd700');
-                            _grad.addColorStop(0.75, '#00e5ff');
-                            _grad.addColorStop(1, '#ffd700');
-                            ctx.strokeStyle = _grad;
-                            ctx.lineWidth = 4;
-                            ctx.shadowColor = '#ffd700';
-                            ctx.shadowBlur = 25;
-                            ctx.setLineDash([8, 6]);
-                            ctx.lineDashOffset = -performance.now() / 50;
-                            for (var _ri = 0; _ri < _clearRows.length; _ri++) {
-                                var _ry = _clearRows[_ri] * bCell;
-                                ctx.strokeRect(3, _ry + 3, 8*bCell - 6, bCell - 6);
-                            }
-                            for (var _ci = 0; _ci < _clearCols.length; _ci++) {
-                                var _cx = _clearCols[_ci] * bCell;
-                                ctx.strokeRect(_cx + 3, 3, bCell - 6, 8*bCell - 6);
-                            }
-                            ctx.setLineDash([]);
-                            ctx.restore();
-                        }
                     }
                 }
 
-                // 绘製分數飛字（放大+发光）
+                // 绘製分數飛字
                 for (let fi = s.scoreFlyouts.length - 1; fi >= 0; fi--) {
                     const fl = s.scoreFlyouts[fi];
                     fl.y -= fl.vy; fl.timer -= 0.02;
                     if (fl.timer <= 0) { s.scoreFlyouts.splice(fi, 1); continue; }
                     ctx.save();
                     ctx.globalAlpha = Math.min(fl.timer * 2, 1);
-                    // 分数越大字号越大
-                    const scoreNum = parseInt(fl.text.replace(/\D/g,'')) || 0;
-                    const fontSize = scoreNum > 500 ? 48 : scoreNum > 200 ? 38 : scoreNum > 80 ? 32 : 28;
-                    ctx.font = `bold ${fontSize}px -apple-system, sans-serif`;
+                    ctx.font = 'bold 22px -apple-system, sans-serif';
                     ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    // 外发光（分层）- 增强版
-                    ctx.shadowColor = fl.color || '#ffd700';
-                    ctx.shadowBlur = 50;
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillText(fl.text, fl.x + 2, fl.y + 2);
-                    ctx.shadowBlur = 35;
                     ctx.fillStyle = fl.color || '#ffd700';
-                    ctx.fillText(fl.text, fl.x, fl.y);
-                    // 第二层超大光晕
                     ctx.shadowColor = fl.color || '#ffd700';
-                    ctx.shadowBlur = 80;
-                    ctx.globalAlpha = 0.3;
-                    ctx.fillStyle = '#ffffff';
+                    ctx.shadowBlur = 15;
                     ctx.fillText(fl.text, fl.x, fl.y);
                     ctx.restore();
                 }
 
 
-                // 粒子上限 200 个，防止爆内存
-                while (s.particles.length > 150) s.particles.shift();
                 s.particles.forEach(p => { ctx.save(); ctx.globalAlpha = p.alpha; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill(); ctx.restore(); });
                 
                 if (s.allClearFlashTimer > 0) {
-                    ctx.save();
-                    ctx.globalAlpha = Math.min(s.allClearFlashTimer * 0.5, 0.6);
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.restore();
+                    ctx.save(); ctx.globalAlpha = s.allClearFlashTimer; ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.restore();
                 }
 
                 ctx.fillStyle = "rgba(0,0,0,0.4)"; ctx.fillRect(0, canvas.width, canvas.width, canvas.height - canvas.width);
-                // 成就横幅渲染（Canvas内）
-                if (s.lastAchievement && s.lastAchievement.timer > 0) {
-                    s.lastAchievement.timer -= 0.03;
-                    if (s.lastAchievement.timer <= 0) s.lastAchievement = null;
-                    else {
-                        ctx.save();
-                        ctx.globalAlpha = Math.min(s.lastAchievement.timer * 2, 0.9);
-                        ctx.fillStyle = s.lastAchievement.color;
-                        ctx.shadowColor = s.lastAchievement.color;
-                        ctx.shadowBlur = 40;
-                        ctx.font = 'bold 22px -apple-system, sans-serif';
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'top';
-                        ctx.fillText(s.lastAchievement.icon + ' ' + s.lastAchievement.title, canvas.width/2, 8);
-                        ctx.restore();
-                    }
-                }
-                
                 s.hand.forEach(piece => { if (!piece.isUsed && piece !== s.selectedPiece) this.drawPiece(piece, piece.x, piece.y, 24); });
                 
-
-
                 if (s.selectedPiece && !s.isGameOver) {
-                    // 拖拽粒子轨迹（降频，每帧概率降低到10%）
-                    if (Math.random() > 0.9) {
-                        const tx = s.mouseX + (Math.random() - 0.5) * 25;
-                        const ty = s.mouseY + (Math.random() - 0.5) * 25;
-                        s.particles.push({ x: tx, y: ty, vx: (Math.random() - 0.5) * 2, vy: -Math.random() * 3 - 1, radius: Math.random() * 3 + 1.5, alpha: 0.5, color: s.selectedPiece.color });
-                    }
-                    // 拖拽时加外发光，让方块更明显
-                    // 完全自由跟随手指，不做任何绘制限制（手感与之前完全一致）
-                    const pW = s.selectedPiece.shape[0].length * bCell;
-                    const pH = s.selectedPiece.shape.length * bCell;
-                    const mult = GameApp.Config.isTouchDevice ? 1.5 : 1.35; const dx = s.dragStartX + (s.mouseX - s.dragStartX) * mult - s.dragOffset.x;
-                    const dy = s.dragStartY + (s.mouseY - s.dragStartY) * mult - s.dragOffset.y;
-                    ctx.save();
-                    ctx.shadowColor = s.selectedPiece.color;
-                    ctx.shadowBlur = 25;
-                    this.drawPiece(s.selectedPiece, dx, dy, bCell);
-                    ctx.restore();
-                    // 半透明底光
-                    ctx.save();
-                    ctx.shadowColor = 'rgba(255,255,255,0.5)';
-                    ctx.shadowBlur = 40;
-                    ctx.globalAlpha = 0.25;
-                    this.drawPiece(s.selectedPiece, dx, dy, bCell);
-                    ctx.restore();
-                    // 实心绘制
-                    this.drawPiece(s.selectedPiece, dx, dy, bCell);
+                    this.drawPiece(s.selectedPiece, s.mouseX - s.dragOffset.x, s.mouseY - s.dragOffset.y - 85, bCell);
                 }
             }
         };
+
+        // ==========================================================================
+        // 9. BOOTSTRAP INITIALIZATION
+        // ==========================================================================
         window.onload = function() {
             GameApp.UI.init();
             GameApp.I18N.init();
             GameApp.Core.init();
-            // iOS: 必须在用户触摸事件中创建 AudioContext
-            function ensureIOSAudio() {
-                try {
-                    if (!GameApp.Audio.ctx) {
-                        GameApp.Audio.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                    }
-                    if (GameApp.Audio.ctx && GameApp.Audio.ctx.state === 'suspended') {
-                        GameApp.Audio.ctx.resume();
-                    }
-                } catch(e) {}
-            }
-            document.addEventListener('touchstart', ensureIOSAudio, { once: false, passive: true });
-            document.addEventListener('touchend', ensureIOSAudio, { once: false, passive: true });
-            document.addEventListener('click', ensureIOSAudio, { once: false, passive: true });
-            // 如果 AudioContext 可以直接创建，立即尝试
-            ensureIOSAudio();
             console.log("All You Can Put! Grand Master Edition Initialized.");
         };
 
-    </script>
-
-    <!-- 🎪 糖果森林 Emoji 大军生成器 -->
-    <script>
-    (function() {
-        var emojis = [
-            // 🍭🍬 糖果主力军
-            '🍭','🍭','🍭','🍭','🍭','🍬','🍬','🍬','🍬','🍬',
-            '🍫','🍫','🧁','🧁','🍩','🍪','🍦','🍧','🍨','🍰',
-            '🎂','🍯','🍮','🍡','🍥','🥮',
-            // 🌲🌳 森林树木主力军
-            '🌲','🌲','🌲','🌲','🌲','🌳','🌳','🌳','🌳','🌳',
-            '🌴','🌴','🌿','🌿','🍀','🍀','🌵','🎄','🎋','🌱','🌾',
-            // 🏠 小屋
-            '🏠','🏡','🏘️','🏰','🏯','🛖','🎪','⛺','🏕️',
-            // 🎁 宝箱宝藏
-            '🎁','🎁','🎁','🎁','📦','📦','🧰','💎','💎','👑',
-            '🪙','🪙','🏆','🥇','💰','💵',
-            // 🌸 花草
-            '🌸','🌸','🌺','🌻','🌷','🌹','🌼',
-            // 🍄 森林小物
-            '🍄','🍓','🍇','🍊','🍋','🍑','🍒','🫐','🥝','🌰',
-            // 🦋 小动物
-            '🦋','🐝','🐞','🐌','🐿️','🦊','🐇','🕊️',
-            // ✨ 梦幻
-            '⭐','🌟','✨','💫','🌈','🌙','💖','💗','💕',
-            '🪄','🎊','🎉','🎈','🦄','🎀','🎠','🎡','🧸'
-        ];
-        var container = document.getElementById('emoji-rain');
-        if (!container) return;
-        container.style.cssText = 'position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1;';
-        var animations = ['emojiFloat1','emojiFloat2','emojiFloat3','emojiDrift','emojiSpin'];
-        for (var i = 0; i < 85; i++) {
-            var el = document.createElement('div');
-            el.className = 'bg-emoji';
-            el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-            el.style.cssText =
-                'top:' + (Math.random()*100).toFixed(1) + '%;' +
-                'left:' + (Math.random()*100).toFixed(1) + '%;' +
-                'font-size:' + (1.5+Math.random()*3.5).toFixed(1) + 'rem;' +
-                'animation-name:' + animations[Math.floor(Math.random()*animations.length)] + ';' +
-                'animation-duration:' + (7+Math.random()*15).toFixed(1) + 's;' +
-                'animation-delay:' + (Math.random()*15).toFixed(1) + 's;' +
-                'opacity:' + (0.25+Math.random()*0.45).toFixed(2) + ';';
-            container.appendChild(el);
-        }
-        var stars = ['✦','✧','⋆','·'];
-        for (var i = 0; i < 20; i++) {
-            var el = document.createElement('div');
-            el.className = 'bg-emoji';
-            el.textContent = stars[i % stars.length];
-            el.style.cssText =
-                'top:' + (Math.random()*100).toFixed(1) + '%;' +
-                'left:' + (Math.random()*100).toFixed(1) + '%;' +
-                'font-size:' + (0.3+Math.random()*0.7).toFixed(1) + 'rem;' +
-                'color:rgba(180,210,255,' + (0.3+Math.random()*0.5).toFixed(2) + ');' +
-                'animation-name:emojiFloat3;' +
-                'animation-duration:' + (2.5+Math.random()*4).toFixed(1) + 's;' +
-                'animation-delay:' + (Math.random()*10).toFixed(1) + 's;' +
-                'opacity:0;';
-            container.appendChild(el);
-        }
-    })();
     </script>
 </body>
 </html>
